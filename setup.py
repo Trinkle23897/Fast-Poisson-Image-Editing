@@ -74,11 +74,11 @@ setup(
   author_email="trinkle23897@gmail.com",
   url="https://github.com/Trinkle23897/Fast-Poisson-Image-Editing",
   license="MIT",
-  description="A fast poisson image editing algorithm that can utilize multi-core CPU or GPU to handle a high-resolution image input",
+  description="A fast poisson image editing algorithm",
   long_description=get_description(),
   long_description_content_type="text/markdown",
   packages=find_packages(exclude=["tests", "tests.*"]),
-  package_data={"pie": ["pie*.so",]},
+  package_data={"pie": ["pie*.so"]},
   install_requires=[
     "opencv-python>=4.5",
     "numpy>=1.20",

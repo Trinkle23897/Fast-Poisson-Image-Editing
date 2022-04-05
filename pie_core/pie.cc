@@ -2,7 +2,7 @@
 
 class PIE {
  public:
-  PIE(int n) { printf("2333\n"); }
+  explicit PIE(int n) { printf("2333\n"); }
   int run() { return 6; }
 };
 
