@@ -5,7 +5,12 @@ import numpy as np
 
 
 def read_image(name: str) -> np.ndarray:
-  return cv2.imread(str)
+  img = cv2.imread(str)
+  if len(img.shape) == 2:
+    img = np.stack([img, img, img], axis=-1)
+  elif len(img.shape) == 4:
+    img = img[..., :-1]
+  return img
 
 
 def write_image(name: str, image: np.ndarray) -> None:

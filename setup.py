@@ -79,6 +79,9 @@ setup(
   long_description_content_type="text/markdown",
   packages=find_packages(exclude=["tests", "tests.*"]),
   package_data={"pie": ["pie*.so"]},
+  entry_points={
+    "console_scripts": ["pie=pie.cli:main"],
+  },
   install_requires=[
     "opencv-python>=4.5",
     "numpy>=1.20",
