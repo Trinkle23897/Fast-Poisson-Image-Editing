@@ -2,8 +2,12 @@ from typing import Tuple
 
 import numpy as np
 
-# import pie_core
 from pie.solver import Solver
+
+try:
+  import pie_core_openmp
+except:
+  pie_core_openmp = None
 
 
 class Processor(object):
@@ -12,17 +16,21 @@ class Processor(object):
   def __init__(self, backend: str):
     super().__init__()
     self.backend = backend
-    # self.core = pie_core
-    self.core = Solver()
+    self.core: Optional[Any] = None
+    if backend == "numpy":
+      self.core = Solver()
+    elif backend == "openmp":
+      self.core = pie_core_openmp.Solver()
+    assert self.core is not None, f"Backend {backend} is invalid."
 
   def mask2index(
     self, mask: np.ndarray
   ) -> Tuple[np.ndarray, int, np.ndarray, np.ndarray]:
-    ids = self.core.partition(mask)
-    max_id = ids[-1, -1] + 1
-    ids[mask == 0] = 0  # reserve id=0 for constant
-    index = np.zeros((max_id, 3))
     x, y = np.nonzero(mask)
+    max_id = x.shape[0] + 1
+    index = np.zeros((max_id, 3))
+    ids = self.core.partition(mask)
+    ids[mask == 0] = 0  # reserve id=0 for constant
     index = ids[x, y].argsort()
     return ids, max_id, x[index], y[index]
 
@@ -43,7 +51,7 @@ class Processor(object):
 
     if len(mask.shape) == 3:
       mask = mask.mean(-1)
-    mask = (mask >= 128).astype(int)
+    mask = (mask >= 128).astype(np.int32)
 
     # zero-out edge
     mask[0] = 0
@@ -58,9 +66,9 @@ class Processor(object):
     src_grad[:, 1:] -= src[:, :-1]
 
     ids, max_id, index_x, index_y = self.mask2index(mask)
-    A = np.zeros((max_id, 4), int)
-    X = np.zeros((max_id, 3), float)
-    B = np.zeros((max_id, 3), float)
+    A = np.zeros((max_id, 4), np.int32)
+    X = np.zeros((max_id, 3), np.float32)
+    B = np.zeros((max_id, 3), np.float32)
 
     X[1:] = tgt[index_x + mask_on_tgt[0], index_y + mask_on_tgt[1]]
     # four-way

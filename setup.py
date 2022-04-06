@@ -74,7 +74,7 @@ setup(
   author_email="trinkle23897@gmail.com",
   url="https://github.com/Trinkle23897/Fast-Poisson-Image-Editing",
   license="MIT",
-  description="A fast poisson image editing algorithm",
+  description="A fast poisson image editing algorithm implementation.",
   long_description=get_description(),
   long_description_content_type="text/markdown",
   packages=find_packages(exclude=["tests", "tests.*"]),
@@ -94,7 +94,7 @@ setup(
       "tqdm",
     ],
   },
-  ext_modules=[CMakeExtension("pie_core")],
+  ext_modules=[CMakeExtension("pie_core_openmp")],
   cmdclass={"build_ext": CMakeBuild},
   zip_safe=False,
   classifiers=[

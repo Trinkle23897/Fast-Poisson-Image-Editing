@@ -12,9 +12,7 @@ set(CMAKE_CXX_FLAGS
 
 add_subdirectory(pybind11)
 
-include_directories(pie)
-
 set(LINK_LIBS dl rt z)
 
-pybind11_add_module(pie_core pie_core/pie.cc)
-target_link_libraries(pie_core PRIVATE ${LINK_LIBS})
+pybind11_add_module(pie_core_openmp pie_core/openmp.cc)
+target_link_libraries(pie_core_openmp PRIVATE ${LINK_LIBS})
