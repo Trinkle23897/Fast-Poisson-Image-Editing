@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Any, Optional, Tuple
 
 import numpy as np
 
@@ -6,7 +6,7 @@ from pie.solver import Solver
 
 try:
   import pie_core_openmp
-except:
+except ImportError:
   pie_core_openmp = None
 
 
@@ -29,7 +29,7 @@ class Processor(object):
     x, y = np.nonzero(mask)
     max_id = x.shape[0] + 1
     index = np.zeros((max_id, 3))
-    ids = self.core.partition(mask)
+    ids = self.core.partition(mask)  # type: ignore
     ids[mask == 0] = 0  # reserve id=0 for constant
     index = ids[x, y].argsort()
     return ids, max_id, x[index], y[index]
@@ -88,11 +88,11 @@ class Processor(object):
 
     self.tgt = tgt.copy()
     self.tgt_index = (index_x + mask_on_tgt[0], index_y + mask_on_tgt[1])
-    self.core.reset(max_id, A, X, B)
+    self.core.reset(max_id, A, X, B)  # type: ignore
     return max_id
 
   def step(self, iteration: int) -> Tuple[np.ndarray, np.ndarray]:
-    x, err = self.core.step(iteration)
+    x, err = self.core.step(iteration)  # type: ignore
     x[x < 0] = 0
     x[x > 255] = 255
     self.tgt[self.tgt_index] = x[1:]

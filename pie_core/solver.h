@@ -1,10 +1,11 @@
-#ifndef __SOLVER_H__
-#define __SOLVER_H__
+#ifndef PIE_CORE_SOLVER_H_
+#define PIE_CORE_SOLVER_H_
 
-#include <bits/stdc++.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+
+#include <tuple>
 
 namespace py = pybind11;
 
@@ -60,4 +61,4 @@ class Solver {
   }
 };
 
-#endif  // __SOLVER_H__
+#endif  // PIE_CORE_SOLVER_H_
