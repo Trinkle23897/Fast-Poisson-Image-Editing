@@ -93,7 +93,5 @@ class Processor(object):
 
   def step(self, iteration: int) -> Tuple[np.ndarray, np.ndarray]:
     x, err = self.core.step(iteration)  # type: ignore
-    x[x < 0] = 0
-    x[x > 255] = 255
     self.tgt[self.tgt_index] = x[1:]
     return self.tgt, err

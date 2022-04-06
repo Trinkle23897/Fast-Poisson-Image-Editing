@@ -32,4 +32,7 @@ class Solver(object):
       self.X[self.A[:, 3]]
     )
     err = np.abs(c - self.B).sum(axis=0)
-    return self.X.copy(), err
+    x = self.X.copy()
+    x[x < 0] = 0
+    x[x > 255] = 255
+    return x, err
