@@ -36,7 +36,7 @@ auditwheel-install:
 # python linter
 
 flake8: flake8-install
-	flake8 $(PYTHON_FILES) --count --show-source --statistics
+	flake8 $(PYTHON_FILES) --count --show-source --statistics --max-line-length 80
 
 py-format: py-format-install
 	isort --check $(PYTHON_FILES) && yapf -r -d $(PYTHON_FILES)
