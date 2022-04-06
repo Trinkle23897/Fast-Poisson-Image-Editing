@@ -6,7 +6,18 @@ This project aims to provide a fast poisson image editing algorithm that can uti
 
 ## Installation & Usage
 
-TODO
+```bash
+$ pip install .
+```
+
+Run test suite:
+
+```bash
+$ cd tests
+$ ./data.sh
+$ pie -s test1_src.jpg -m test1_mask.jpg -t test1_target.jpg -o result1.png -h0 0 -w0 0 -h1 -150 -w1 -50 -n 5000 -p 1000
+$ pie -s test2_src.png -m test2_mask.png -t test2_target.png -o result2.png -h0 0 -w0 0 -h1 130 -w1 130 -n 5000 -p 1000
+```
 
 ## Background
 

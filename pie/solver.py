@@ -20,17 +20,16 @@ class Solver(object):
     self.B = B
     self.X = X
 
-  def single_step(self) -> None:
-    """X = (B + AX) / 4"""
-    X = (
-      self.B + self.X[self.A[:, 0]] + self.X[self.A[:, 1]] +
-      self.X[self.A[:, 2]] + self.X[self.A[:, 3]]
-    ) / 4.0
-    X[0] = 0
-    self.err = np.abs(self.X - X).sum(axis=0)
-    self.X = X
-
   def step(self, iteration: int) -> Tuple[np.ndarray, np.ndarray]:
     for _ in range(iteration):
-      self.single_step()
-    return self.X, self.err
+      # X = (B + AX) / 4
+      self.X = (
+        self.B + self.X[self.A[:, 0]] + self.X[self.A[:, 1]] +
+        self.X[self.A[:, 2]] + self.X[self.A[:, 3]]
+      ) / 4.0
+    c = 4.0 * self.X - (
+      self.X[self.A[:, 0]] + self.X[self.A[:, 1]] + self.X[self.A[:, 2]] +
+      self.X[self.A[:, 3]]
+    )
+    err = np.abs(c - self.B).sum(axis=0)
+    return self.X.copy(), err

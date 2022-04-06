@@ -37,10 +37,13 @@ def main() -> None:
   args = get_args()
   proc = Processor("numpy")
   src, mask, tgt = read_images(args.source, args.mask, args.target)
-  proc.reset(src, mask, tgt, (args.h0, args.w0), (args.h1, args.w1))
+  n = proc.reset(src, mask, tgt, (args.h0, args.w0), (args.h1, args.w1))
+  print(f"# of vars: {n}")
   if args.p == 0:
     args.p = args.n
+  result = tgt
   for i in range(0, args.n, args.p):
     result, err = proc.step(args.p)
-    print(f"Iter {i + args.p}, err {err}")
+    print(f"Iter {i + args.p}, abs error {err}")
+    write_image(f"iter{i:05d}.png", result)
   write_image(args.output, result)

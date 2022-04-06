@@ -33,13 +33,13 @@ class Processor(object):
     tgt: np.ndarray,
     mask_on_src: Tuple[int, int],
     mask_on_tgt: Tuple[int, int],
-  ) -> None:
+  ) -> int:
     # check validity
-    assert 0 <= mask_on_src[0] and 0 <= mask_on_src[1]
-    assert mask_on_src[0] + mask.shape[0] <= src.shape[0]
-    assert mask_on_src[1] + mask.shape[1] <= src.shape[1]
-    assert mask_on_src[0] + mask.shape[0] <= tgt.shape[0]
-    assert mask_on_src[1] + mask.shape[1] <= tgt.shape[1]
+    # assert 0 <= mask_on_src[0] and 0 <= mask_on_src[1]
+    # assert mask_on_src[0] + mask.shape[0] <= src.shape[0]
+    # assert mask_on_src[1] + mask.shape[1] <= src.shape[1]
+    # assert mask_on_tgt[0] + mask.shape[0] <= tgt.shape[0]
+    # assert mask_on_tgt[1] + mask.shape[1] <= tgt.shape[1]
 
     if len(mask.shape) == 3:
       mask = mask.mean(-1)
@@ -53,7 +53,7 @@ class Processor(object):
 
     src_grad = src * 4.0
     src_grad[:-1] -= src[1:]
-    src_grad[1:] -= src[-1:]
+    src_grad[1:] -= src[:-1]
     src_grad[:, :-1] -= src[:, 1:]
     src_grad[:, 1:] -= src[:, :-1]
 
@@ -62,7 +62,7 @@ class Processor(object):
     X = np.zeros((max_id, 3), float)
     B = np.zeros((max_id, 3), float)
 
-    X[1:] = src[index_x + mask_on_src[0], index_y + mask_on_src[1]]
+    X[1:] = tgt[index_x + mask_on_tgt[0], index_y + mask_on_tgt[1]]
     # four-way
     A[1:, 0] = ids[index_x - 1, index_y]
     A[1:, 1] = ids[index_x + 1, index_y]
@@ -81,10 +81,11 @@ class Processor(object):
     self.tgt = tgt.copy()
     self.tgt_index = (index_x + mask_on_tgt[0], index_y + mask_on_tgt[1])
     self.core.reset(max_id, A, X, B)
+    return max_id
 
   def step(self, iteration: int) -> Tuple[np.ndarray, np.ndarray]:
     x, err = self.core.step(iteration)
+    x[x < 0] = 0
+    x[x > 255] = 255
     self.tgt[self.tgt_index] = x[1:]
-    self.tgt[self.tgt > 255] = 255
-    self.tgt[self.tgt < 0] = 0
-    return self.tgt.astype(np.uint8), err
+    return self.tgt, err
