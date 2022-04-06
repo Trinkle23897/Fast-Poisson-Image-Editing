@@ -2,7 +2,8 @@ from typing import Tuple
 
 import numpy as np
 
-import pie_core
+# import pie_core
+from pie.solver import Solver
 
 
 class Processor(object):
@@ -11,13 +12,13 @@ class Processor(object):
   def __init__(self, backend: str):
     super().__init__()
     self.backend = backend
-    self.core = pie_core
+    # self.core = pie_core
+    self.core = Solver()
 
   def mask2index(
     self, mask: np.ndarray
-  ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    # ids = self.core.partition(mask)
-    ids = np.cumsum((mask > 0).reshape(-1)).reshape(mask.shape)  # or others
+  ) -> Tuple[np.ndarray, int, np.ndarray, np.ndarray]:
+    ids = self.core.partition(mask)
     max_id = ids[-1, -1] + 1
     ids[mask == 0] = 0  # reserve id=0 for constant
     index = np.zeros((max_id, 3))
@@ -81,7 +82,9 @@ class Processor(object):
     self.tgt_index = (index_x + mask_on_tgt[0], index_y + mask_on_tgt[1])
     self.core.reset(max_id, A, X, B)
 
-  def step(self, iteration: int) -> np.ndarray:
+  def step(self, iteration: int) -> Tuple[np.ndarray, np.ndarray]:
     x, err = self.core.step(iteration)
     self.tgt[self.tgt_index] = x[1:]
-    return self.tgt
+    self.tgt[self.tgt > 255] = 255
+    self.tgt[self.tgt < 0] = 0
+    return self.tgt.astype(np.uint8), err

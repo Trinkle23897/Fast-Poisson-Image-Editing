@@ -1,5 +1,8 @@
 import argparse
 
+from pie.io import read_images, write_image
+from pie.process import Processor
+
 
 def get_args() -> argparse.Namespace:
   parser = argparse.ArgumentParser()
@@ -20,14 +23,24 @@ def get_args() -> argparse.Namespace:
     "-w1", type=int, help="mask position (width) on target image"
   )
   parser.add_argument(
-    "-i",
+    "-n",
     type=int,
     help="how many iteration would you perfer, the more the better"
   )
-  parser.add_argument("-p", type=int, help="output result every P iteration")
+  parser.add_argument(
+    "-p", type=int, help="output result every P iteration", default=0
+  )
   return parser.parse_args()
 
 
 def main() -> None:
   args = get_args()
-  print("here", args)
+  proc = Processor("numpy")
+  src, mask, tgt = read_images(args.source, args.mask, args.target)
+  proc.reset(src, mask, tgt, (args.h0, args.w0), (args.h1, args.w1))
+  if args.p == 0:
+    args.p = args.n
+  for i in range(0, args.n, args.p):
+    result, err = proc.step(args.p)
+    print(f"Iter {i + args.p}, err {err}")
+  write_image(args.output, result)
