@@ -6,10 +6,12 @@ class OpenMPSolver : public Solver {
   int* buf;
   unsigned char* buf2;
   float* tmp;
+  int block_size;
 
  public:
-  explicit OpenMPSolver(int n) : buf(NULL), buf2(NULL), tmp(NULL), Solver() {
-    omp_set_num_threads(n);
+  explicit OpenMPSolver(int n_cpu, int block_size)
+      : buf(NULL), buf2(NULL), tmp(NULL), block_size(block_size), Solver() {
+    omp_set_num_threads(n_cpu);
   }
 
   py::array_t<int> partition(py::array_t<int> mask) {
@@ -20,12 +22,18 @@ class OpenMPSolver : public Solver {
     }
     buf = new int[n * m];
     int cnt = 0;
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < m; ++j) {
-        if (arr(i, j) > 0) {
-          buf[i * m + j] = ++cnt;
-        } else {
-          buf[i * m + j] = 0;
+    for (int i = 0; i < (n + block_size - 1) / block_size; ++i) {
+      for (int j = 0; j < (m + block_size - 1) / block_size; ++j) {
+        for (int x = i * block_size, dx = 0; dx < block_size && x < n;
+             ++dx, ++x) {
+          for (int y = j * block_size, dy = 0; dy < block_size && y < m;
+               ++dy, ++y) {
+            if (arr(x, y) > 0) {
+              buf[x * m + y] = ++cnt;
+            } else {
+              buf[x * m + y] = 0;
+            }
+          }
         }
       }
     }
@@ -105,7 +113,7 @@ class OpenMPSolver : public Solver {
 
 PYBIND11_MODULE(pie_core_openmp, m) {
   py::class_<OpenMPSolver>(m, "Solver")
-      .def(py::init<int>())
+      .def(py::init<int, int>())
       .def("partition", &OpenMPSolver::partition)
       .def("reset", &OpenMPSolver::reset)
       .def("step", &OpenMPSolver::step);

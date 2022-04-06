@@ -2,12 +2,16 @@ import argparse
 import os
 import time
 
+import pie
 from pie.io import read_images, write_image
 from pie.process import Processor
 
 
 def get_args() -> argparse.Namespace:
   parser = argparse.ArgumentParser()
+  parser.add_argument(
+    "-v", "--version", action="store_true", help="show the version and exit"
+  )
   parser.add_argument(
     "-b",
     "--backend",
@@ -21,6 +25,9 @@ def get_args() -> argparse.Namespace:
     type=int,
     default=os.cpu_count(),
     help="number of CPU used",
+  )
+  parser.add_argument(
+    "-z", "--block-size", type=int, default=1, help="block size"
   )
   parser.add_argument("-s", "--source", type=str, help="source image filename")
   parser.add_argument("-m", "--mask", type=str, help="mask image filename")
@@ -46,12 +53,16 @@ def get_args() -> argparse.Namespace:
   parser.add_argument(
     "-p", type=int, help="output result every P iteration", default=0
   )
+
   return parser.parse_args()
 
 
 def main() -> None:
   args = get_args()
-  proc = Processor(args.backend, args.cpu)
+  if args.version:
+    print(pie.__version__)
+    exit(0)
+  proc = Processor(args.backend, args.cpu, args.block_size)
   print(f"Successfully initialize PIE solver with {args.backend} backend")
   src, mask, tgt = read_images(args.source, args.mask, args.target)
   n = proc.reset(src, mask, tgt, (args.h0, args.w0), (args.h1, args.w1))
