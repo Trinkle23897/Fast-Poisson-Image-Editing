@@ -13,14 +13,14 @@ except ImportError:
 class Processor(object):
   """PIE Processor"""
 
-  def __init__(self, backend: str):
+  def __init__(self, backend: str, n_cpu: int):
     super().__init__()
     self.backend = backend
     self.core: Optional[Any] = None
     if backend == "numpy":
       self.core = Solver()
     elif backend == "openmp":
-      self.core = pie_core_openmp.Solver()
+      self.core = pie_core_openmp.Solver(n_cpu)
     assert self.core is not None, f"Backend {backend} is invalid."
 
   def mask2index(

@@ -1,4 +1,5 @@
 import argparse
+import os
 import time
 
 from pie.io import read_images, write_image
@@ -13,6 +14,13 @@ def get_args() -> argparse.Namespace:
     type=str,
     choices=["numpy", "openmp"],
     help="backend choice",
+  )
+  parser.add_argument(
+    "-c",
+    "--cpu",
+    type=int,
+    default=os.cpu_count(),
+    help="number of CPU used",
   )
   parser.add_argument("-s", "--source", type=str, help="source image filename")
   parser.add_argument("-m", "--mask", type=str, help="mask image filename")
@@ -43,7 +51,8 @@ def get_args() -> argparse.Namespace:
 
 def main() -> None:
   args = get_args()
-  proc = Processor(args.backend)
+  proc = Processor(args.backend, args.cpu)
+  print(f"Successfully initialize PIE solver with {args.backend} backend")
   src, mask, tgt = read_images(args.source, args.mask, args.target)
   n = proc.reset(src, mask, tgt, (args.h0, args.w0), (args.h1, args.w1))
   print(f"# of vars: {n}")
@@ -58,3 +67,4 @@ def main() -> None:
   dt = time.time() - t
   print(f"Time elapsed: {dt:.2f}s")
   write_image(args.output, result)
+  print(f"Successfully write image to {args.output}")

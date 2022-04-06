@@ -21,8 +21,9 @@ class Solver {
       delete[] A, B, X;
     }
   }
-  void reset(int n, py::array a, py::array x, py::array b) {
-    if (N > 0 && n != N) {
+  void reset(int n, py::array_t<int> a, py::array_t<float> x,
+             py::array_t<float> b) {
+    if (N > 0) {
       delete[] A, B, X;
     }
     N = n;
@@ -30,9 +31,9 @@ class Solver {
     B = new float[N * 3];
     X = new float[N * 3];
     // copy from numpy
-    auto a_arr = a.unchecked<int, 2>();
-    auto b_arr = b.unchecked<float, 2>();
-    auto x_arr = x.unchecked<float, 2>();
+    auto a_arr = a.unchecked<2>();
+    auto b_arr = b.unchecked<2>();
+    auto x_arr = x.unchecked<2>();
     for (int i = 0; i < N; ++i) {
       for (int j = 0; j < 4; ++j) {
         A[i * 4 + j] = a_arr(i, j);
@@ -49,10 +50,15 @@ class Solver {
       }
     }
     memset(err, 0, sizeof(err));
+    post_reset();
   }
 
   virtual py::array_t<int> partition(py::array_t<int> mask) {
     throw std::runtime_error("partition not implemented");
+  }
+
+  virtual void post_reset() {
+    throw std::runtime_error("post_reset not implemented");
   }
 
   virtual std::tuple<py::array_t<float>, py::array_t<float>> step(

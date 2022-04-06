@@ -7,7 +7,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} -std=c++1y -fPIC -O3 -fomit-frame-pointer -D__STDC_CONSTANT_MACROS -lpthread"
+    "${CMAKE_CXX_FLAGS} -std=c++1y -fPIC -O3 -fomit-frame-pointer -D__STDC_CONSTANT_MACROS -lpthread -fopenmp"
 )
 
 add_subdirectory(pybind11)
