@@ -1,6 +1,8 @@
-#include "cuda.h"
-
 #include "solver.h"
+
+#include <tuple>
+
+#include "helper.h"
 
 class CudaSolver : public Solver {
   int* buf;

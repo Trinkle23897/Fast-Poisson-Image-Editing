@@ -1,6 +1,6 @@
-#include <omp.h>
-
 #include "solver.h"
+
+#include <omp.h>
 
 class OpenMPSolver : public Solver {
   int* buf;

@@ -3,6 +3,8 @@
 #include <driver_functions.h>
 #include <stdio.h>
 
+#include "helper.h"
+
 void printCudaInfo() {
   // For fun, just print out some stats on the machine
 
