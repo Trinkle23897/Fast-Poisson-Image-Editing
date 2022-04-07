@@ -36,8 +36,6 @@ class CMakeBuild(build_ext):
       extdir += os.path.sep
 
     # Set Python_EXECUTABLE instead if you use PYBIND11_FINDPYTHON
-    # EXAMPLE_VERSION_INFO shows you how to pass a value into the C++ code
-    # from Python.
     cmake_args = [
       f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}",
       f"-DPYTHON_EXECUTABLE={sys.executable}",
@@ -52,14 +50,6 @@ class CMakeBuild(build_ext):
       ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp
     )
     subprocess.check_call(["make"] + build_args, cwd=self.build_temp)
-
-
-def package_files(directory):
-  paths = []
-  for (path, _, filenames) in os.walk(directory):
-    for filename in filenames:
-      paths.append(os.path.join("..", path, filename))
-  return paths
 
 
 def get_description():
@@ -78,7 +68,7 @@ setup(
   long_description=get_description(),
   long_description_content_type="text/markdown",
   packages=find_packages(exclude=["tests", "tests.*"]),
-  package_data={"pie": ["pie*.so"]},
+  package_data={"pie": ["pie/*.so"]},
   entry_points={
     "console_scripts": ["pie=pie.cli:main"],
   },
@@ -94,7 +84,10 @@ setup(
       "tqdm",
     ],
   },
-  ext_modules=[CMakeExtension("pie_core_openmp")],
+  ext_modules=[
+    CMakeExtension("pie/pie_core_openmp"),
+    CMakeExtension("pie/pie_core_naive"),
+  ],
   cmdclass={"build_ext": CMakeBuild},
   zip_safe=False,
   classifiers=[
