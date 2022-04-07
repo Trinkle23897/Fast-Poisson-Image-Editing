@@ -12,19 +12,29 @@ try:
 except ImportError:
   pie_core_openmp = None
 
+try:
+  from pie import pie_core_cuda  # type: ignore
+except ImportError:
+  pie_core_cuda = None
+
 
 class Processor(object):
   """PIE Processor"""
 
   def __init__(self, gradient: str, backend: str, n_cpu: int, block_size: int):
     super().__init__()
+
     self.backend = backend
     self.core: Optional[Any] = None
     self.gradient = gradient
+
     if backend == "numpy":
       self.core = Solver()
     elif backend == "openmp":
       self.core = pie_core_openmp.Solver(n_cpu, block_size)
+    elif backend == "cuda":
+      self.core = pie_core_cuda.Solver(n_cpu, block_size)
+
     assert self.core is not None, f"Backend {backend} is invalid."
 
   def mask2index(

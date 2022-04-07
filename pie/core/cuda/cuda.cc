@@ -1,16 +1,18 @@
-#include <omp.h>
+#include "cuda.h"
 
 #include "solver.h"
 
-class NaiveSolver : public Solver {
+class CudaSolver : public Solver {
   int* buf;
   unsigned char* buf2;
   float* tmp;
   int block_size;
 
  public:
-  explicit NaiveSolver(int n_cpu, int block_size)
-      : buf(NULL), buf2(NULL), tmp(NULL), block_size(block_size), Solver() {}
+  explicit CudaSolver(int n_cpu, int block_size)
+      : buf(NULL), buf2(NULL), tmp(NULL), block_size(block_size), Solver() {
+    printCudaInfo();
+  }
 
   py::array_t<int> partition(py::array_t<int> mask) {
     auto arr = mask.unchecked<2>();
@@ -105,10 +107,10 @@ class NaiveSolver : public Solver {
   }
 };
 
-PYBIND11_MODULE(pie_core_naive, m) {
-  py::class_<NaiveSolver>(m, "Solver")
+PYBIND11_MODULE(pie_core_cuda, m) {
+  py::class_<CudaSolver>(m, "Solver")
       .def(py::init<int, int>())
-      .def("partition", &NaiveSolver::partition)
-      .def("reset", &NaiveSolver::reset)
-      .def("step", &NaiveSolver::step);
+      .def("partition", &CudaSolver::partition)
+      .def("reset", &CudaSolver::reset)
+      .def("step", &CudaSolver::step);
 }

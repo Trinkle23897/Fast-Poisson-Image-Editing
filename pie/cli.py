@@ -16,7 +16,7 @@ def get_args() -> argparse.Namespace:
     "-b",
     "--backend",
     type=str,
-    choices=["numpy", "openmp"],
+    choices=["numpy", "openmp", "cuda"],
     default=DEFAULT_BACKEND,
     help="backend choice",
   )
