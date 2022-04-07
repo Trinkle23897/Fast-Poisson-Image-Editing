@@ -10,9 +10,12 @@ add_subdirectory(pybind11)
 
 include_directories(pie/core)
 
-add_subdirectory(pie/core/openmp)
+find_package(OpenMP)
+if(OpenMP_FOUND)
+  add_subdirectory(pie/core/openmp)
+endif()
 
-find_library(CUDA cuda)
-if(CUDA)
+find_library(CUDA_LIB cuda)
+if(CUDA_LIB)
   add_subdirectory(pie/core/cuda)
 endif()
