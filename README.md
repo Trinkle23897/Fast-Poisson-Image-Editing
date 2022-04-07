@@ -6,7 +6,10 @@ This project aims to provide a fast poisson image editing algorithm that can uti
 
 ## Installation & Usage
 
+On a Linux machine:
+
 ```bash
+$ git submodule update --init --recursive
 $ pip install .
 ```
 
