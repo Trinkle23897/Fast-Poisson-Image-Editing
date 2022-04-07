@@ -10,3 +10,6 @@ https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/bg.jpg t
 https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/mask.jpg test4_mask.jpg
 https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/fg.jpg test4_src.jpg
 https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/bg.jpg test4_target.jpg
+https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/mask1.png test5_mask.png
+https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/source1.jpg test5_src.jpg
+https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/target1.jpg test5_target.jpg

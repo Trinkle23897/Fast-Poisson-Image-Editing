@@ -13,10 +13,11 @@ except ImportError:
 class Processor(object):
   """PIE Processor"""
 
-  def __init__(self, backend: str, n_cpu: int, block_size: int):
+  def __init__(self, gradient: str, backend: str, n_cpu: int, block_size: int):
     super().__init__()
     self.backend = backend
     self.core: Optional[Any] = None
+    self.gradient = gradient
     if backend == "numpy":
       self.core = Solver()
     elif backend == "openmp":
@@ -35,6 +36,9 @@ class Processor(object):
     return ids, max_id, x[index], y[index]
 
   def mixgrad(self, a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    if self.gradient == "src":
+      return a
+    # mix gradient, see Equ. 12 in PIE paper
     mask = np.abs(a) < np.abs(b)
     # mask = (a ** 2).sum(-1) < (b ** 2).sum(-1)
     a[mask] = b[mask]

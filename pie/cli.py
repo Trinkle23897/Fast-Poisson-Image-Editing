@@ -52,9 +52,17 @@ def get_args() -> argparse.Namespace:
     "-w1", type=int, help="mask position (width) on target image"
   )
   parser.add_argument(
+    "-g",
+    "--gradient",
+    type=str,
+    choices=["mix", "src"],
+    default="mix",
+    help="how to calculate gradient for PIE",
+  )
+  parser.add_argument(
     "-n",
     type=int,
-    help="how many iteration would you perfer, the more the better"
+    help="how many iteration would you perfer, the more the better",
   )
   parser.add_argument(
     "-p", type=int, help="output result every P iteration", default=0
@@ -68,7 +76,7 @@ def main() -> None:
   if args.version:
     print(pie.__version__)
     exit(0)
-  proc = Processor(args.backend, args.cpu, args.block_size)
+  proc = Processor(args.gradient, args.backend, args.cpu, args.block_size)
   print(f"Successfully initialize PIE solver with {args.backend} backend")
   src, mask, tgt = read_images(args.source, args.mask, args.target)
   n = proc.reset(src, mask, tgt, (args.h0, args.w0), (args.h1, args.w1))
