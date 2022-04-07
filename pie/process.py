@@ -5,15 +5,18 @@ import numpy as np
 from pie.solver import Solver
 
 DEFAULT_BACKEND = "numpy"
+ALL_BACKEND = ["numpy"]
 
 try:
   from pie import pie_core_openmp  # type: ignore
   DEFAULT_BACKEND = "openmp"
+  ALL_BACKEND.append("openmp")
 except ImportError:
   pie_core_openmp = None
 
 try:
   from pie import pie_core_cuda  # type: ignore
+  ALL_BACKEND.append("cuda")
 except ImportError:
   pie_core_cuda = None
 

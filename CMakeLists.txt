@@ -7,6 +7,12 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 add_subdirectory(pybind11)
+
 include_directories(pie/core)
+
 add_subdirectory(pie/core/openmp)
-add_subdirectory(pie/core/cuda)
+
+find_library(CUDA cuda)
+if(CUDA)
+  add_subdirectory(pie/core/cuda)
+endif()
