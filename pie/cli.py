@@ -4,7 +4,7 @@ import time
 
 import pie
 from pie.io import read_images, write_image
-from pie.process import Processor
+from pie.process import DEFAULT_BACKEND, Processor
 
 
 def get_args() -> argparse.Namespace:
@@ -17,6 +17,7 @@ def get_args() -> argparse.Namespace:
     "--backend",
     type=str,
     choices=["numpy", "openmp"],
+    default=DEFAULT_BACKEND,
     help="backend choice",
   )
   parser.add_argument(

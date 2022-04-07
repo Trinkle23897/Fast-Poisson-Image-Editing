@@ -4,8 +4,11 @@ import numpy as np
 
 from pie.solver import Solver
 
+DEFAULT_BACKEND = "numpy"
+
 try:
   import pie_core_openmp
+  DEFAULT_BACKEND = "openmp"
 except ImportError:
   pie_core_openmp = None
 
