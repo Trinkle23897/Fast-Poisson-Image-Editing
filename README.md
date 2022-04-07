@@ -15,10 +15,10 @@ Run test suite:
 ```bash
 $ cd tests
 $ ./data.py
-$ pie -s test1_src.jpg -m test1_mask.jpg -t test1_target.jpg -o result1.png -h0 0 -w0 0 -h1 -150 -w1 -50 -n 5000 -p 1000
-$ pie -s test2_src.png -m test2_mask.png -t test2_target.png -o result2.png -h0 0 -w0 0 -h1 130 -w1 130 -n 5000 -p 1000
-$ pie -s test3_src.jpg -m test3_mask.jpg -t test3_target.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 100 -n 5000 -p 0 -b openmp -c 6 -z 1
-$ pie -s test4_src.jpg -m test4_mask.jpg -t test4_target.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 100 -n 5000 -p 0 -b openmp -c 6 -z 1
+$ pie -s test1_src.jpg -m test1_mask.jpg -t test1_target.jpg -o result1.png -h0 0 -w0 0 -h1 -150 -w1 -50 -n 5000 -p 1000 -b openmp
+$ pie -s test2_src.png -m test2_mask.png -t test2_target.png -o result2.png -h0 0 -w0 0 -h1 130 -w1 130 -n 5000 -p 1000 -b openmp
+$ pie -s test3_src.jpg -m test3_mask.jpg -t test3_target.jpg -o result3.png -h0 0 -w0 0 -h1 100 -w1 100 -n 5000 -p 0 -b openmp
+$ pie -s test4_src.jpg -m test4_mask.jpg -t test4_target.jpg -o result4.png -h0 0 -w0 0 -h1 100 -w1 100 -n 5000 -p 0 -b openmp
 ```
 
 ## Background
@@ -49,7 +49,7 @@ The gradient is computed by
 $$
 \nabla(x,y)=4I(x,y)-I(x-1,y)-I(x,y-1)-I(x+1,y)-I(x,y+1)
 $$
-After computing the gradient in source image, the algorithm tries to solve the following problem: given the gradient and the boundary value, calculate the approximate solution that meets the requirement. It can be formulated as
+After computing the gradient in source image, the algorithm tries to solve the following problem: given the gradient and the boundary value, calculate the approximate solution that meets the requirement, i.e., to keep target image's gradient as similar as the source image. It can be formulated as
 $$
 A\vec{x}=\vec{b}
 $$
@@ -58,6 +58,13 @@ where $A\in \mathbb{R}^{N\times N}$, $\vec{x}\in \mathbb{R}^N$, $\vec{b}\in \mat
 $N$ is always a large number, i.e., greater than 500k, so the Gauss-Jordan Elimination cannot be directly applied here because of the high time complexity $O(N^3)$. People always use [Jacobi Method](https://en.wikipedia.org/wiki/Jacobi_method) to solve the problem. Thanks to the sparsity of matrix $A$, the overall time complexity is $O(MN)$ where $M$ is the number of iteration performed by poisson image editing.
 
 In this project, we are going to parallelize Jacobi method to speed up the computation. To our best knowledge, there's no public project on GitHub that implements poisson image editing with either OpenMP, or MPI, or CUDA. All of them can only handle a small size image workload.
+
+## Implement Method
+
+- [x] NumPy
+- [x] OpenMP
+- [ ] MPI
+- [ ] CUDA
 
 ## Miscellaneous (for 15-618 course project)
 
@@ -72,10 +79,9 @@ Resources:
 
 Goals:
 
-- 75%: implement one parallel version of PIE
-- 100%: benchmark the algorithm with OpenMP/MPI/CUDA implementation
-
-- 125%: include a interactive python frontend that can demonstrate the result in a user-friendly style. Real-time computation on a single GTX-1060 Nvidia GPU.
+- [x] 75%: implement one parallel version of PIE
+- [ ] 100%: benchmark the algorithm with OpenMP/MPI/CUDA implementation
+- [ ] 125%: include a interactive python frontend that can demonstrate the result in a user-friendly style. Real-time computation on a single GTX-1060 Nvidia GPU.
 
 Platform choice:
 

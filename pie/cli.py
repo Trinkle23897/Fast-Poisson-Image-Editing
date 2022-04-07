@@ -30,7 +30,13 @@ def get_args() -> argparse.Namespace:
     "-z", "--block-size", type=int, default=1, help="block size"
   )
   parser.add_argument("-s", "--source", type=str, help="source image filename")
-  parser.add_argument("-m", "--mask", type=str, help="mask image filename")
+  parser.add_argument(
+    "-m",
+    "--mask",
+    type=str,
+    help="mask image filename (default is to use the whole source image)",
+    default="",
+  )
   parser.add_argument("-t", "--target", type=str, help="target image filename")
   parser.add_argument("-o", "--output", type=str, help="output image filename")
   parser.add_argument(

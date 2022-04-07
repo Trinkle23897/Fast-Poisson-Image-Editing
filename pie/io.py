@@ -1,3 +1,5 @@
+import os
+import warnings
 from typing import Tuple
 
 import cv2
@@ -22,4 +24,10 @@ def read_images(
   mask_name: str,
   tgt_name: str,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-  return read_image(src_name), read_image(mask_name), read_image(tgt_name)
+  src, tgt = read_image(src_name), read_image(tgt_name)
+  if os.path.exists(mask_name):
+    mask = read_image(mask_name)
+  else:
+    warnings.warn("No mask file found, use default setting")
+    mask = np.zeros_like(src) + 255
+  return src, mask, tgt
