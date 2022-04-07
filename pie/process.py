@@ -34,6 +34,12 @@ class Processor(object):
     index = ids[x, y].argsort()
     return ids, max_id, x[index], y[index]
 
+  def mixgrad(self, a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    mask = np.abs(a) < np.abs(b)
+    # mask = (a ** 2).sum(-1) < (b ** 2).sum(-1)
+    a[mask] = b[mask]
+    return a
+
   def reset(
     self,
     src: np.ndarray,
@@ -59,13 +65,26 @@ class Processor(object):
     mask[:, 0] = 0
     mask[:, -1] = 0
 
-    src_grad = src * 4.0
-    src_grad[:-1] -= src[1:]
-    src_grad[1:] -= src[:-1]
-    src_grad[:, :-1] -= src[:, 1:]
-    src_grad[:, 1:] -= src[:, :-1]
-
     ids, max_id, index_x, index_y = self.mask2index(mask)
+    src_x, src_y = index_x + mask_on_src[0], index_y + mask_on_src[1]
+    tgt_x, tgt_y = index_x + mask_on_tgt[0], index_y + mask_on_tgt[1]
+
+    src_C = src[src_x, src_y].astype(np.float32)
+    src_U = src[src_x - 1, src_y].astype(np.float32)
+    src_D = src[src_x + 1, src_y].astype(np.float32)
+    src_L = src[src_x, src_y - 1].astype(np.float32)
+    src_R = src[src_x, src_y + 1].astype(np.float32)
+    tgt_C = tgt[tgt_x, tgt_y].astype(np.float32)
+    tgt_U = tgt[tgt_x - 1, tgt_y].astype(np.float32)
+    tgt_D = tgt[tgt_x + 1, tgt_y].astype(np.float32)
+    tgt_L = tgt[tgt_x, tgt_y - 1].astype(np.float32)
+    tgt_R = tgt[tgt_x, tgt_y + 1].astype(np.float32)
+
+    grad = self.mixgrad(src_C - src_L, tgt_C - tgt_L) \
+      + self.mixgrad(src_C - src_R, tgt_C - tgt_R) \
+      + self.mixgrad(src_C - src_U, tgt_C - tgt_U) \
+      + self.mixgrad(src_C - src_D, tgt_C - tgt_D)
+
     A = np.zeros((max_id, 4), np.int32)
     X = np.zeros((max_id, 3), np.float32)
     B = np.zeros((max_id, 3), np.float32)
@@ -76,7 +95,7 @@ class Processor(object):
     A[1:, 1] = ids[index_x + 1, index_y]
     A[1:, 2] = ids[index_x, index_y - 1]
     A[1:, 3] = ids[index_x, index_y + 1]
-    B[1:] = src_grad[index_x + mask_on_src[0], index_y + mask_on_src[1]]
+    B[1:] = grad
     m = (mask[index_x - 1, index_y] == 0).astype(float).reshape(-1, 1)
     B[1:] += m * tgt[index_x + mask_on_tgt[0] - 1, index_y + mask_on_tgt[1]]
     m = (mask[index_x + 1, index_y] == 0).astype(float).reshape(-1, 1)

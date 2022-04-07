@@ -14,9 +14,11 @@ Run test suite:
 
 ```bash
 $ cd tests
-$ ./data.sh
+$ ./data.py
 $ pie -s test1_src.jpg -m test1_mask.jpg -t test1_target.jpg -o result1.png -h0 0 -w0 0 -h1 -150 -w1 -50 -n 5000 -p 1000
 $ pie -s test2_src.png -m test2_mask.png -t test2_target.png -o result2.png -h0 0 -w0 0 -h1 130 -w1 130 -n 5000 -p 1000
+$ pie -s test3_src.jpg -m test3_mask.jpg -t test3_target.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 100 -n 5000 -p 0 -b openmp -c 6 -z 1
+$ pie -s test4_src.jpg -m test4_mask.jpg -t test4_target.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 100 -n 5000 -p 0 -b openmp -c 6 -z 1
 ```
 
 ## Background

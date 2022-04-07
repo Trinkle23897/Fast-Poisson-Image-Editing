@@ -74,7 +74,7 @@ def main() -> None:
   for i in range(0, args.n, args.p):
     result, err = proc.step(args.p)
     print(f"Iter {i + args.p}, abs error {err}")
-    write_image(f"iter{i:05d}.png", result)
+    write_image(f"iter{i + args.p:05d}.png", result)
   dt = time.time() - t
   print(f"Time elapsed: {dt:.2f}s")
   write_image(args.output, result)

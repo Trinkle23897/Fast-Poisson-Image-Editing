@@ -1,0 +1,12 @@
+https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_mask.jpg test1_mask.jpg
+https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_src.jpg test1_src.jpg
+https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_target.jpg test1_target.jpg
+https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_mask.png test2_mask.png
+https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_src.png test2_src.png
+https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_target.png test2_target.png
+https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/mask.jpg test3_mask.jpg
+https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/fg.jpg test3_src.jpg
+https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/bg.jpg test3_target.jpg
+https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/mask.jpg test4_mask.jpg
+https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/fg.jpg test4_src.jpg
+https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/bg.jpg test4_target.jpg
