@@ -79,12 +79,32 @@ __global__ void iter_kernel(int N0, int N1, int* A, float* B, float* X) {
     int id1 = A[off4 + 1] * 3;
     int id2 = A[off4 + 2] * 3;
     int id3 = A[off4 + 3] * 3;
-    X[off3 + 0] =
-        (B[off3 + 0] + X[id0 + 0] + X[id1 + 0] + X[id2 + 0] + X[id3 + 0]) / 4;
-    X[off3 + 1] =
-        (B[off3 + 1] + X[id0 + 1] + X[id1 + 1] + X[id2 + 1] + X[id3 + 1]) / 4;
-    X[off3 + 2] =
-        (B[off3 + 2] + X[id0 + 2] + X[id1 + 2] + X[id2 + 2] + X[id3 + 2]) / 4;
+    float x0 = B[off3 + 0];
+    float x1 = B[off3 + 1];
+    float x2 = B[off3 + 2];
+    if (id0) {
+      x0 += X[id0 + 0];
+      x1 += X[id0 + 1];
+      x2 += X[id0 + 2];
+    }
+    if (id1) {
+      x0 += X[id1 + 0];
+      x1 += X[id1 + 1];
+      x2 += X[id1 + 2];
+    }
+    if (id2) {
+      x0 += X[id2 + 0];
+      x1 += X[id2 + 1];
+      x2 += X[id2 + 2];
+    }
+    if (id3) {
+      x0 += X[id3 + 0];
+      x1 += X[id3 + 1];
+      x2 += X[id3 + 2];
+    }
+    X[off3 + 0] = x0 / 4;
+    X[off3 + 1] = x1 / 4;
+    X[off3 + 2] = x2 / 4;
   }
 }
 
