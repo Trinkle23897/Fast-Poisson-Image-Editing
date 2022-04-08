@@ -2,7 +2,7 @@ from typing import Any, Optional, Tuple
 
 import numpy as np
 
-from pie.solver import Solver
+from pie import np_solver
 
 DEFAULT_BACKEND = "numpy"
 ALL_BACKEND = ["numpy"]
@@ -15,6 +15,12 @@ except ImportError:
   pie_core_openmp = None
 
 try:
+  from pie import pie_core_mpi  # type: ignore
+  ALL_BACKEND.append("mpi")
+except ImportError:
+  pie_core_mpi = None
+
+try:
   from pie import pie_core_cuda  # type: ignore
   ALL_BACKEND.append("cuda")
 except ImportError:
@@ -22,7 +28,7 @@ except ImportError:
 
 
 class Processor(object):
-  """PIE Processor"""
+  """PIE Processor."""
 
   def __init__(self, gradient: str, backend: str, n_cpu: int, block_size: int):
     super().__init__()
@@ -32,10 +38,12 @@ class Processor(object):
     self.gradient = gradient
 
     if backend == "numpy":
-      self.core = Solver()
-    elif backend == "openmp":
+      self.core = np_solver.Solver()
+    elif backend == "openmp" and pie_core_openmp is not None:
       self.core = pie_core_openmp.Solver(n_cpu)
-    elif backend == "cuda":
+    elif backend == "mpi" and pie_core_mpi is not None:
+      self.core = pie_core_mpi.Solver(n_cpu)
+    elif backend == "cuda" and pie_core_cuda is not None:
       self.core = pie_core_cuda.Solver(block_size)
 
     assert self.core is not None, f"Backend {backend} is invalid."
