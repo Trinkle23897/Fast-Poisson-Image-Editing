@@ -108,6 +108,82 @@ __global__ void iter_kernel(int N0, int N1, int* A, float* B, float* X) {
   }
 }
 
+__global__ void iter_shared_kernel(int N0, int N1, int* A, float* B, float* X) {
+  __shared__ float sX[4096 * 3];  // max shared size
+  int i = blockIdx.x * blockDim.x + threadIdx.x + N0;
+  if (i < N1) {
+    int i0 = blockIdx.x * blockDim.x + N0;
+    int i1 = (1 + blockIdx.x) * blockDim.x + N0;
+    if (i1 > N1) i1 = N1;
+    int off0 = i0 * 3;
+    int off1 = i1 * 3;
+    int off3 = i * 3;
+    int off4 = i * 4;
+
+    // load X to shared mem
+    // sX[0..(i1 - i0), :] = X[i0..i1, :]
+    sX[off3 - off0 + 0] = X[off3 + 0];
+    sX[off3 - off0 + 1] = X[off3 + 1];
+    sX[off3 - off0 + 2] = X[off3 + 2];
+    __syncthreads();
+
+    int id0 = A[off4 + 0] * 3;
+    int id1 = A[off4 + 1] * 3;
+    int id2 = A[off4 + 2] * 3;
+    int id3 = A[off4 + 3] * 3;
+    float x0 = B[off3 + 0];
+    float x1 = B[off3 + 1];
+    float x2 = B[off3 + 2];
+    if (id0) {
+      if (off0 <= id0 && id0 < off1) {
+        x0 += sX[id0 - off0 + 0];
+        x1 += sX[id0 - off0 + 1];
+        x2 += sX[id0 - off0 + 2];
+      } else {
+        x0 += X[id0 + 0];
+        x1 += X[id0 + 1];
+        x2 += X[id0 + 2];
+      }
+    }
+    if (id1) {
+      if (off0 <= id1 && id1 < off1) {
+        x0 += sX[id1 - off0 + 0];
+        x1 += sX[id1 - off0 + 1];
+        x2 += sX[id1 - off0 + 2];
+      } else {
+        x0 += X[id1 + 0];
+        x1 += X[id1 + 1];
+        x2 += X[id1 + 2];
+      }
+    }
+    if (id2) {
+      if (off0 <= id2 && id2 < off1) {
+        x0 += sX[id2 - off0 + 0];
+        x1 += sX[id2 - off0 + 1];
+        x2 += sX[id2 - off0 + 2];
+      } else {
+        x0 += X[id2 + 0];
+        x1 += X[id2 + 1];
+        x2 += X[id2 + 2];
+      }
+    }
+    if (id3) {
+      if (off0 <= id3 && id3 < off1) {
+        x0 += sX[id3 - off0 + 0];
+        x1 += sX[id3 - off0 + 1];
+        x2 += sX[id3 - off0 + 2];
+      } else {
+        x0 += X[id3 + 0];
+        x1 += X[id3 + 1];
+        x2 += X[id3 + 2];
+      }
+    }
+    X[off3 + 0] = x0 / 4;
+    X[off3 + 1] = x1 / 4;
+    X[off3 + 2] = x2 / 4;
+  }
+}
+
 __global__ void error_kernel(int N0, int N1, int* A, float* B, float* X,
                              float* tmp) {
   int i = blockIdx.x * blockDim.x + threadIdx.x + N0;
