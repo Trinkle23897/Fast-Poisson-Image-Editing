@@ -6,11 +6,11 @@ class OpenMPSolver : public Solver {
   int* buf;
   unsigned char* buf2;
   float* tmp;
-  int block_size;
+  int n_mid;
 
  public:
-  explicit OpenMPSolver(int n_cpu, int block_size)
-      : buf(NULL), buf2(NULL), tmp(NULL), block_size(block_size), Solver() {
+  explicit OpenMPSolver(int n_cpu)
+      : buf(NULL), buf2(NULL), tmp(NULL), n_mid(0), Solver() {
     omp_set_num_threads(n_cpu);
   }
 
@@ -31,17 +31,27 @@ class OpenMPSolver : public Solver {
     }
     buf = new int[n * m];
     int cnt = 0;
-    for (int i = 0; i < (n + block_size - 1) / block_size; ++i) {
-      for (int j = 0; j < (m + block_size - 1) / block_size; ++j) {
-        for (int x = i * block_size, dx = 0; dx < block_size && x < n;
-             ++dx, ++x) {
-          for (int y = j * block_size, dy = 0; dy < block_size && y < m;
-               ++dy, ++y) {
-            if (arr(x, y) > 0) {
-              buf[x * m + y] = ++cnt;
-            } else {
-              buf[x * m + y] = 0;
-            }
+    // odd
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < m; ++j) {
+        if ((i + j) % 2 == 1) {
+          if (arr(i, j) > 0) {
+            buf[i * m + j] = ++cnt;
+          } else {
+            buf[i * m + j] = 0;
+          }
+        }
+      }
+    }
+    n_mid = cnt + 1;
+    // even
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < m; ++j) {
+        if ((i + j) % 2 == 0) {
+          if (arr(i, j) > 0) {
+            buf[i * m + j] = ++cnt;
+          } else {
+            buf[i * m + j] = 0;
           }
         }
       }
@@ -57,25 +67,29 @@ class OpenMPSolver : public Solver {
     tmp = new float[N * 3];
   }
 
+  inline void update_equation(int i) {
+    int off3 = i * 3;
+    int off4 = i * 4;
+    int id0 = A[off4 + 0] * 3;
+    int id1 = A[off4 + 1] * 3;
+    int id2 = A[off4 + 2] * 3;
+    int id3 = A[off4 + 3] * 3;
+    X[off3 + 0] =
+        (B[off3 + 0] + X[id0 + 0] + X[id1 + 0] + X[id2 + 0] + X[id3 + 0]) / 4;
+    X[off3 + 1] =
+        (B[off3 + 1] + X[id0 + 1] + X[id1 + 1] + X[id2 + 1] + X[id3 + 1]) / 4;
+    X[off3 + 2] =
+        (B[off3 + 2] + X[id0 + 2] + X[id1 + 2] + X[id2 + 2] + X[id3 + 2]) / 4;
+  }
+
   void step_single() {
 #pragma omp parallel for schedule(static)
-    for (int i = 1; i < N; ++i) {
-      int off3 = i * 3;
-      int off4 = i * 4;
-      int id0 = A[off4 + 0] * 3;
-      int id1 = A[off4 + 1] * 3;
-      int id2 = A[off4 + 2] * 3;
-      int id3 = A[off4 + 3] * 3;
-      tmp[off3 + 0] =
-          (B[off3 + 0] + X[id0 + 0] + X[id1 + 0] + X[id2 + 0] + X[id3 + 0]) / 4;
-      tmp[off3 + 1] =
-          (B[off3 + 1] + X[id0 + 1] + X[id1 + 1] + X[id2 + 1] + X[id3 + 1]) / 4;
-      tmp[off3 + 2] =
-          (B[off3 + 2] + X[id0 + 2] + X[id1 + 2] + X[id2 + 2] + X[id3 + 2]) / 4;
+    for (int i = 1; i < n_mid; ++i) {
+      update_equation(i);
     }
 #pragma omp parallel for schedule(static)
-    for (int i = 3; i < N * 3; ++i) {
-      X[i] = tmp[i];
+    for (int i = n_mid; i < N; ++i) {
+      update_equation(i);
     }
   }
 
@@ -122,7 +136,7 @@ class OpenMPSolver : public Solver {
 
 PYBIND11_MODULE(pie_core_openmp, m) {
   py::class_<OpenMPSolver>(m, "Solver")
-      .def(py::init<int, int>())
+      .def(py::init<int>())
       .def("partition", &OpenMPSolver::partition)
       .def("reset", &OpenMPSolver::reset)
       .def("step", &OpenMPSolver::step);

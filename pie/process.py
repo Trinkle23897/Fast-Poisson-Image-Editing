@@ -34,7 +34,7 @@ class Processor(object):
     if backend == "numpy":
       self.core = Solver()
     elif backend == "openmp":
-      self.core = pie_core_openmp.Solver(n_cpu, block_size)
+      self.core = pie_core_openmp.Solver(n_cpu)
     elif backend == "cuda":
       self.core = pie_core_cuda.Solver()
 
