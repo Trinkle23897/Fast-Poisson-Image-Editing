@@ -14,6 +14,15 @@ class OpenMPSolver : public Solver {
     omp_set_num_threads(n_cpu);
   }
 
+  ~OpenMPSolver() {
+    if (buf != NULL) {
+      delete[] buf, buf2;
+    }
+    if (tmp != NULL) {
+      delete[] tmp;
+    }
+  }
+
   py::array_t<int> partition(py::array_t<int> mask) {
     auto arr = mask.unchecked<2>();
     int n = arr.shape(0), m = arr.shape(1);

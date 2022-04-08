@@ -36,7 +36,7 @@ class Processor(object):
     elif backend == "openmp":
       self.core = pie_core_openmp.Solver(n_cpu, block_size)
     elif backend == "cuda":
-      self.core = pie_core_cuda.Solver(n_cpu, block_size)
+      self.core = pie_core_cuda.Solver()
 
     assert self.core is not None, f"Backend {backend} is invalid."
 
