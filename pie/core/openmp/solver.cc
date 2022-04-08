@@ -82,17 +82,6 @@ class OpenMPSolver : public Solver {
         (B[off3 + 2] + X[id0 + 2] + X[id1 + 2] + X[id2 + 2] + X[id3 + 2]) / 4;
   }
 
-  void step_single() {
-#pragma omp parallel for schedule(static)
-    for (int i = 1; i < n_mid; ++i) {
-      update_equation(i);
-    }
-#pragma omp parallel for schedule(static)
-    for (int i = n_mid; i < N; ++i) {
-      update_equation(i);
-    }
-  }
-
   void calc_error() {
 #pragma omp parallel for schedule(static)
     for (int i = 1; i < N; ++i) {
@@ -123,7 +112,14 @@ class OpenMPSolver : public Solver {
 
   std::tuple<py::array_t<float>, py::array_t<float>> step(int iteration) {
     for (int i = 0; i < iteration; ++i) {
-      step_single();
+#pragma omp parallel for schedule(static)
+      for (int j = 1; j < n_mid; ++j) {
+        update_equation(j);
+      }
+#pragma omp parallel for schedule(static)
+      for (int j = n_mid; j < N; ++j) {
+        update_equation(j);
+      }
     }
     calc_error();
 #pragma omp parallel for schedule(static)

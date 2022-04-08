@@ -28,7 +28,7 @@ def get_args() -> argparse.Namespace:
     help="number of CPU used",
   )
   parser.add_argument(
-    "-z", "--block-size", type=int, default=1, help="block size"
+    "-z", "--block-size", type=int, default=1024, help="cuda block size"
   )
   parser.add_argument("-s", "--source", type=str, help="source image filename")
   parser.add_argument(

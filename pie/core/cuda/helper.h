@@ -11,12 +11,14 @@ class CudaSolver : public Solver {
  protected:
   int* buf;
   unsigned char* buf2;
+  int n_mid, grid_size, block_size;
   // CUDA
   int* cA;
+  unsigned char* cbuf;
   float *cB, *cX, *cerr, *tmp;
 
  public:
-  CudaSolver();
+  explicit CudaSolver(int block_size);
   ~CudaSolver();
 
   py::array_t<int> partition(py::array_t<int> mask);
