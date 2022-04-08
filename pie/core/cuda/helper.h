@@ -11,7 +11,7 @@ class CudaSolver : public Solver {
  protected:
   int* buf;
   unsigned char* buf2;
-  int n_mid, grid_size, block_size;
+  int grid_size, block_size;
   // CUDA
   int* cA;
   unsigned char* cbuf;

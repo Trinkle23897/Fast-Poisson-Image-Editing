@@ -71,7 +71,7 @@ In this project, we are going to parallelize Jacobi method to speed up the compu
 - [x] NumPy
 - [x] OpenMP
 - [ ] MPI
-- [ ] CUDA
+- [x] CUDA
 
 ## Miscellaneous (for 15-618 course project)
 
