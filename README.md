@@ -28,6 +28,10 @@ $ pie -s test7_src.jpg -t test7_tgt.jpg -o result.png -h0 0 -w0 0 -h1 50 -w1 30 
 $ pie -s test8_src.jpg -t test8_tgt.jpg -o result.png -h0 0 -w0 0 -h1 90 -w1 90 -n 25000 -p 0 -g mix -b openmp
 ```
 
+```bash
+$ mpiexec -np 6 pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 100 -n 25000 -p 0 -b mpi --mpi-sync-interval 100
+```
+
 ## Background
 
 [Poisson image editing](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) is a technique that can blend two images together without artifacts. Given a source image and its corresponding mask, and a coordination on target image, this algorithm can always generate amazing result:
@@ -70,7 +74,7 @@ In this project, we are going to parallelize Jacobi method to speed up the compu
 
 - [x] NumPy
 - [x] OpenMP
-- [ ] MPI
+- [x] MPI
 - [x] CUDA
 
 ## Miscellaneous (for 15-618 course project)
@@ -87,7 +91,7 @@ Resources:
 Goals:
 
 - [x] 75%: implement one parallel version of PIE
-- [ ] 100%: benchmark the algorithm with OpenMP/MPI/CUDA implementation
+- [x] 100%: benchmark the algorithm with OpenMP/MPI/CUDA implementation
 - [ ] 125%: include a interactive python frontend that can demonstrate the result in a user-friendly style. Real-time computation on a single GTX-1060 Nvidia GPU.
 
 Platform choice:

@@ -1,9 +1,11 @@
+import os
 from typing import Any, Optional, Tuple
 
 import numpy as np
 
 from pie import np_solver
 
+CPU_COUNT = os.cpu_count() or 1
 DEFAULT_BACKEND = "numpy"
 ALL_BACKEND = ["numpy"]
 
@@ -35,7 +37,14 @@ except ImportError:
 class Processor(object):
   """PIE Processor."""
 
-  def __init__(self, gradient: str, backend: str, n_cpu: int, block_size: int):
+  def __init__(
+    self,
+    gradient: str = "mix",
+    backend: str = DEFAULT_BACKEND,
+    n_cpu: int = CPU_COUNT,
+    min_interval: int = 100,
+    block_size: int = 1024,
+  ):
     super().__init__()
 
     self.backend = backend
@@ -48,7 +57,7 @@ class Processor(object):
     elif backend == "openmp" and pie_core_openmp is not None:
       self.core = pie_core_openmp.Solver(n_cpu)
     elif backend == "mpi" and pie_core_mpi is not None:
-      self.core = pie_core_mpi.Solver()
+      self.core = pie_core_mpi.Solver(min_interval)
       self.rank = MPI.COMM_WORLD.Get_rank()
     elif backend == "cuda" and pie_core_cuda is not None:
       self.core = pie_core_cuda.Solver(block_size)
@@ -150,9 +159,9 @@ class Processor(object):
     self.core.sync()  # type: ignore
 
   def step(self, iteration: int) -> Optional[Tuple[np.ndarray, np.ndarray]]:
+    result = self.core.step(iteration)  # type: ignore
     if self.rank == 0:
-      x, err = self.core.step(iteration)  # type: ignore
+      x, err = result
       self.tgt[self.tgt_index] = x[1:]
       return self.tgt, err
-    self.core.step(iteration)  # type: ignore
     return None

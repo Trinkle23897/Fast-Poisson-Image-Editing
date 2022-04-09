@@ -1,10 +1,9 @@
 import argparse
-import os
 import time
 
 import pie
 from pie.io import read_images, write_image
-from pie.process import ALL_BACKEND, DEFAULT_BACKEND, Processor
+from pie.process import ALL_BACKEND, CPU_COUNT, DEFAULT_BACKEND, Processor
 
 
 def get_args() -> argparse.Namespace:
@@ -24,7 +23,7 @@ def get_args() -> argparse.Namespace:
     "-c",
     "--cpu",
     type=int,
-    default=os.cpu_count(),
+    default=CPU_COUNT,
     help="number of CPU used",
   )
   parser.add_argument(
@@ -68,7 +67,12 @@ def get_args() -> argparse.Namespace:
   parser.add_argument(
     "-p", type=int, help="output result every P iteration", default=0
   )
-
+  parser.add_argument(
+    "--mpi-sync-interval",
+    type=int,
+    help="MPI sync iteration interval",
+    default=100,
+  )
   return parser.parse_args()
 
 
@@ -78,7 +82,13 @@ def main() -> None:
     print(pie.__version__)
     exit(0)
 
-  proc = Processor(args.gradient, args.backend, args.cpu, args.block_size)
+  proc = Processor(
+    args.gradient,
+    args.backend,
+    args.cpu,
+    args.mpi_sync_interval,
+    args.block_size,
+  )
   if proc.rank == 0:
     print(f"Successfully initialize PIE solver with {args.backend} backend")
     src, mask, tgt = read_images(args.source, args.mask, args.target)

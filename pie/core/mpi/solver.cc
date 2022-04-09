@@ -6,12 +6,14 @@ class MPISolver : public Solver {
   int* buf;
   unsigned char* buf2;
   float* tmp;
-  int proc_id, n_proc;
+  int proc_id, n_proc, min_interval, *offset;
 
  public:
-  MPISolver() : buf(NULL), buf2(NULL), tmp(NULL), Solver() {
+  explicit MPISolver(int min_interval)
+      : buf(NULL), buf2(NULL), tmp(NULL), min_interval(min_interval), Solver() {
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_id);
     MPI_Comm_size(MPI_COMM_WORLD, &n_proc);
+    offset = new int[n_proc + 1];
   }
 
   ~MPISolver() {
@@ -21,6 +23,7 @@ class MPISolver : public Solver {
     if (tmp != NULL) {
       delete[] tmp;
     }
+    delete[] offset;
   }
 
   py::array_t<int> partition(py::array_t<int> mask) {
@@ -31,7 +34,6 @@ class MPISolver : public Solver {
     }
     buf = new int[n * m];
     int cnt = 0;
-    // odd
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < m; ++j) {
         if (arr(i, j) > 0) {
@@ -50,6 +52,12 @@ class MPISolver : public Solver {
     }
     tmp = new float[N * 3];
     buf2 = new unsigned char[N * 3];
+    // offset
+    offset[0] = 0;
+    int additional = N % n_proc;
+    for (int i = 0; i < n_proc; ++i) {
+      offset[i + 1] = offset[i] + N / n_proc + (i < additional);
+    }
   }
 
   void sync() {
@@ -67,6 +75,7 @@ class MPISolver : public Solver {
     MPI_Bcast(A, N * 4, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Bcast(B, N * 3, MPI_FLOAT, 0, MPI_COMM_WORLD);
     MPI_Bcast(X, N * 3, MPI_FLOAT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(offset, n_proc + 1, MPI_INT, 0, MPI_COMM_WORLD);
   }
 
   inline void update_equation(int i) {
@@ -113,10 +122,23 @@ class MPISolver : public Solver {
 
   std::tuple<py::array_t<unsigned char>, py::array_t<float>> step(
       int iteration) {
-    for (int i = 0; i < iteration; ++i) {
-      for (int j = 1; j < N; ++j) {
-        update_equation(j);
+    for (int i = 0; i < iteration; i += min_interval) {
+      for (int j = 0; j < min_interval; ++j) {
+        for (int k = offset[proc_id]; k < offset[proc_id + 1]; ++k) {
+          update_equation(k);
+        }
       }
+      if (proc_id == 0) {
+        for (int j = 1; j < n_proc; ++j) {
+          MPI_Recv(&X[offset[j] * 3], (offset[j + 1] - offset[j]) * 3,
+                   MPI_FLOAT, j, 0, MPI_COMM_WORLD, NULL);
+        }
+      } else {
+        MPI_Send(&X[offset[proc_id] * 3],
+                 (offset[proc_id + 1] - offset[proc_id]) * 3, MPI_FLOAT, 0, 0,
+                 MPI_COMM_WORLD);
+      }
+      MPI_Bcast(X, N * 3, MPI_FLOAT, 0, MPI_COMM_WORLD);
     }
     if (proc_id == 0) {
       calc_error();
@@ -132,7 +154,7 @@ class MPISolver : public Solver {
 
 PYBIND11_MODULE(pie_core_mpi, m) {
   py::class_<MPISolver>(m, "Solver")
-      .def(py::init<>())
+      .def(py::init<int>())
       .def("partition", &MPISolver::partition)
       .def("reset", &MPISolver::reset)
       .def("sync", &MPISolver::sync)
