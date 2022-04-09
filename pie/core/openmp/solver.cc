@@ -27,7 +27,7 @@ class OpenMPSolver : public Solver {
     auto arr = mask.unchecked<2>();
     int n = arr.shape(0), m = arr.shape(1);
     if (buf != NULL) {
-      delete[] buf, buf2;
+      delete[] buf;
     }
     buf = new int[n * m];
     int cnt = 0;
@@ -56,15 +56,15 @@ class OpenMPSolver : public Solver {
         }
       }
     }
-    buf2 = new unsigned char[(cnt + 1) * 3];
     return py::array({n, m}, buf);
   }
 
   void post_reset() {
     if (tmp != NULL) {
-      delete[] tmp;
+      delete[] tmp, buf2;
     }
     tmp = new float[N * 3];
+    buf2 = new unsigned char[N * 3];
   }
 
   inline void update_equation(int i) {
@@ -110,7 +110,8 @@ class OpenMPSolver : public Solver {
     }
   }
 
-  std::tuple<py::array_t<float>, py::array_t<float>> step(int iteration) {
+  std::tuple<py::array_t<unsigned char>, py::array_t<float>> step(
+      int iteration) {
     for (int i = 0; i < iteration; ++i) {
 #pragma omp parallel for schedule(static)
       for (int j = 1; j < n_mid; ++j) {

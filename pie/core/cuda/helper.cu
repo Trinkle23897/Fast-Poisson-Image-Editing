@@ -35,7 +35,7 @@ py::array_t<int> CudaSolver::partition(py::array_t<int> mask) {
   auto arr = mask.unchecked<2>();
   int n = arr.shape(0), m = arr.shape(1);
   if (buf != NULL) {
-    delete[] buf, buf2;
+    delete[] buf;
   }
   buf = new int[n * m];
   int cnt = 0;
@@ -48,18 +48,19 @@ py::array_t<int> CudaSolver::partition(py::array_t<int> mask) {
       }
     }
   }
-  buf2 = new unsigned char[(cnt + 1) * 3];
   return py::array({n, m}, buf);
 }
 
 void CudaSolver::post_reset() {
   if (cA != NULL) {
+    delete[] buf2;
     cudaFree(cA);
     cudaFree(cB);
     cudaFree(cX);
     cudaFree(cbuf);
     cudaFree(tmp);
   }
+  buf2 = new unsigned char[N * 3];
   cudaMalloc(&cA, N * 4 * sizeof(int));
   cudaMalloc(&cB, N * 3 * sizeof(float));
   cudaMalloc(&cX, N * 3 * sizeof(float));
@@ -243,7 +244,7 @@ __global__ void copy_X_kernel(int N0, int N1, float* X, unsigned char* buf) {
   }
 }
 
-std::tuple<py::array_t<float>, py::array_t<float>> CudaSolver::step(
+std::tuple<py::array_t<unsigned char>, py::array_t<float>> CudaSolver::step(
     int iteration) {
   cudaMemset(cerr, 0, 3 * sizeof(float));
   int grid_size = (N - 1 + block_size - 1) / block_size;

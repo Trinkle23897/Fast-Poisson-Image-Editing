@@ -67,7 +67,7 @@ class Solver {
     throw std::runtime_error("post_reset not implemented");
   }
 
-  virtual std::tuple<py::array_t<float>, py::array_t<float>> step(
+  virtual std::tuple<py::array_t<unsigned char>, py::array_t<float>> step(
       int iteration) {
     throw std::runtime_error("step not implemented");
   }

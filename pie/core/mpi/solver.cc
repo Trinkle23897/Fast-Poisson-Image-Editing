@@ -27,7 +27,7 @@ class MPISolver : public Solver {
     auto arr = mask.unchecked<2>();
     int n = arr.shape(0), m = arr.shape(1);
     if (buf != NULL) {
-      delete[] buf, buf2;
+      delete[] buf;
     }
     buf = new int[n * m];
     int cnt = 0;
@@ -41,18 +41,33 @@ class MPISolver : public Solver {
         }
       }
     }
-    buf2 = new unsigned char[(cnt + 1) * 3];
     return py::array({n, m}, buf);
   }
 
   void post_reset() {
     if (tmp != NULL) {
-      delete[] tmp;
+      delete[] tmp, buf2;
     }
     tmp = new float[N * 3];
+    buf2 = new unsigned char[N * 3];
   }
 
-  void sync() {}
+  void sync() {
+    MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    if (proc_id > 0) {
+      if (A != NULL) {
+        delete[] A, B, X, tmp;
+      }
+      A = new int[N * 4];
+      B = new float[N * 3];
+      X = new float[N * 3];
+      tmp = new float[N * 3];
+      buf2 = new unsigned char[N * 3];
+    }
+    MPI_Bcast(A, N * 4, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(B, N * 3, MPI_FLOAT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(X, N * 3, MPI_FLOAT, 0, MPI_COMM_WORLD);
+  }
 
   inline void update_equation(int i) {
     int off3 = i * 3;
@@ -96,17 +111,22 @@ class MPISolver : public Solver {
     }
   }
 
-  std::tuple<py::array_t<float>, py::array_t<float>> step(int iteration) {
+  std::tuple<py::array_t<unsigned char>, py::array_t<float>> step(
+      int iteration) {
     for (int i = 0; i < iteration; ++i) {
       for (int j = 1; j < N; ++j) {
         update_equation(j);
       }
     }
-    calc_error();
-    for (int i = 0; i < N * 3; ++i) {
-      buf2[i] = X[i] < 0 ? 0 : X[i] > 255 ? 255 : X[i];
+    if (proc_id == 0) {
+      calc_error();
+      for (int i = 0; i < N * 3; ++i) {
+        buf2[i] = X[i] < 0 ? 0 : X[i] > 255 ? 255 : X[i];
+      }
+      return std::make_tuple(py::array({N, 3}, buf2), py::array(3, err));
+    } else {
+      return std::make_tuple(py::array({1, 3}, buf2), py::array(3, err));
     }
-    return std::make_tuple(py::array({N, 3}, buf2), py::array(3, err));
   }
 };
 

@@ -23,7 +23,8 @@ class CudaSolver : public Solver {
 
   py::array_t<int> partition(py::array_t<int> mask);
   void post_reset();
-  std::tuple<py::array_t<float>, py::array_t<float>> step(int iteration);
+  std::tuple<py::array_t<unsigned char>, py::array_t<float>> step(
+      int iteration);
 };
 
 #endif  // PIE_CORE_CUDA_HELPER_H_
