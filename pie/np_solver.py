@@ -20,6 +20,9 @@ class Solver(object):
     self.B = B
     self.X = X
 
+  def sync(self) -> None:
+    pass
+
   def step(self, iteration: int) -> Tuple[np.ndarray, np.ndarray]:
     for _ in range(iteration):
       # X = (B + AX) / 4

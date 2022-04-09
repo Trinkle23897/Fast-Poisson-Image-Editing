@@ -68,7 +68,7 @@ setup(
   long_description=get_description(),
   long_description_content_type="text/markdown",
   packages=find_packages(exclude=["tests", "tests.*"]),
-  package_data={"pie": ["pie/*.so"]},
+  package_data={"pie": ["pie/pie_core_*.so"]},
   entry_points={
     "console_scripts": ["pie=pie.cli:main"],
   },
@@ -87,7 +87,8 @@ setup(
   },
   ext_modules=[
     CMakeExtension("pie/pie_core_openmp"),
-    CMakeExtension("pie/pie_core_naive"),
+    CMakeExtension("pie/pie_core_mpi"),
+    CMakeExtension("pie/pie_core_cuda"),
   ],
   cmdclass={"build_ext": CMakeBuild},
   zip_safe=False,
@@ -108,6 +109,5 @@ setup(
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
-    "Operating System :: POSIX",
   ],
 )

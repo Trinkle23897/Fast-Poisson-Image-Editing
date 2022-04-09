@@ -9,5 +9,6 @@ PYBIND11_MODULE(pie_core_cuda, m) {
       .def(py::init<int>())
       .def("partition", &CudaSolver::partition)
       .def("reset", &CudaSolver::reset)
+      .def("sync", &CudaSolver::sync)
       .def("step", &CudaSolver::step);
 }

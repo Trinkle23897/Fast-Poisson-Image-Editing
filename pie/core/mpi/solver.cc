@@ -6,12 +6,12 @@ class MPISolver : public Solver {
   int* buf;
   unsigned char* buf2;
   float* tmp;
-  int n_mid;
+  int proc_id, n_proc;
 
  public:
-  explicit MPISolver(int n_cpu)
-      : buf(NULL), buf2(NULL), tmp(NULL), n_mid(0), Solver() {
-    printf("%lf\n", MPI_Wtime());
+  MPISolver() : buf(NULL), buf2(NULL), tmp(NULL), Solver() {
+    MPI_Comm_rank(MPI_COMM_WORLD, &proc_id);
+    MPI_Comm_size(MPI_COMM_WORLD, &n_proc);
   }
 
   ~MPISolver() {
@@ -34,25 +34,10 @@ class MPISolver : public Solver {
     // odd
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < m; ++j) {
-        if ((i + j) % 2 == 1) {
-          if (arr(i, j) > 0) {
-            buf[i * m + j] = ++cnt;
-          } else {
-            buf[i * m + j] = 0;
-          }
-        }
-      }
-    }
-    n_mid = cnt + 1;
-    // even
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < m; ++j) {
-        if ((i + j) % 2 == 0) {
-          if (arr(i, j) > 0) {
-            buf[i * m + j] = ++cnt;
-          } else {
-            buf[i * m + j] = 0;
-          }
+        if (arr(i, j) > 0) {
+          buf[i * m + j] = ++cnt;
+        } else {
+          buf[i * m + j] = 0;
         }
       }
     }
@@ -66,6 +51,8 @@ class MPISolver : public Solver {
     }
     tmp = new float[N * 3];
   }
+
+  void sync() {}
 
   inline void update_equation(int i) {
     int off3 = i * 3;
@@ -111,10 +98,7 @@ class MPISolver : public Solver {
 
   std::tuple<py::array_t<float>, py::array_t<float>> step(int iteration) {
     for (int i = 0; i < iteration; ++i) {
-      for (int j = 1; j < n_mid; ++j) {
-        update_equation(j);
-      }
-      for (int j = n_mid; j < N; ++j) {
+      for (int j = 1; j < N; ++j) {
         update_equation(j);
       }
     }
@@ -128,8 +112,9 @@ class MPISolver : public Solver {
 
 PYBIND11_MODULE(pie_core_mpi, m) {
   py::class_<MPISolver>(m, "Solver")
-      .def(py::init<int>())
+      .def(py::init<>())
       .def("partition", &MPISolver::partition)
       .def("reset", &MPISolver::reset)
+      .def("sync", &MPISolver::sync)
       .def("step", &MPISolver::step);
 }

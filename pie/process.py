@@ -15,6 +15,11 @@ except ImportError:
   pie_core_openmp = None
 
 try:
+  from mpi4py import MPI
+except ImportError:
+  MPI = None  # type: ignore
+
+try:
   from pie import pie_core_mpi  # type: ignore
   ALL_BACKEND.append("mpi")
 except ImportError:
@@ -36,13 +41,15 @@ class Processor(object):
     self.backend = backend
     self.core: Optional[Any] = None
     self.gradient = gradient
+    self.rank = 0
 
     if backend == "numpy":
       self.core = np_solver.Solver()
     elif backend == "openmp" and pie_core_openmp is not None:
       self.core = pie_core_openmp.Solver(n_cpu)
     elif backend == "mpi" and pie_core_mpi is not None:
-      self.core = pie_core_mpi.Solver(n_cpu)
+      self.core = pie_core_mpi.Solver()
+      self.rank = MPI.COMM_WORLD.Get_rank()
     elif backend == "cuda" and pie_core_cuda is not None:
       self.core = pie_core_cuda.Solver(block_size)
 
@@ -76,6 +83,7 @@ class Processor(object):
     mask_on_src: Tuple[int, int],
     mask_on_tgt: Tuple[int, int],
   ) -> int:
+    assert self.rank == 0
     # check validity
     # assert 0 <= mask_on_src[0] and 0 <= mask_on_src[1]
     # assert mask_on_src[0] + mask.shape[0] <= src.shape[0]
@@ -138,7 +146,13 @@ class Processor(object):
     self.core.reset(max_id, A, X, B)  # type: ignore
     return max_id
 
-  def step(self, iteration: int) -> Tuple[np.ndarray, np.ndarray]:
-    x, err = self.core.step(iteration)  # type: ignore
-    self.tgt[self.tgt_index] = x[1:]
-    return self.tgt, err
+  def sync(self) -> None:
+    self.core.sync()  # type: ignore
+
+  def step(self, iteration: int) -> Optional[Tuple[np.ndarray, np.ndarray]]:
+    if self.rank == 0:
+      x, err = self.core.step(iteration)  # type: ignore
+      self.tgt[self.tgt_index] = x[1:]
+      return self.tgt, err
+    self.core.step(iteration)  # type: ignore
+    return None

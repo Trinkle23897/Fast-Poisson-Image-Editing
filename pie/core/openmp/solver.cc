@@ -135,5 +135,6 @@ PYBIND11_MODULE(pie_core_openmp, m) {
       .def(py::init<int>())
       .def("partition", &OpenMPSolver::partition)
       .def("reset", &OpenMPSolver::reset)
+      .def("sync", &OpenMPSolver::sync)
       .def("step", &OpenMPSolver::step);
 }

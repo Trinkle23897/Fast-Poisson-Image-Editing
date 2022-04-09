@@ -57,6 +57,8 @@ class Solver {
     post_reset();
   }
 
+  void sync() {}
+
   virtual py::array_t<int> partition(py::array_t<int> mask) {
     throw std::runtime_error("partition not implemented");
   }
