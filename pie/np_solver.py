@@ -30,11 +30,11 @@ class EquSolver(object):
         self.B + self.X[self.A[:, 0]] + self.X[self.A[:, 1]] +
         self.X[self.A[:, 2]] + self.X[self.A[:, 3]]
       ) / 4.0
-    c = 4.0 * self.X - (
+    tmp = 4.0 * self.X - self.B - (
       self.X[self.A[:, 0]] + self.X[self.A[:, 1]] + self.X[self.A[:, 2]] +
       self.X[self.A[:, 3]]
     )
-    err = np.abs(c - self.B).sum(axis=0)
+    err = np.abs(tmp).sum(axis=0)
     x = self.X.copy()
     x[x < 0] = 0
     x[x > 255] = 255

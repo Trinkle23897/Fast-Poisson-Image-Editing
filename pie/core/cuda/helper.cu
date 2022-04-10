@@ -1,8 +1,3 @@
-#include <cuda.h>
-#include <cuda_runtime.h>
-#include <driver_functions.h>
-#include <stdio.h>
-
 #include "helper.h"
 
 CudaEquSolver::CudaEquSolver(int block_size)
@@ -75,37 +70,21 @@ __global__ void iter_kernel(int N0, int N1, int* A, float* B, float* X) {
   int i = blockIdx.x * blockDim.x + threadIdx.x + N0;
   if (i < N1) {
     int off3 = i * 3;
-    int off4 = i * 4;
-    int id0 = A[off4 + 0] * 3;
-    int id1 = A[off4 + 1] * 3;
-    int id2 = A[off4 + 2] * 3;
-    int id3 = A[off4 + 3] * 3;
-    float x0 = B[off3 + 0];
-    float x1 = B[off3 + 1];
-    float x2 = B[off3 + 2];
-    if (id0) {
-      x0 += X[id0 + 0];
-      x1 += X[id0 + 1];
-      x2 += X[id0 + 2];
+    int4 id = (*((int4*)(A + i * 4))) * 3;
+    float3 x = *((float3*)(B + off3));
+    if (id.x) {
+      x += *((float3*)(X + id.x));
     }
-    if (id1) {
-      x0 += X[id1 + 0];
-      x1 += X[id1 + 1];
-      x2 += X[id1 + 2];
+    if (id.y) {
+      x += *((float3*)(X + id.y));
     }
-    if (id2) {
-      x0 += X[id2 + 0];
-      x1 += X[id2 + 1];
-      x2 += X[id2 + 2];
+    if (id.z) {
+      x += *((float3*)(X + id.z));
     }
-    if (id3) {
-      x0 += X[id3 + 0];
-      x1 += X[id3 + 1];
-      x2 += X[id3 + 2];
+    if (id.w) {
+      x += *((float3*)(X + id.w));
     }
-    X[off3 + 0] = x0 / 4;
-    X[off3 + 1] = x1 / 4;
-    X[off3 + 2] = x2 / 4;
+    *((float3*)(X + off3)) = x / 4.0;
   }
 }
 
@@ -119,69 +98,43 @@ __global__ void iter_shared_kernel(int N0, int N1, int* A, float* B, float* X) {
     int off0 = i0 * 3;
     int off1 = i1 * 3;
     int off3 = i * 3;
-    int off4 = i * 4;
 
     // load X to shared mem
     // sX[0..(i1 - i0), :] = X[i0..i1, :]
-    sX[off3 - off0 + 0] = X[off3 + 0];
-    sX[off3 - off0 + 1] = X[off3 + 1];
-    sX[off3 - off0 + 2] = X[off3 + 2];
+    *((float3*)(sX + off3 - off0)) = *((float3*)(X + off3));
     __syncthreads();
 
-    int id0 = A[off4 + 0] * 3;
-    int id1 = A[off4 + 1] * 3;
-    int id2 = A[off4 + 2] * 3;
-    int id3 = A[off4 + 3] * 3;
-    float x0 = B[off3 + 0];
-    float x1 = B[off3 + 1];
-    float x2 = B[off3 + 2];
-    if (id0) {
-      if (off0 <= id0 && id0 < off1) {
-        x0 += sX[id0 - off0 + 0];
-        x1 += sX[id0 - off0 + 1];
-        x2 += sX[id0 - off0 + 2];
+    int4 id = (*((int4*)(A + i * 4))) * 3;
+    float3 x = *((float3*)(B + off3));
+    if (id.x) {
+      if (off0 <= id.x && id.x < off1) {
+        x += *((float3*)(sX + id.x - off0));
       } else {
-        x0 += X[id0 + 0];
-        x1 += X[id0 + 1];
-        x2 += X[id0 + 2];
+        x += *((float3*)(X + id.x));
       }
     }
-    if (id1) {
-      if (off0 <= id1 && id1 < off1) {
-        x0 += sX[id1 - off0 + 0];
-        x1 += sX[id1 - off0 + 1];
-        x2 += sX[id1 - off0 + 2];
+    if (id.y) {
+      if (off0 <= id.y && id.y < off1) {
+        x += *((float3*)(sX + id.y - off0));
       } else {
-        x0 += X[id1 + 0];
-        x1 += X[id1 + 1];
-        x2 += X[id1 + 2];
+        x += *((float3*)(X + id.y));
       }
     }
-    if (id2) {
-      if (off0 <= id2 && id2 < off1) {
-        x0 += sX[id2 - off0 + 0];
-        x1 += sX[id2 - off0 + 1];
-        x2 += sX[id2 - off0 + 2];
+    if (id.z) {
+      if (off0 <= id.z && id.z < off1) {
+        x += *((float3*)(sX + id.z - off0));
       } else {
-        x0 += X[id2 + 0];
-        x1 += X[id2 + 1];
-        x2 += X[id2 + 2];
+        x += *((float3*)(X + id.z));
       }
     }
-    if (id3) {
-      if (off0 <= id3 && id3 < off1) {
-        x0 += sX[id3 - off0 + 0];
-        x1 += sX[id3 - off0 + 1];
-        x2 += sX[id3 - off0 + 2];
+    if (id.w) {
+      if (off0 <= id.w && id.w < off1) {
+        x += *((float3*)(sX + id.w - off0));
       } else {
-        x0 += X[id3 + 0];
-        x1 += X[id3 + 1];
-        x2 += X[id3 + 2];
+        x += *((float3*)(X + id.w));
       }
     }
-    X[off3 + 0] = x0 / 4;
-    X[off3 + 1] = x1 / 4;
-    X[off3 + 2] = x2 / 4;
+    *((float3*)(X + off3)) = x / 4.0;
   }
 }
 
@@ -190,23 +143,11 @@ __global__ void error_kernel(int N0, int N1, int* A, float* B, float* X,
   int i = blockIdx.x * blockDim.x + threadIdx.x + N0;
   if (i < N1) {
     int off3 = i * 3;
-    int off4 = i * 4;
-    int id0 = A[off4 + 0] * 3;
-    int id1 = A[off4 + 1] * 3;
-    int id2 = A[off4 + 2] * 3;
-    int id3 = A[off4 + 3] * 3;
-    float t0 = 4 * X[off3 + 0] -
-               (X[id0 + 0] + X[id1 + 0] + X[id2 + 0] + X[id3 + 0]) -
-               B[off3 + 0];
-    float t1 = 4 * X[off3 + 1] -
-               (X[id0 + 1] + X[id1 + 1] + X[id2 + 1] + X[id3 + 1]) -
-               B[off3 + 1];
-    float t2 = 4 * X[off3 + 2] -
-               (X[id0 + 2] + X[id1 + 2] + X[id2 + 2] + X[id3 + 2]) -
-               B[off3 + 2];
-    tmp[off3 + 0] = t0 > 0 ? t0 : -t0;
-    tmp[off3 + 1] = t1 > 0 ? t1 : -t1;
-    tmp[off3 + 2] = t2 > 0 ? t2 : -t2;
+    int4 id = (*((int4*)(A + i * 4))) * 3;
+    float3 t = (*((float3*)(X + off3))) * 4.0 - (*((float3*)(B + off3))) -
+               (*((float3*)(X + id.x))) - (*((float3*)(X + id.y))) -
+               (*((float3*)(X + id.z))) - (*((float3*)(X + id.w)));
+    *((float3*)(tmp + off3)) = fabs(t);
   }
 }
 
@@ -214,26 +155,18 @@ __global__ void error_sum_kernel(int N, int block_size, float* tmp,
                                  float* err) {
   __shared__ float sum_err[4096 * 3];  // max shared size
   int id = blockIdx.x * blockDim.x + threadIdx.x;
-  float err0 = 0, err1 = 0, err2 = 0;
+  float3 err3 = make_float3(0.0, 0.0, 0.0);
   for (int i = id; i < N; i += block_size) {
-    err0 += tmp[i * 3 + 0];
-    err1 += tmp[i * 3 + 1];
-    err2 += tmp[i * 3 + 2];
+    err3 += *((float3*)(tmp + i * 3));
   }
-  sum_err[id * 3 + 0] = err0;
-  sum_err[id * 3 + 1] = err1;
-  sum_err[id * 3 + 2] = err2;
+  *((float3*)(sum_err + id * 3)) = err3;
   __syncthreads();
   if (id == 0) {
-    err0 = err1 = err2 = 0;
+    err3 = make_float3(0.0, 0.0, 0.0);
     for (int i = 0; i < block_size; ++i) {
-      err0 += sum_err[i * 3 + 0];
-      err1 += sum_err[i * 3 + 1];
-      err2 += sum_err[i * 3 + 2];
+      err3 += *((float3*)(sum_err + i * 3));
     }
-    err[0] = err0;
-    err[1] = err1;
-    err[2] = err2;
+    *(float3*)(err) = err3;
   }
 }
 
@@ -265,23 +198,4 @@ std::tuple<py::array_t<unsigned char>, py::array_t<float>> CudaEquSolver::step(
   cudaMemcpy(err, cerr, 3 * sizeof(float), cudaMemcpyDeviceToHost);
   cudaMemcpy(buf2, cbuf, 3 * N * sizeof(unsigned char), cudaMemcpyDeviceToHost);
   return std::make_tuple(py::array({N, 3}, buf2), py::array(3, err));
-}
-
-void print_cuda_info() {
-  int deviceCount = 0;
-  cudaError_t err = cudaGetDeviceCount(&deviceCount);
-
-  printf("---------------------------------------------------------\n");
-  printf("Found %d CUDA devices\n", deviceCount);
-
-  for (int i = 0; i < deviceCount; i++) {
-    cudaDeviceProp deviceProps;
-    cudaGetDeviceProperties(&deviceProps, i);
-    printf("Device %d: %s\n", i, deviceProps.name);
-    printf("   SMs:        %d\n", deviceProps.multiProcessorCount);
-    printf("   Global mem: %.0f MB\n",
-           static_cast<float>(deviceProps.totalGlobalMem) / (1024 * 1024));
-    printf("   CUDA Cap:   %d.%d\n", deviceProps.major, deviceProps.minor);
-  }
-  printf("---------------------------------------------------------\n");
 }

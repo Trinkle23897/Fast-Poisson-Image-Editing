@@ -291,7 +291,7 @@ class GridProcessor(BaseProcessor):
   def step(self, iteration: int) -> Optional[Tuple[np.ndarray, np.ndarray]]:
     result = self.core.step(iteration)
     if self.root:
-      x, err = result
-      self.tgt[self.x0:self.x1, self.y0:self.y1] = x
+      tgt, err = result
+      self.tgt[self.x0:self.x1, self.y0:self.y1] = tgt
       return self.tgt, err
     return None
