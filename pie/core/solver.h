@@ -73,4 +73,9 @@ class EquSolver {
   }
 };
 
+class GridSolver {
+ protected:
+  int N, M;
+};
+
 #endif  // PIE_CORE_SOLVER_H_

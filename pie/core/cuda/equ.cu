@@ -144,9 +144,9 @@ __global__ void error_kernel(int N0, int N1, int* A, float* B, float* X,
   if (i < N1) {
     int off3 = i * 3;
     int4 id = (*((int4*)(A + i * 4))) * 3;
-    float3 t = (*((float3*)(X + off3))) * 4.0 - (*((float3*)(B + off3))) -
-               (*((float3*)(X + id.x))) - (*((float3*)(X + id.y))) -
-               (*((float3*)(X + id.z))) - (*((float3*)(X + id.w)));
+    float3 t = (*((float3*)(B + off3))) + (*((float3*)(X + id.x))) +
+               (*((float3*)(X + id.y))) + (*((float3*)(X + id.z))) +
+               (*((float3*)(X + id.w))) - (*((float3*)(X + off3))) * 4.0;
     *((float3*)(tmp + off3)) = fabs(t);
   }
 }
