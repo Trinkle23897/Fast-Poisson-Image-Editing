@@ -128,10 +128,6 @@ class GridSolver {
 
   void sync() {}
 
-  virtual py::array_t<int> partition(py::array_t<int> mask) {
-    throw std::runtime_error("partition not implemented");
-  }
-
   virtual void post_reset() {
     throw std::runtime_error("post_reset not implemented");
   }

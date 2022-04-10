@@ -28,4 +28,22 @@ class OpenMPEquSolver : public EquSolver {
       int iteration);
 };
 
+class OpenMPGridSolver : public GridSolver {
+  unsigned char* imgbuf;
+  float* tmp;
+
+ public:
+  explicit OpenMPGridSolver(int n_cpu);
+  ~OpenMPGridSolver();
+
+  void post_reset();
+
+  inline void update_equation(int id, int x, int y);
+
+  void calc_error();
+
+  std::tuple<py::array_t<unsigned char>, py::array_t<float>> step(
+      int iteration);
+};
+
 #endif  // PIE_CORE_OPENMP_HELPER_H_

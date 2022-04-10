@@ -48,9 +48,6 @@ class GridSolver(object):
     super().__init__()
     self.N = 0
 
-  def partition(self, mask: np.ndarray) -> np.ndarray:
-    return np.cumsum((mask > 0).reshape(-1)).reshape(mask.shape)
-
   def reset(
     self, N: int, mask: np.ndarray, tgt: np.ndarray, grad: np.ndarray
   ) -> None:

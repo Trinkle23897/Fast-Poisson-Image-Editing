@@ -7,10 +7,9 @@ PYBIND11_MODULE(pie_core_openmp, m) {
       .def("reset", &OpenMPEquSolver::reset)
       .def("sync", &OpenMPEquSolver::sync)
       .def("step", &OpenMPEquSolver::step);
-  // py::class_<OpenMPGridSolver>(m, "GridSolver")
-  //     .def(py::init<int>())
-  //     .def("partition", &OpenMPGridSolver::partition)
-  //     .def("reset", &OpenMPGridSolver::reset)
-  //     .def("sync", &OpenMPGridSolver::sync)
-  //     .def("step", &OpenMPGridSolver::step);
+  py::class_<OpenMPGridSolver>(m, "GridSolver")
+      .def(py::init<int>())
+      .def("reset", &OpenMPGridSolver::reset)
+      .def("sync", &OpenMPGridSolver::sync)
+      .def("step", &OpenMPGridSolver::step);
 }

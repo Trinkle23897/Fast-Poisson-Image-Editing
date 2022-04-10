@@ -59,17 +59,6 @@ class BaseProcessor(ABC):
     a[mask] = b[mask]
     return a
 
-  def mask2index(
-    self, mask: np.ndarray
-  ) -> Tuple[np.ndarray, int, np.ndarray, np.ndarray]:
-    x, y = np.nonzero(mask)
-    max_id = x.shape[0] + 1
-    index = np.zeros((max_id, 3))
-    ids = self.core.partition(mask)
-    ids[mask == 0] = 0  # reserve id=0 for constant
-    index = ids[x, y].argsort()
-    return ids, max_id, x[index], y[index]
-
   @abstractmethod
   def reset(
     self,
@@ -113,6 +102,17 @@ class EquProcessor(BaseProcessor):
       core = pie_core_cuda.EquSolver(block_size)
 
     super().__init__(gradient, rank, backend, core)
+
+  def mask2index(
+    self, mask: np.ndarray
+  ) -> Tuple[np.ndarray, int, np.ndarray, np.ndarray]:
+    x, y = np.nonzero(mask)
+    max_id = x.shape[0] + 1
+    index = np.zeros((max_id, 3))
+    ids = self.core.partition(mask)
+    ids[mask == 0] = 0  # reserve id=0 for constant
+    index = ids[x, y].argsort()
+    return ids, max_id, x[index], y[index]
 
   def reset(
     self,
@@ -257,7 +257,6 @@ class GridProcessor(BaseProcessor):
     x0, x1 = x.min() - 1, x.max() + 2
     y0, y1 = y.min() - 1, y.max() + 2
     mask = mask[x0:x1, y0:y1]
-    ids, max_id, index_x, index_y = self.mask2index(mask)
     max_id = np.prod(mask.shape)
 
     src_crop = src[mask_on_src[0] + x0:mask_on_src[0] + x1,
