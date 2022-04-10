@@ -2,21 +2,25 @@
 
 #include <mpi.h>
 
-class MPISolver : public Solver {
+class MPIEquSolver : public EquSolver {
   int* buf;
   unsigned char* buf2;
   float* tmp;
   int proc_id, n_proc, min_interval, *offset;
 
  public:
-  explicit MPISolver(int min_interval)
-      : buf(NULL), buf2(NULL), tmp(NULL), min_interval(min_interval), Solver() {
+  explicit MPIEquSolver(int min_interval)
+      : buf(NULL),
+        buf2(NULL),
+        tmp(NULL),
+        min_interval(min_interval),
+        EquSolver() {
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_id);
     MPI_Comm_size(MPI_COMM_WORLD, &n_proc);
     offset = new int[n_proc + 1];
   }
 
-  ~MPISolver() {
+  ~MPIEquSolver() {
     if (buf != NULL) {
       delete[] buf, buf2;
     }
@@ -153,10 +157,10 @@ class MPISolver : public Solver {
 };
 
 PYBIND11_MODULE(pie_core_mpi, m) {
-  py::class_<MPISolver>(m, "Solver")
+  py::class_<MPIEquSolver>(m, "EquSolver")
       .def(py::init<int>())
-      .def("partition", &MPISolver::partition)
-      .def("reset", &MPISolver::reset)
-      .def("sync", &MPISolver::sync)
-      .def("step", &MPISolver::step);
+      .def("partition", &MPIEquSolver::partition)
+      .def("reset", &MPIEquSolver::reset)
+      .def("sync", &MPIEquSolver::sync)
+      .def("step", &MPIEquSolver::step);
 }

@@ -3,7 +3,7 @@ from typing import Tuple
 import numpy as np
 
 
-class Solver(object):
+class EquSolver(object):
   """Numpy-based Jacobi method solver implementation."""
 
   def __init__(self) -> None:

@@ -3,7 +3,13 @@ import time
 
 import pie
 from pie.io import read_images, write_image
-from pie.process import ALL_BACKEND, CPU_COUNT, DEFAULT_BACKEND, Processor
+from pie.process import (
+  ALL_BACKEND,
+  CPU_COUNT,
+  DEFAULT_BACKEND,
+  EquProcessor,
+  GridProcessor,
+)
 
 
 def get_args() -> argparse.Namespace:
@@ -28,6 +34,13 @@ def get_args() -> argparse.Namespace:
   )
   parser.add_argument(
     "-z", "--block-size", type=int, default=1024, help="cuda block size"
+  )
+  parser.add_argument(
+    "--method",
+    type=str,
+    choices=["equ", "grid"],
+    default="equ",
+    help="how to parallelize computation",
   )
   parser.add_argument("-s", "--source", type=str, help="source image filename")
   parser.add_argument(
@@ -82,6 +95,8 @@ def main() -> None:
     print(pie.__version__)
     exit(0)
 
+  Processor = EquProcessor if args.method == "equ" else GridProcessor
+
   proc = Processor(
     args.gradient,
     args.backend,
@@ -89,28 +104,31 @@ def main() -> None:
     args.mpi_sync_interval,
     args.block_size,
   )
-  if proc.rank == 0:
-    print(f"Successfully initialize PIE solver with {args.backend} backend")
+  if proc.root:
+    print(
+      f"Successfully initialize PIE {args.method} solver "
+      f"with {args.backend} backend"
+    )
     src, mask, tgt = read_images(args.source, args.mask, args.target)
     n = proc.reset(src, mask, tgt, (args.h0, args.w0), (args.h1, args.w1))
     print(f"# of vars: {n}")
   proc.sync()
 
-  if proc.rank == 0:
+  if proc.root:
     result = tgt
     t = time.time()
   if args.p == 0:
     args.p = args.n
 
   for i in range(0, args.n, args.p):
-    if proc.rank == 0:
+    if proc.root:
       result, err = proc.step(args.p)  # type: ignore
       print(f"Iter {i + args.p}, abs error {err}")
       write_image(f"iter{i + args.p:05d}.png", result)
     else:
       proc.step(args.p)
 
-  if proc.rank == 0:
+  if proc.root:
     dt = time.time() - t
     print(f"Time elapsed: {dt:.2f}s")
     write_image(args.output, result)

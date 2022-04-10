@@ -5,10 +5,10 @@
 #include "helper.h"
 
 PYBIND11_MODULE(pie_core_cuda, m) {
-  py::class_<CudaSolver>(m, "Solver")
+  py::class_<CudaEquSolver>(m, "EquSolver")
       .def(py::init<int>())
-      .def("partition", &CudaSolver::partition)
-      .def("reset", &CudaSolver::reset)
-      .def("sync", &CudaSolver::sync)
-      .def("step", &CudaSolver::step);
+      .def("partition", &CudaEquSolver::partition)
+      .def("reset", &CudaEquSolver::reset)
+      .def("sync", &CudaEquSolver::sync)
+      .def("step", &CudaEquSolver::step);
 }

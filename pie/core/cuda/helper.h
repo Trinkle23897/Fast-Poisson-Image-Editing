@@ -7,7 +7,7 @@
 
 void print_cuda_info();
 
-class CudaSolver : public Solver {
+class CudaEquSolver : public EquSolver {
  protected:
   int* buf;
   unsigned char* buf2;
@@ -18,8 +18,8 @@ class CudaSolver : public Solver {
   float *cB, *cX, *cerr, *tmp;
 
  public:
-  explicit CudaSolver(int block_size);
-  ~CudaSolver();
+  explicit CudaEquSolver(int block_size);
+  ~CudaEquSolver();
 
   py::array_t<int> partition(py::array_t<int> mask);
   void post_reset();

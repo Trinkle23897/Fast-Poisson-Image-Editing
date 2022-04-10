@@ -13,14 +13,14 @@ typedef std::chrono::duration<double> dsec;
 
 namespace py = pybind11;
 
-class Solver {
+class EquSolver {
  protected:
   int N, *A;
   float *B, *X, err[3];
 
  public:
-  Solver() : N(0), A(NULL), B(NULL), X(NULL) {}
-  ~Solver() {
+  EquSolver() : N(0), A(NULL), B(NULL), X(NULL) {}
+  ~EquSolver() {
     if (N > 0) {
       delete[] A, B, X;
     }

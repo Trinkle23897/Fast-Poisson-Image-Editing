@@ -1,4 +1,5 @@
 import os
+from abc import ABC, abstractmethod
 from typing import Any, Optional, Tuple
 
 import numpy as np
@@ -34,46 +35,18 @@ except ImportError:
   pie_core_cuda = None
 
 
-class Processor(object):
-  """PIE Processor."""
+class BaseProcessor(ABC):
+  """API definition for processor class."""
 
   def __init__(
-    self,
-    gradient: str = "mix",
-    backend: str = DEFAULT_BACKEND,
-    n_cpu: int = CPU_COUNT,
-    min_interval: int = 100,
-    block_size: int = 1024,
+    self, gradient: str, rank: int, backend: str, core: Optional[Any]
   ):
-    super().__init__()
-
-    self.backend = backend
-    self.core: Optional[Any] = None
+    assert core is not None, f"Invalid backend {backend}."
     self.gradient = gradient
-    self.rank = 0
-
-    if backend == "numpy":
-      self.core = np_solver.Solver()
-    elif backend == "openmp" and pie_core_openmp is not None:
-      self.core = pie_core_openmp.Solver(n_cpu)
-    elif backend == "mpi" and pie_core_mpi is not None:
-      self.core = pie_core_mpi.Solver(min_interval)
-      self.rank = MPI.COMM_WORLD.Get_rank()
-    elif backend == "cuda" and pie_core_cuda is not None:
-      self.core = pie_core_cuda.Solver(block_size)
-
-    assert self.core is not None, f"Backend {backend} is invalid."
-
-  def mask2index(
-    self, mask: np.ndarray
-  ) -> Tuple[np.ndarray, int, np.ndarray, np.ndarray]:
-    x, y = np.nonzero(mask)
-    max_id = x.shape[0] + 1
-    index = np.zeros((max_id, 3))
-    ids = self.core.partition(mask)  # type: ignore
-    ids[mask == 0] = 0  # reserve id=0 for constant
-    index = ids[x, y].argsort()
-    return ids, max_id, x[index], y[index]
+    self.rank = rank
+    self.backend = backend
+    self.core = core
+    self.root = rank == 0
 
   def mixgrad(self, a: np.ndarray, b: np.ndarray) -> np.ndarray:
     if self.gradient == "src":
@@ -83,6 +56,67 @@ class Processor(object):
     # mask = (a ** 2).sum(-1) < (b ** 2).sum(-1)
     a[mask] = b[mask]
     return a
+
+  @abstractmethod
+  def mask2index(
+    self, mask: np.ndarray
+  ) -> Tuple[np.ndarray, int, np.ndarray, np.ndarray]:
+    pass
+
+  @abstractmethod
+  def reset(
+    self,
+    src: np.ndarray,
+    mask: np.ndarray,
+    tgt: np.ndarray,
+    mask_on_src: Tuple[int, int],
+    mask_on_tgt: Tuple[int, int],
+  ) -> int:
+    pass
+
+  def sync(self) -> None:
+    self.core.sync()
+
+  def step(self, iteration: int) -> Optional[Tuple[np.ndarray, np.ndarray]]:
+    pass
+
+
+class EquProcessor(BaseProcessor):
+  """PIE Jacobi equation processor."""
+
+  def __init__(
+    self,
+    gradient: str = "mix",
+    backend: str = DEFAULT_BACKEND,
+    n_cpu: int = CPU_COUNT,
+    min_interval: int = 100,
+    block_size: int = 1024,
+  ):
+    core: Optional[Any] = None
+    rank = 0
+
+    if backend == "numpy":
+      core = np_solver.EquSolver()
+    elif backend == "openmp" and pie_core_openmp is not None:
+      core = pie_core_openmp.EquSolver(n_cpu)
+    elif backend == "mpi" and pie_core_mpi is not None:
+      core = pie_core_mpi.EquSolver(min_interval)
+      rank = MPI.COMM_WORLD.Get_rank()
+    elif backend == "cuda" and pie_core_cuda is not None:
+      core = pie_core_cuda.EquSolver(block_size)
+
+    super().__init__(gradient, rank, backend, core)
+
+  def mask2index(
+    self, mask: np.ndarray
+  ) -> Tuple[np.ndarray, int, np.ndarray, np.ndarray]:
+    x, y = np.nonzero(mask)
+    max_id = x.shape[0] + 1
+    index = np.zeros((max_id, 3))
+    ids = self.core.partition(mask)
+    ids[mask == 0] = 0  # reserve id=0 for constant
+    index = ids[x, y].argsort()
+    return ids, max_id, x[index], y[index]
 
   def reset(
     self,
@@ -152,14 +186,128 @@ class Processor(object):
 
     self.tgt = tgt.copy()
     self.tgt_index = (index_x + mask_on_tgt[0], index_y + mask_on_tgt[1])
-    self.core.reset(max_id, A, X, B)  # type: ignore
+    self.core.reset(max_id, A, X, B)
     return max_id
 
-  def sync(self) -> None:
-    self.core.sync()  # type: ignore
+  def step(self, iteration: int) -> Optional[Tuple[np.ndarray, np.ndarray]]:
+    result = self.core.step(iteration)
+    if self.rank == 0:
+      x, err = result
+      self.tgt[self.tgt_index] = x[1:]
+      return self.tgt, err
+    return None
+
+
+class GridProcessor(BaseProcessor):
+  """PIE grid processor."""
+
+  def __init__(
+    self,
+    gradient: str = "mix",
+    backend: str = DEFAULT_BACKEND,
+    n_cpu: int = CPU_COUNT,
+    min_interval: int = 100,
+    block_size: int = 1024,
+  ):
+    core: Optional[Any] = None
+    rank = 0
+
+    if backend == "numpy":
+      core = np_solver.EquSolver()
+    elif backend == "openmp" and pie_core_openmp is not None:
+      core = pie_core_openmp.EquSolver(n_cpu)
+    elif backend == "mpi" and pie_core_mpi is not None:
+      core = pie_core_mpi.EquSolver(min_interval)
+      rank = MPI.COMM_WORLD.Get_rank()
+    elif backend == "cuda" and pie_core_cuda is not None:
+      core = pie_core_cuda.EquSolver(block_size)
+
+    super().__init__(gradient, rank, backend, core)
+
+  def mask2index(
+    self, mask: np.ndarray
+  ) -> Tuple[np.ndarray, int, np.ndarray, np.ndarray]:
+    x, y = np.nonzero(mask)
+    max_id = x.shape[0] + 1
+    index = np.zeros((max_id, 3))
+    ids = self.core.partition(mask)
+    ids[mask == 0] = 0  # reserve id=0 for constant
+    index = ids[x, y].argsort()
+    return ids, max_id, x[index], y[index]
+
+  def reset(
+    self,
+    src: np.ndarray,
+    mask: np.ndarray,
+    tgt: np.ndarray,
+    mask_on_src: Tuple[int, int],
+    mask_on_tgt: Tuple[int, int],
+  ) -> int:
+    assert self.rank == 0
+    # check validity
+    # assert 0 <= mask_on_src[0] and 0 <= mask_on_src[1]
+    # assert mask_on_src[0] + mask.shape[0] <= src.shape[0]
+    # assert mask_on_src[1] + mask.shape[1] <= src.shape[1]
+    # assert mask_on_tgt[0] + mask.shape[0] <= tgt.shape[0]
+    # assert mask_on_tgt[1] + mask.shape[1] <= tgt.shape[1]
+
+    if len(mask.shape) == 3:
+      mask = mask.mean(-1)
+    mask = (mask >= 128).astype(np.int32)
+
+    # zero-out edge
+    mask[0] = 0
+    mask[-1] = 0
+    mask[:, 0] = 0
+    mask[:, -1] = 0
+
+    ids, max_id, index_x, index_y = self.mask2index(mask)
+    src_x, src_y = index_x + mask_on_src[0], index_y + mask_on_src[1]
+    tgt_x, tgt_y = index_x + mask_on_tgt[0], index_y + mask_on_tgt[1]
+
+    src_C = src[src_x, src_y].astype(np.float32)
+    src_U = src[src_x - 1, src_y].astype(np.float32)
+    src_D = src[src_x + 1, src_y].astype(np.float32)
+    src_L = src[src_x, src_y - 1].astype(np.float32)
+    src_R = src[src_x, src_y + 1].astype(np.float32)
+    tgt_C = tgt[tgt_x, tgt_y].astype(np.float32)
+    tgt_U = tgt[tgt_x - 1, tgt_y].astype(np.float32)
+    tgt_D = tgt[tgt_x + 1, tgt_y].astype(np.float32)
+    tgt_L = tgt[tgt_x, tgt_y - 1].astype(np.float32)
+    tgt_R = tgt[tgt_x, tgt_y + 1].astype(np.float32)
+
+    grad = self.mixgrad(src_C - src_L, tgt_C - tgt_L) \
+      + self.mixgrad(src_C - src_R, tgt_C - tgt_R) \
+      + self.mixgrad(src_C - src_U, tgt_C - tgt_U) \
+      + self.mixgrad(src_C - src_D, tgt_C - tgt_D)
+
+    A = np.zeros((max_id, 4), np.int32)
+    X = np.zeros((max_id, 3), np.float32)
+    B = np.zeros((max_id, 3), np.float32)
+
+    X[1:] = tgt[index_x + mask_on_tgt[0], index_y + mask_on_tgt[1]]
+    # four-way
+    A[1:, 0] = ids[index_x - 1, index_y]
+    A[1:, 1] = ids[index_x + 1, index_y]
+    A[1:, 2] = ids[index_x, index_y - 1]
+    A[1:, 3] = ids[index_x, index_y + 1]
+    B[1:] = grad
+    m = (mask[index_x - 1, index_y] == 0).astype(float).reshape(-1, 1)
+    B[1:] += m * tgt[index_x + mask_on_tgt[0] - 1, index_y + mask_on_tgt[1]]
+    m = (mask[index_x + 1, index_y] == 0).astype(float).reshape(-1, 1)
+    B[1:] += m * tgt[index_x + mask_on_tgt[0] + 1, index_y + mask_on_tgt[1]]
+    m = (mask[index_x, index_y - 1] == 0).astype(float).reshape(-1, 1)
+    B[1:] += m * tgt[index_x + mask_on_tgt[0], index_y + mask_on_tgt[1] - 1]
+    m = (mask[index_x, index_y + 1] == 0).astype(float).reshape(-1, 1)
+    B[1:] += m * tgt[index_x + mask_on_tgt[0], index_y + mask_on_tgt[1] + 1]
+
+    self.tgt = tgt.copy()
+    self.tgt_index = (index_x + mask_on_tgt[0], index_y + mask_on_tgt[1])
+    self.core.reset(max_id, A, X, B)
+    return max_id
 
   def step(self, iteration: int) -> Optional[Tuple[np.ndarray, np.ndarray]]:
-    result = self.core.step(iteration)  # type: ignore
+    result = self.core.step(iteration)
     if self.rank == 0:
       x, err = result
       self.tgt[self.tgt_index] = x[1:]

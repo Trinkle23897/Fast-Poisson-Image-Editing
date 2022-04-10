@@ -2,19 +2,19 @@
 
 #include <omp.h>
 
-class OpenMPSolver : public Solver {
+class OpenMPEquSolver : public EquSolver {
   int* buf;
   unsigned char* buf2;
   float* tmp;
   int n_mid;
 
  public:
-  explicit OpenMPSolver(int n_cpu)
-      : buf(NULL), buf2(NULL), tmp(NULL), n_mid(0), Solver() {
+  explicit OpenMPEquSolver(int n_cpu)
+      : buf(NULL), buf2(NULL), tmp(NULL), n_mid(0), EquSolver() {
     omp_set_num_threads(n_cpu);
   }
 
-  ~OpenMPSolver() {
+  ~OpenMPEquSolver() {
     if (buf != NULL) {
       delete[] buf, buf2;
     }
@@ -132,10 +132,10 @@ class OpenMPSolver : public Solver {
 };
 
 PYBIND11_MODULE(pie_core_openmp, m) {
-  py::class_<OpenMPSolver>(m, "Solver")
+  py::class_<OpenMPEquSolver>(m, "EquSolver")
       .def(py::init<int>())
-      .def("partition", &OpenMPSolver::partition)
-      .def("reset", &OpenMPSolver::reset)
-      .def("sync", &OpenMPSolver::sync)
-      .def("step", &OpenMPSolver::step);
+      .def("partition", &OpenMPEquSolver::partition)
+      .def("reset", &OpenMPEquSolver::reset)
+      .def("sync", &OpenMPEquSolver::sync)
+      .def("step", &OpenMPEquSolver::step);
 }
