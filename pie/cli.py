@@ -68,8 +68,8 @@ def get_args() -> argparse.Namespace:
     "-g",
     "--gradient",
     type=str,
-    choices=["mix", "src"],
-    default="mix",
+    choices=["max", "src", "avg"],
+    default="max",
     help="how to calculate gradient for PIE",
   )
   parser.add_argument(

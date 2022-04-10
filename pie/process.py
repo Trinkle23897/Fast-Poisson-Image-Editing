@@ -51,17 +51,24 @@ class BaseProcessor(ABC):
   def mixgrad(self, a: np.ndarray, b: np.ndarray) -> np.ndarray:
     if self.gradient == "src":
       return a
+    if self.gradient == "avg":
+      return (a + b) / 2
     # mix gradient, see Equ. 12 in PIE paper
     mask = np.abs(a) < np.abs(b)
     # mask = (a ** 2).sum(-1) < (b ** 2).sum(-1)
     a[mask] = b[mask]
     return a
 
-  @abstractmethod
   def mask2index(
     self, mask: np.ndarray
   ) -> Tuple[np.ndarray, int, np.ndarray, np.ndarray]:
-    pass
+    x, y = np.nonzero(mask)
+    max_id = x.shape[0] + 1
+    index = np.zeros((max_id, 3))
+    ids = self.core.partition(mask)
+    ids[mask == 0] = 0  # reserve id=0 for constant
+    index = ids[x, y].argsort()
+    return ids, max_id, x[index], y[index]
 
   @abstractmethod
   def reset(
@@ -107,17 +114,6 @@ class EquProcessor(BaseProcessor):
 
     super().__init__(gradient, rank, backend, core)
 
-  def mask2index(
-    self, mask: np.ndarray
-  ) -> Tuple[np.ndarray, int, np.ndarray, np.ndarray]:
-    x, y = np.nonzero(mask)
-    max_id = x.shape[0] + 1
-    index = np.zeros((max_id, 3))
-    ids = self.core.partition(mask)
-    ids[mask == 0] = 0  # reserve id=0 for constant
-    index = ids[x, y].argsort()
-    return ids, max_id, x[index], y[index]
-
   def reset(
     self,
     src: np.ndarray,
@@ -126,7 +122,7 @@ class EquProcessor(BaseProcessor):
     mask_on_src: Tuple[int, int],
     mask_on_tgt: Tuple[int, int],
   ) -> int:
-    assert self.rank == 0
+    assert self.root
     # check validity
     # assert 0 <= mask_on_src[0] and 0 <= mask_on_src[1]
     # assert mask_on_src[0] + mask.shape[0] <= src.shape[0]
@@ -144,7 +140,14 @@ class EquProcessor(BaseProcessor):
     mask[:, 0] = 0
     mask[:, -1] = 0
 
+    x, y = np.nonzero(mask)
+    x0, x1 = x.min() - 1, x.max() + 2
+    y0, y1 = y.min() - 1, y.max() + 2
+    mask_on_src = (x0 + mask_on_src[0], y0 + mask_on_src[1])
+    mask_on_tgt = (x0 + mask_on_tgt[0], y0 + mask_on_tgt[1])
+    mask = mask[x0:x1, y0:y1]
     ids, max_id, index_x, index_y = self.mask2index(mask)
+
     src_x, src_y = index_x + mask_on_src[0], index_y + mask_on_src[1]
     tgt_x, tgt_y = index_x + mask_on_tgt[0], index_y + mask_on_tgt[1]
 
@@ -191,7 +194,7 @@ class EquProcessor(BaseProcessor):
 
   def step(self, iteration: int) -> Optional[Tuple[np.ndarray, np.ndarray]]:
     result = self.core.step(iteration)
-    if self.rank == 0:
+    if self.root:
       x, err = result
       self.tgt[self.tgt_index] = x[1:]
       return self.tgt, err
@@ -213,27 +216,16 @@ class GridProcessor(BaseProcessor):
     rank = 0
 
     if backend == "numpy":
-      core = np_solver.EquSolver()
+      core = np_solver.GridSolver()
     elif backend == "openmp" and pie_core_openmp is not None:
-      core = pie_core_openmp.EquSolver(n_cpu)
+      core = pie_core_openmp.GridSolver(n_cpu)
     elif backend == "mpi" and pie_core_mpi is not None:
-      core = pie_core_mpi.EquSolver(min_interval)
+      core = pie_core_mpi.GridSolver(min_interval)
       rank = MPI.COMM_WORLD.Get_rank()
     elif backend == "cuda" and pie_core_cuda is not None:
-      core = pie_core_cuda.EquSolver(block_size)
+      core = pie_core_cuda.GridSolver(block_size)
 
     super().__init__(gradient, rank, backend, core)
-
-  def mask2index(
-    self, mask: np.ndarray
-  ) -> Tuple[np.ndarray, int, np.ndarray, np.ndarray]:
-    x, y = np.nonzero(mask)
-    max_id = x.shape[0] + 1
-    index = np.zeros((max_id, 3))
-    ids = self.core.partition(mask)
-    ids[mask == 0] = 0  # reserve id=0 for constant
-    index = ids[x, y].argsort()
-    return ids, max_id, x[index], y[index]
 
   def reset(
     self,
@@ -243,7 +235,7 @@ class GridProcessor(BaseProcessor):
     mask_on_src: Tuple[int, int],
     mask_on_tgt: Tuple[int, int],
   ) -> int:
-    assert self.rank == 0
+    assert self.root
     # check validity
     # assert 0 <= mask_on_src[0] and 0 <= mask_on_src[1]
     # assert mask_on_src[0] + mask.shape[0] <= src.shape[0]
@@ -261,55 +253,45 @@ class GridProcessor(BaseProcessor):
     mask[:, 0] = 0
     mask[:, -1] = 0
 
+    x, y = np.nonzero(mask)
+    x0, x1 = x.min() - 1, x.max() + 2
+    y0, y1 = y.min() - 1, y.max() + 2
+    mask = mask[x0:x1, y0:y1]
     ids, max_id, index_x, index_y = self.mask2index(mask)
-    src_x, src_y = index_x + mask_on_src[0], index_y + mask_on_src[1]
-    tgt_x, tgt_y = index_x + mask_on_tgt[0], index_y + mask_on_tgt[1]
+    max_id = np.prod(mask.shape)
 
-    src_C = src[src_x, src_y].astype(np.float32)
-    src_U = src[src_x - 1, src_y].astype(np.float32)
-    src_D = src[src_x + 1, src_y].astype(np.float32)
-    src_L = src[src_x, src_y - 1].astype(np.float32)
-    src_R = src[src_x, src_y + 1].astype(np.float32)
-    tgt_C = tgt[tgt_x, tgt_y].astype(np.float32)
-    tgt_U = tgt[tgt_x - 1, tgt_y].astype(np.float32)
-    tgt_D = tgt[tgt_x + 1, tgt_y].astype(np.float32)
-    tgt_L = tgt[tgt_x, tgt_y - 1].astype(np.float32)
-    tgt_R = tgt[tgt_x, tgt_y + 1].astype(np.float32)
+    src_crop = src[mask_on_src[0] + x0:mask_on_src[0] + x1,
+                   mask_on_src[1] + y0:mask_on_src[1] + y1].astype(np.float32)
+    tgt_crop = tgt[mask_on_tgt[0] + x0:mask_on_tgt[0] + x1,
+                   mask_on_tgt[1] + y0:mask_on_tgt[1] + y1].astype(np.float32)
+    grad = np.zeros([*mask.shape, 3], np.float32)
+    grad[1:] += self.mixgrad(
+      src_crop[1:] - src_crop[:-1], tgt_crop[1:] - tgt_crop[:-1]
+    )
+    grad[:-1] += self.mixgrad(
+      src_crop[:-1] - src_crop[1:], tgt_crop[:-1] - tgt_crop[1:]
+    )
+    grad[:, 1:] += self.mixgrad(
+      src_crop[:, 1:] - src_crop[:, :-1], tgt_crop[:, 1:] - tgt_crop[:, :-1]
+    )
+    grad[:, :-1] += self.mixgrad(
+      src_crop[:, :-1] - src_crop[:, 1:], tgt_crop[:, :-1] - tgt_crop[:, 1:]
+    )
 
-    grad = self.mixgrad(src_C - src_L, tgt_C - tgt_L) \
-      + self.mixgrad(src_C - src_R, tgt_C - tgt_R) \
-      + self.mixgrad(src_C - src_U, tgt_C - tgt_U) \
-      + self.mixgrad(src_C - src_D, tgt_C - tgt_D)
+    grad[mask == 0] = 0
 
-    A = np.zeros((max_id, 4), np.int32)
-    X = np.zeros((max_id, 3), np.float32)
-    B = np.zeros((max_id, 3), np.float32)
-
-    X[1:] = tgt[index_x + mask_on_tgt[0], index_y + mask_on_tgt[1]]
-    # four-way
-    A[1:, 0] = ids[index_x - 1, index_y]
-    A[1:, 1] = ids[index_x + 1, index_y]
-    A[1:, 2] = ids[index_x, index_y - 1]
-    A[1:, 3] = ids[index_x, index_y + 1]
-    B[1:] = grad
-    m = (mask[index_x - 1, index_y] == 0).astype(float).reshape(-1, 1)
-    B[1:] += m * tgt[index_x + mask_on_tgt[0] - 1, index_y + mask_on_tgt[1]]
-    m = (mask[index_x + 1, index_y] == 0).astype(float).reshape(-1, 1)
-    B[1:] += m * tgt[index_x + mask_on_tgt[0] + 1, index_y + mask_on_tgt[1]]
-    m = (mask[index_x, index_y - 1] == 0).astype(float).reshape(-1, 1)
-    B[1:] += m * tgt[index_x + mask_on_tgt[0], index_y + mask_on_tgt[1] - 1]
-    m = (mask[index_x, index_y + 1] == 0).astype(float).reshape(-1, 1)
-    B[1:] += m * tgt[index_x + mask_on_tgt[0], index_y + mask_on_tgt[1] + 1]
-
+    self.x0 = mask_on_tgt[0] + x0
+    self.x1 = mask_on_tgt[0] + x1
+    self.y0 = mask_on_tgt[1] + y0
+    self.y1 = mask_on_tgt[1] + y1
     self.tgt = tgt.copy()
-    self.tgt_index = (index_x + mask_on_tgt[0], index_y + mask_on_tgt[1])
-    self.core.reset(max_id, A, X, B)
+    self.core.reset(max_id, mask, tgt_crop, grad)
     return max_id
 
   def step(self, iteration: int) -> Optional[Tuple[np.ndarray, np.ndarray]]:
     result = self.core.step(iteration)
-    if self.rank == 0:
+    if self.root:
       x, err = result
-      self.tgt[self.tgt_index] = x[1:]
+      self.tgt[self.x0:self.x1, self.y0:self.y1] = x
       return self.tgt, err
     return None
