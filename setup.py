@@ -74,7 +74,7 @@ setup(
   },
   install_requires=[
     "opencv-python>=4.5",
-    "numpy>=1.20",
+    "numpy>=1.21",
     "mpi4py>=3.1",
   ],
   extras_require={
