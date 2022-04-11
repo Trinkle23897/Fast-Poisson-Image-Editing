@@ -32,6 +32,16 @@ $ pie -s test8_src.jpg -t test8_tgt.jpg -o result.png -h0 0 -w0 0 -h1 90 -w1 90 
 $ mpiexec -np 6 pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 100 -n 25000 -p 0 -b mpi --mpi-sync-interval 100
 ```
 
+## Implemented Method
+
+| Backend                                        | EquSolver          | GridSolver         |
+| ---------------------------------------------- | ------------------ | ------------------ |
+| NumPy                                          | :heavy_check_mark: | :heavy_check_mark: |
+| OpenMP                                         | :heavy_check_mark: | :heavy_check_mark: |
+| CUDA                                           | :heavy_check_mark: |                    |
+| MPI                                            | :heavy_check_mark: |                    |
+| [Taichi](https://github.com/taichi-dev/taichi) |                    |                    |
+
 ## Background
 
 [Poisson image editing](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) is a technique that can blend two images together without artifacts. Given a source image and its corresponding mask, and a coordination on target image, this algorithm can always generate amazing result:
@@ -69,13 +79,6 @@ where $A\in \mathbb{R}^{N\times N}$, $\vec{x}\in \mathbb{R}^N$, $\vec{b}\in \mat
 $N$ is always a large number, i.e., greater than 500k, so the Gauss-Jordan Elimination cannot be directly applied here because of the high time complexity $O(N^3)$. People always use [Jacobi Method](https://en.wikipedia.org/wiki/Jacobi_method) to solve the problem. Thanks to the sparsity of matrix $A$, the overall time complexity is $O(MN)$ where $M$ is the number of iteration performed by poisson image editing.
 
 In this project, we are going to parallelize Jacobi method to speed up the computation. To our best knowledge, there's no public project on GitHub that implements poisson image editing with either OpenMP, or MPI, or CUDA. All of them can only handle a small size image workload.
-
-## Implement Method
-
-- [x] NumPy
-- [x] OpenMP
-- [x] MPI
-- [x] CUDA
 
 ## Miscellaneous (for 15-618 course project)
 
