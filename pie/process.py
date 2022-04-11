@@ -13,6 +13,7 @@ ALL_BACKEND = ["numpy"]
 try:
   from pie import taichi_solver
   ALL_BACKEND += ["taichi-cpu", "taichi-gpu", "taichi-cuda"]
+  DEFAULT_BACKEND = "taichi-cpu"
 except ImportError:
   taichi_solver = None  # type: ignore
 

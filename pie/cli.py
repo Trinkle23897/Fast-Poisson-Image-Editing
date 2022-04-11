@@ -64,10 +64,10 @@ def get_args() -> argparse.Namespace:
     "-w0", type=int, help="mask position (width) on source image", default=0
   )
   parser.add_argument(
-    "-h1", type=int, help="mask position (height) on target image"
+    "-h1", type=int, help="mask position (height) on target image", default=0
   )
   parser.add_argument(
-    "-w1", type=int, help="mask position (width) on target image"
+    "-w1", type=int, help="mask position (width) on target image", default=0
   )
   parser.add_argument(
     "-g",
@@ -81,6 +81,7 @@ def get_args() -> argparse.Namespace:
     "-n",
     type=int,
     help="how many iteration would you perfer, the more the better",
+    default=5000,
   )
   parser.add_argument(
     "-p", type=int, help="output result every P iteration", default=0
