@@ -76,7 +76,7 @@ class EquSolver {
 
 class GridSolver {
  protected:
-  int N, M, grid_x, grid_y;
+  int N, M, grid_x, grid_y, m3;
   int* mask;
   float *tgt, *grad, err[3];
 
@@ -86,6 +86,7 @@ class GridSolver {
         M(0),
         grid_x(grid_x),
         grid_y(grid_y),
+        m3(0),
         mask(NULL),
         tgt(NULL),
         grad(NULL) {}
@@ -106,9 +107,10 @@ class GridSolver {
     auto grad_arr = g.unchecked<3>();
     N = mask_arr.shape(0);
     M = mask_arr.shape(1);
+    m3 = M * 3;
     mask = new int[N * M];
-    tgt = new float[N * M * 3];
-    grad = new float[N * M * 3];
+    tgt = new float[N * m3];
+    grad = new float[N * m3];
     int ptr = 0;
     for (int i = 0; i < N; ++i) {
       for (int j = 0; j < M; ++j) {

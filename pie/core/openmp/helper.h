@@ -29,7 +29,6 @@ class OpenMPEquSolver : public EquSolver {
 class OpenMPGridSolver : public GridSolver {
   unsigned char* imgbuf;
   float* tmp;
-  int m3;
 
  public:
   OpenMPGridSolver(int grid_x, int grid_y, int n_cpu);

@@ -1,7 +1,7 @@
 #include "helper.h"
 
 GCCGridSolver::GCCGridSolver(int grid_x, int grid_y)
-    : imgbuf(NULL), m3(0), GridSolver(grid_x, grid_y) {}
+    : imgbuf(NULL), GridSolver(grid_x, grid_y) {}
 
 GCCGridSolver::~GCCGridSolver() {
   if (imgbuf != NULL) {
@@ -13,7 +13,6 @@ void GCCGridSolver::post_reset() {
   if (imgbuf != NULL) {
     delete[] imgbuf;
   }
-  m3 = M * 3;
   imgbuf = new unsigned char[N * m3];
 }
 

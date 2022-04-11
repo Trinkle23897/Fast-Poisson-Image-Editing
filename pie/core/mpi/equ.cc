@@ -3,8 +3,8 @@
 #include "helper.h"
 
 MPIEquSolver::MPIEquSolver(int min_interval)
-    : buf(NULL),
-      buf2(NULL),
+    : maskbuf(NULL),
+      imgbuf(NULL),
       tmp(NULL),
       min_interval(min_interval),
       EquSolver() {
@@ -14,8 +14,8 @@ MPIEquSolver::MPIEquSolver(int min_interval)
 }
 
 MPIEquSolver::~MPIEquSolver() {
-  if (buf != NULL) {
-    delete[] buf, buf2;
+  if (maskbuf != NULL) {
+    delete[] maskbuf, imgbuf;
   }
   if (tmp != NULL) {
     delete[] tmp;
@@ -26,29 +26,29 @@ MPIEquSolver::~MPIEquSolver() {
 py::array_t<int> MPIEquSolver::partition(py::array_t<int> mask) {
   auto arr = mask.unchecked<2>();
   int n = arr.shape(0), m = arr.shape(1);
-  if (buf != NULL) {
-    delete[] buf;
+  if (maskbuf != NULL) {
+    delete[] maskbuf;
   }
-  buf = new int[n * m];
+  maskbuf = new int[n * m];
   int cnt = 0;
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < m; ++j) {
       if (arr(i, j) > 0) {
-        buf[i * m + j] = ++cnt;
+        maskbuf[i * m + j] = ++cnt;
       } else {
-        buf[i * m + j] = 0;
+        maskbuf[i * m + j] = 0;
       }
     }
   }
-  return py::array({n, m}, buf);
+  return py::array({n, m}, maskbuf);
 }
 
 void MPIEquSolver::post_reset() {
   if (tmp != NULL) {
-    delete[] tmp, buf2;
+    delete[] tmp, imgbuf;
   }
   tmp = new float[N * 3];
-  buf2 = new unsigned char[N * 3];
+  imgbuf = new unsigned char[N * 3];
   // offset
   offset[0] = 0;
   int additional = N % n_proc;
@@ -61,13 +61,13 @@ void MPIEquSolver::sync() {
   MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
   if (proc_id > 0) {
     if (A != NULL) {
-      delete[] A, B, X, tmp;
+      delete[] A, B, X, tmp, imgbuf;
     }
     A = new int[N * 4];
     B = new float[N * 3];
     X = new float[N * 3];
     tmp = new float[N * 3];
-    buf2 = new unsigned char[N * 3];
+    imgbuf = new unsigned char[N * 3];
   }
   MPI_Bcast(A, N * 4, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(B, N * 3, MPI_FLOAT, 0, MPI_COMM_WORLD);
@@ -140,10 +140,10 @@ std::tuple<py::array_t<unsigned char>, py::array_t<float>> MPIEquSolver::step(
   if (proc_id == 0) {
     calc_error();
     for (int i = 0; i < N * 3; ++i) {
-      buf2[i] = X[i] < 0 ? 0 : X[i] > 255 ? 255 : X[i];
+      imgbuf[i] = X[i] < 0 ? 0 : X[i] > 255 ? 255 : X[i];
     }
-    return std::make_tuple(py::array({N, 3}, buf2), py::array(3, err));
+    return std::make_tuple(py::array({N, 3}, imgbuf), py::array(3, err));
   } else {
-    return std::make_tuple(py::array({1, 3}, buf2), py::array(3, err));
+    return std::make_tuple(py::array({1, 3}, imgbuf), py::array(3, err));
   }
 }

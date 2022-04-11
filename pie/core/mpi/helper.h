@@ -6,8 +6,8 @@
 #include "solver.h"
 
 class MPIEquSolver : public EquSolver {
-  int* buf;
-  unsigned char* buf2;
+  int* maskbuf;
+  unsigned char* imgbuf;
   float* tmp;
   int proc_id, n_proc, min_interval, *offset;
 
@@ -23,6 +23,27 @@ class MPIEquSolver : public EquSolver {
   void sync();
 
   inline void update_equation(int i);
+
+  void calc_error();
+
+  std::tuple<py::array_t<unsigned char>, py::array_t<float>> step(
+      int iteration);
+};
+
+class MPIGridSolver : public GridSolver {
+  unsigned char* imgbuf;
+  int proc_id, n_proc, min_interval, *offset;
+
+ public:
+  explicit MPIGridSolver(int min_interval);
+
+  ~MPIGridSolver();
+
+  void post_reset();
+
+  void sync();
+
+  inline void update_equation(int id);
 
   void calc_error();
 

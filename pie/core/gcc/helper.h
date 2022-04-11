@@ -26,7 +26,6 @@ class GCCEquSolver : public EquSolver {
 
 class GCCGridSolver : public GridSolver {
   unsigned char* imgbuf;
-  int m3;
 
  public:
   GCCGridSolver(int grid_x, int grid_y);

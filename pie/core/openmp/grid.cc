@@ -3,7 +3,7 @@
 #include "helper.h"
 
 OpenMPGridSolver::OpenMPGridSolver(int grid_x, int grid_y, int n_cpu)
-    : imgbuf(NULL), tmp(NULL), m3(0), GridSolver(grid_x, grid_y) {
+    : imgbuf(NULL), tmp(NULL), GridSolver(grid_x, grid_y) {
   omp_set_num_threads(n_cpu);
 }
 
@@ -17,7 +17,6 @@ void OpenMPGridSolver::post_reset() {
   if (tmp != NULL) {
     delete[] tmp, imgbuf;
   }
-  m3 = M * 3;
   tmp = new float[N * m3];
   imgbuf = new unsigned char[N * m3];
   memset(tmp, 0, sizeof(float) * N * m3);

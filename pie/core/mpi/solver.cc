@@ -7,4 +7,9 @@ PYBIND11_MODULE(pie_core_mpi, m) {
       .def("reset", &MPIEquSolver::reset)
       .def("sync", &MPIEquSolver::sync)
       .def("step", &MPIEquSolver::step);
+  py::class_<MPIGridSolver>(m, "GridSolver")
+      .def(py::init<int>())
+      .def("reset", &MPIGridSolver::reset)
+      .def("sync", &MPIGridSolver::sync)
+      .def("step", &MPIGridSolver::step);
 }

@@ -35,16 +35,16 @@ void CudaGridSolver::post_reset() {
     cudaFree(cimgbuf);
     cudaFree(tmp);
   }
-  imgbuf = new unsigned char[N * M * 3];
+  imgbuf = new unsigned char[N * m3];
   cudaMalloc(&cmask, N * M * sizeof(int));
-  cudaMalloc(&ctgt, N * M * 3 * sizeof(float));
-  cudaMalloc(&cgrad, N * M * 3 * sizeof(float));
-  cudaMalloc(&cimgbuf, N * M * 3 * sizeof(unsigned char));
-  cudaMalloc(&tmp, N * M * 3 * sizeof(float));
+  cudaMalloc(&ctgt, N * m3 * sizeof(float));
+  cudaMalloc(&cgrad, N * m3 * sizeof(float));
+  cudaMalloc(&cimgbuf, N * m3 * sizeof(unsigned char));
+  cudaMalloc(&tmp, N * m3 * sizeof(float));
   cudaMemcpy(cmask, mask, N * M * sizeof(int), cudaMemcpyHostToDevice);
-  cudaMemcpy(ctgt, tgt, N * M * 3 * sizeof(float), cudaMemcpyHostToDevice);
-  cudaMemcpy(cgrad, grad, N * M * 3 * sizeof(float), cudaMemcpyHostToDevice);
-  cudaMemset(tmp, 0, N * M * 3 * sizeof(float));
+  cudaMemcpy(ctgt, tgt, N * m3 * sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemcpy(cgrad, grad, N * m3 * sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemset(tmp, 0, N * m3 * sizeof(float));
 }
 
 __global__ void iter_grid_kernel(int N, int M, int* mask, float* tgt,
@@ -143,7 +143,7 @@ std::tuple<py::array_t<unsigned char>, py::array_t<float>> CudaGridSolver::step(
   cudaDeviceSynchronize();
 
   cudaMemcpy(err, cerr, 3 * sizeof(float), cudaMemcpyDeviceToHost);
-  cudaMemcpy(imgbuf, cimgbuf, N * M * 3 * sizeof(unsigned char),
+  cudaMemcpy(imgbuf, cimgbuf, N * m3 * sizeof(unsigned char),
              cudaMemcpyDeviceToHost);
   return std::make_tuple(py::array({N, M, 3}, imgbuf), py::array(3, err));
 }
