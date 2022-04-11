@@ -1,8 +1,6 @@
 #ifndef PIE_CORE_OPENMP_HELPER_H_
 #define PIE_CORE_OPENMP_HELPER_H_
 
-#include <omp.h>
-
 #include <tuple>
 
 #include "solver.h"
