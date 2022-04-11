@@ -11,6 +11,12 @@ DEFAULT_BACKEND = "numpy"
 ALL_BACKEND = ["numpy"]
 
 try:
+  from pie import taichi_solver
+  ALL_BACKEND += ["taichi-cpu", "taichi-gpu", "taichi-cuda"]
+except ImportError:
+  taichi_solver = None  # type: ignore
+
+try:
   from pie import pie_core_gcc  # type: ignore
   DEFAULT_BACKEND = "gcc"
   ALL_BACKEND.append("gcc")
@@ -49,21 +55,24 @@ class BaseProcessor(ABC):
     self, gradient: str, rank: int, backend: str, core: Optional[Any]
   ):
     if core is None:
-      print(
-        {
-          "numpy":
-            "Please run `pip install numpy`.",
-          "gcc":
-            "Please install cmake and gcc in your operating system.",
-          "openmp":
-            "Please make sure your gcc is compatible with `-fopenmp` option.",
-          "mpi":
-            "Please install MPI and run `pip install mpi4py`.",
-          "cuda":
-            "Please make sure nvcc and cuda-related libraries are available.",
-        }[backend]
-      )
+      error_msg = {
+        "numpy":
+          "Please run `pip install numpy`.",
+        "gcc":
+          "Please install cmake and gcc in your operating system.",
+        "openmp":
+          "Please make sure your gcc is compatible with `-fopenmp` option.",
+        "mpi":
+          "Please install MPI and run `pip install mpi4py`.",
+        "cuda":
+          "Please make sure nvcc and cuda-related libraries are available.",
+        "taichi":
+          "Please run `pip install taichi`.",
+      }
+      print(error_msg[backend.split("-")[0]])
+
       raise AssertionError(f"Invalid backend {backend}.")
+
     self.gradient = gradient
     self.rank = rank
     self.backend = backend
@@ -104,7 +113,7 @@ class EquProcessor(BaseProcessor):
 
   def __init__(
     self,
-    gradient: str = "mix",
+    gradient: str = "max",
     backend: str = DEFAULT_BACKEND,
     n_cpu: int = CPU_COUNT,
     min_interval: int = 100,
@@ -124,6 +133,8 @@ class EquProcessor(BaseProcessor):
       rank = MPI.COMM_WORLD.Get_rank()
     elif backend == "cuda" and pie_core_cuda is not None:
       core = pie_core_cuda.EquSolver(block_size)
+    elif backend.startswith("taichi") and taichi_solver is not None:
+      core = taichi_solver.EquSolver(backend, n_cpu, block_size)
 
     super().__init__(gradient, rank, backend, core)
 
@@ -252,6 +263,10 @@ class GridProcessor(BaseProcessor):
       rank = MPI.COMM_WORLD.Get_rank()
     elif backend == "cuda" and pie_core_cuda is not None:
       core = pie_core_cuda.GridSolver(grid_x, grid_y)
+    elif backend.startswith("taichi") and taichi_solver is not None:
+      core = taichi_solver.GridSolver(
+        grid_x, grid_y, backend, n_cpu, block_size
+      )
 
     super().__init__(gradient, rank, backend, core)
 

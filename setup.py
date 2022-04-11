@@ -83,6 +83,7 @@ setup(
       "mypy",
     ],
     "mpi": ["mpi4py>=3.1"],
+    "taichi": ["taichi>=0.8"],
   },
   ext_modules=[
     CMakeExtension("pie/pie_core_gcc"),
