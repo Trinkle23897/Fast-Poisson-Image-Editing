@@ -128,7 +128,7 @@ std::tuple<py::array_t<unsigned char>, py::array_t<float>> MPIEquSolver::step(
     if (proc_id == 0) {
       for (int j = 1; j < n_proc; ++j) {
         MPI_Recv(&X[offset[j] * 3], (offset[j + 1] - offset[j]) * 3, MPI_FLOAT,
-                 j, 0, MPI_COMM_WORLD, NULL);
+                 j, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       }
     } else {
       MPI_Send(&X[offset[proc_id] * 3],

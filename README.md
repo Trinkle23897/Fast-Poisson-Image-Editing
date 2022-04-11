@@ -46,7 +46,7 @@ $ pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h1 100 -w1 100 -n 25000 -
 | GCC                                            | :heavy_check_mark: | :heavy_check_mark: |
 | OpenMP                                         | :heavy_check_mark: | :heavy_check_mark: |
 | CUDA                                           | :heavy_check_mark: | :heavy_check_mark: |
-| MPI                                            | :heavy_check_mark: |                    |
+| MPI                                            | :heavy_check_mark: | :heavy_check_mark: |
 | [Taichi](https://github.com/taichi-dev/taichi) |                    |                    |
 
 ## Background

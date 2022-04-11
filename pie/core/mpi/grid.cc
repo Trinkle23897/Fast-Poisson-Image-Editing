@@ -67,7 +67,7 @@ inline void MPIGridSolver::update_equation(int id) {
 
 void MPIGridSolver::calc_error() {
   memset(err, 0, sizeof(err));
-  for (int id = 0; id < N * M; ++id) {
+  for (int id = offset[proc_id] * M; id < offset[proc_id + 1] * M; ++id) {
     if (mask[id]) {
       int off3 = id * 3;
       int id0 = off3 - m3;
@@ -86,8 +86,8 @@ void MPIGridSolver::calc_error() {
     float tmp[3];
     for (int j = 1; j < n_proc; ++j) {
       MPI_Recv(&tgt[offset[j] * m3], (offset[j + 1] - offset[j]) * m3,
-               MPI_FLOAT, j, 1, MPI_COMM_WORLD, NULL);
-      MPI_Recv(&tmp, 3, MPI_FLOAT, j, 0, MPI_COMM_WORLD, NULL);
+               MPI_FLOAT, j, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      MPI_Recv(&tmp, 3, MPI_FLOAT, j, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       err[0] += tmp[0];
       err[1] += tmp[1];
       err[2] += tmp[2];
@@ -110,17 +110,24 @@ std::tuple<py::array_t<unsigned char>, py::array_t<float>> MPIGridSolver::step(
         }
       }
     }
-    if (proc_id == 0) {
-      for (int j = 1; j < n_proc; ++j) {
-        MPI_Recv(&tgt[offset[j] * m3], (offset[j + 1] - offset[j]) * m3,
-                 MPI_FLOAT, j, 1, MPI_COMM_WORLD, NULL);
-      }
-    } else {
-      MPI_Send(&tgt[offset[proc_id] * m3],
-               (offset[proc_id + 1] - offset[proc_id]) * m3, MPI_FLOAT, 0, 1,
+    // send last row to proc_id + 1
+    if (proc_id != n_proc - 1) {
+      MPI_Send(&tgt[(offset[proc_id + 1] - 1) * m3], m3, MPI_FLOAT, proc_id + 1,
+               2, MPI_COMM_WORLD);
+    }
+    if (proc_id != 0) {
+      MPI_Recv(&tgt[(offset[proc_id] - 1) * m3], m3, MPI_FLOAT, proc_id - 1, 2,
+               MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+    // send first row to proc_id - 1
+    if (proc_id != 0) {
+      MPI_Send(&tgt[offset[proc_id] * m3], m3, MPI_FLOAT, proc_id - 1, 3,
                MPI_COMM_WORLD);
     }
-    MPI_Bcast(tgt, N * m3, MPI_FLOAT, 0, MPI_COMM_WORLD);
+    if (proc_id != n_proc - 1) {
+      MPI_Recv(&tgt[(offset[proc_id + 1]) * m3], m3, MPI_FLOAT, proc_id + 1, 3,
+               MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
   }
   // sync tgt to root
   calc_error();
