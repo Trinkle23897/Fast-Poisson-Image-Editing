@@ -51,7 +51,6 @@ class GridSolver(object):
   def reset(
     self, N: int, mask: np.ndarray, tgt: np.ndarray, grad: np.ndarray
   ) -> None:
-    """(4 - A)X = B"""
     self.N = N
     self.mask = mask
     self.bool_mask = mask.astype(bool)
@@ -63,7 +62,7 @@ class GridSolver(object):
 
   def step(self, iteration: int) -> Tuple[np.ndarray, np.ndarray]:
     for _ in range(iteration):
-      # X = (grad + AX) / 4
+      # tgt = (grad + Atgt) / 4
       tgt = self.grad.copy()
       tgt[1:] += self.tgt[:-1]
       tgt[:-1] += self.tgt[1:]
