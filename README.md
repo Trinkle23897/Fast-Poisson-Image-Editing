@@ -32,14 +32,20 @@ $ pie -s test8_src.jpg -t test8_tgt.jpg -o result.png -h0 0 -w0 0 -h1 90 -w1 90 
 $ mpiexec -np 6 pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 100 -n 25000 -p 0 -b mpi --mpi-sync-interval 100
 ```
 
+Grid size:
+```bash
+$ pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 100 -n 25000 -p 0 -b openmp -c 12 --method grid --grid-x 16 --grid-y 16
+$ pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 100 -n 25000 -p 0 -b cuda --method grid --grid-x 4 --grid-y 128
+```
+
 ## Implemented Method
 
 | Backend                                        | EquSolver          | GridSolver         |
 | ---------------------------------------------- | ------------------ | ------------------ |
 | NumPy                                          | :heavy_check_mark: | :heavy_check_mark: |
 | OpenMP                                         | :heavy_check_mark: | :heavy_check_mark: |
-| CUDA                                           | :heavy_check_mark: |                    |
-| MPI                                            | :heavy_check_mark: |                    |
+| CUDA                                           | :heavy_check_mark: | :heavy_check_mark: |
+| MPI                                            | :heavy_check_mark: | :x:                |
 | [Taichi](https://github.com/taichi-dev/taichi) |                    |                    |
 
 ## Background

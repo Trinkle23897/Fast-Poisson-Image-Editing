@@ -1,10 +1,11 @@
 #include "helper.h"
 
 CudaEquSolver::CudaEquSolver(int block_size)
-    : buf(NULL),
-      buf2(NULL),
+    : maskbuf(NULL),
+      imgbuf(NULL),
       block_size(block_size),
       cA(NULL),
+      cimgbuf(NULL),
       cB(NULL),
       cX(NULL),
       tmp(NULL),
@@ -14,13 +15,14 @@ CudaEquSolver::CudaEquSolver(int block_size)
 }
 
 CudaEquSolver::~CudaEquSolver() {
-  if (buf != NULL) {
-    delete[] buf, buf2;
+  if (maskbuf != NULL) {
+    delete[] maskbuf, imgbuf;
   }
   if (tmp != NULL) {
     cudaFree(cA);
     cudaFree(cB);
     cudaFree(cX);
+    cudaFree(cimgbuf);
     cudaFree(tmp);
   }
   cudaFree(cerr);
@@ -29,44 +31,44 @@ CudaEquSolver::~CudaEquSolver() {
 py::array_t<int> CudaEquSolver::partition(py::array_t<int> mask) {
   auto arr = mask.unchecked<2>();
   int n = arr.shape(0), m = arr.shape(1);
-  if (buf != NULL) {
-    delete[] buf;
+  if (maskbuf != NULL) {
+    delete[] maskbuf;
   }
-  buf = new int[n * m];
+  maskbuf = new int[n * m];
   int cnt = 0;
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < m; ++j) {
       if (arr(i, j) > 0) {
-        buf[i * m + j] = ++cnt;
+        maskbuf[i * m + j] = ++cnt;
       } else {
-        buf[i * m + j] = 0;
+        maskbuf[i * m + j] = 0;
       }
     }
   }
-  return py::array({n, m}, buf);
+  return py::array({n, m}, maskbuf);
 }
 
 void CudaEquSolver::post_reset() {
   if (cA != NULL) {
-    delete[] buf2;
+    delete[] imgbuf;
     cudaFree(cA);
     cudaFree(cB);
     cudaFree(cX);
-    cudaFree(cbuf);
+    cudaFree(cimgbuf);
     cudaFree(tmp);
   }
-  buf2 = new unsigned char[N * 3];
+  imgbuf = new unsigned char[N * 3];
   cudaMalloc(&cA, N * 4 * sizeof(int));
   cudaMalloc(&cB, N * 3 * sizeof(float));
   cudaMalloc(&cX, N * 3 * sizeof(float));
-  cudaMalloc(&cbuf, N * 3 * sizeof(unsigned char));
+  cudaMalloc(&cimgbuf, N * 3 * sizeof(unsigned char));
   cudaMalloc(&tmp, N * 3 * sizeof(float));
   cudaMemcpy(cA, A, N * 4 * sizeof(int), cudaMemcpyHostToDevice);
   cudaMemcpy(cB, B, N * 3 * sizeof(float), cudaMemcpyHostToDevice);
   cudaMemcpy(cX, X, N * 3 * sizeof(float), cudaMemcpyHostToDevice);
 }
 
-__global__ void iter_kernel(int N0, int N1, int* A, float* B, float* X) {
+__global__ void iter_equ_kernel(int N0, int N1, int* A, float* B, float* X) {
   int i = blockIdx.x * blockDim.x + threadIdx.x + N0;
   if (i < N1) {
     int off3 = i * 3;
@@ -88,7 +90,8 @@ __global__ void iter_kernel(int N0, int N1, int* A, float* B, float* X) {
   }
 }
 
-__global__ void iter_shared_kernel(int N0, int N1, int* A, float* B, float* X) {
+__global__ void iter_shared_equ_kernel(int N0, int N1, int* A, float* B,
+                                       float* X) {
   __shared__ float sX[4096 * 3];  // max shared size
   int i = blockIdx.x * blockDim.x + threadIdx.x + N0;
   if (i < N1) {
@@ -138,8 +141,8 @@ __global__ void iter_shared_kernel(int N0, int N1, int* A, float* B, float* X) {
   }
 }
 
-__global__ void error_kernel(int N0, int N1, int* A, float* B, float* X,
-                             float* tmp) {
+__global__ void error_equ_kernel(int N0, int N1, int* A, float* B, float* X,
+                                 float* tmp) {
   int i = blockIdx.x * blockDim.x + threadIdx.x + N0;
   if (i < N1) {
     int off3 = i * 3;
@@ -151,8 +154,8 @@ __global__ void error_kernel(int N0, int N1, int* A, float* B, float* X,
   }
 }
 
-__global__ void error_sum_kernel(int N, int block_size, float* tmp,
-                                 float* err) {
+__global__ void error_sum_equ_kernel(int N, int block_size, float* tmp,
+                                     float* err) {
   __shared__ float sum_err[4096 * 3];  // max shared size
   int id = blockIdx.x * blockDim.x + threadIdx.x;
   float3 err3 = make_float3(0.0, 0.0, 0.0);
@@ -170,7 +173,8 @@ __global__ void error_sum_kernel(int N, int block_size, float* tmp,
   }
 }
 
-__global__ void copy_X_kernel(int N0, int N1, float* X, unsigned char* buf) {
+__global__ void copy_X_equ_kernel(int N0, int N1, float* X,
+                                  unsigned char* buf) {
   int i = blockIdx.x * blockDim.x + threadIdx.x + N0;
   if (i < N1) {
     buf[i] = X[i] < 0 ? 0 : X[i] > 255 ? 255 : X[i];
@@ -182,20 +186,21 @@ std::tuple<py::array_t<unsigned char>, py::array_t<float>> CudaEquSolver::step(
   cudaMemset(cerr, 0, 3 * sizeof(float));
   int grid_size = (N - 1 + block_size - 1) / block_size;
   for (int i = 0; i < iteration; ++i) {
-    iter_kernel<<<grid_size, block_size>>>(1, N, cA, cB, cX);
+    iter_equ_kernel<<<grid_size, block_size>>>(1, N, cA, cB, cX);
     // doesn't occur any numeric issue ...
     // cudaDeviceSynchronize();
   }
   cudaDeviceSynchronize();
   grid_size = (N * 3 - 3 + block_size - 1) / block_size;
-  copy_X_kernel<<<grid_size, block_size>>>(3, 3 * N, cX, cbuf);
+  copy_X_equ_kernel<<<grid_size, block_size>>>(3, 3 * N, cX, cimgbuf);
   grid_size = (N - 1 + block_size - 1) / block_size;
-  error_kernel<<<grid_size, block_size>>>(1, N, cA, cB, cX, tmp);
+  error_equ_kernel<<<grid_size, block_size>>>(1, N, cA, cB, cX, tmp);
   cudaDeviceSynchronize();
-  error_sum_kernel<<<1, block_size>>>(N, block_size, tmp, cerr);
+  error_sum_equ_kernel<<<1, block_size>>>(N, block_size, tmp, cerr);
   cudaDeviceSynchronize();
 
   cudaMemcpy(err, cerr, 3 * sizeof(float), cudaMemcpyDeviceToHost);
-  cudaMemcpy(buf2, cbuf, 3 * N * sizeof(unsigned char), cudaMemcpyDeviceToHost);
-  return std::make_tuple(py::array({N, 3}, buf2), py::array(3, err));
+  cudaMemcpy(imgbuf, cimgbuf, 3 * N * sizeof(unsigned char),
+             cudaMemcpyDeviceToHost);
+  return std::make_tuple(py::array({N, 3}, imgbuf), py::array(3, err));
 }

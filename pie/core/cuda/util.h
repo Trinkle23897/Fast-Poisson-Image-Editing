@@ -4,7 +4,6 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <driver_functions.h>
-#include <stdio.h>
 
 // ops
 inline __host__ __device__ int4 operator*(int4 a, int b) {

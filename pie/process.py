@@ -222,10 +222,10 @@ class GridProcessor(BaseProcessor):
     elif backend == "openmp" and pie_core_openmp is not None:
       core = pie_core_openmp.GridSolver(grid_x, grid_y, n_cpu)
     elif backend == "mpi" and pie_core_mpi is not None:
-      core = pie_core_mpi.GridSolver(grid_x, grid_y, min_interval)
+      core = pie_core_mpi.GridSolver(min_interval)
       rank = MPI.COMM_WORLD.Get_rank()
     elif backend == "cuda" and pie_core_cuda is not None:
-      core = pie_core_cuda.GridSolver(grid_x, grid_y, block_size)
+      core = pie_core_cuda.GridSolver(grid_x, grid_y)
 
     super().__init__(gradient, rank, backend, core)
 

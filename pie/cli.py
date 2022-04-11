@@ -34,7 +34,11 @@ def get_args() -> argparse.Namespace:
     help="number of CPU used",
   )
   parser.add_argument(
-    "-z", "--block-size", type=int, default=1024, help="cuda block size"
+    "-z",
+    "--block-size",
+    type=int,
+    default=1024,
+    help="cuda block size (only for equ solver)",
   )
   parser.add_argument(
     "--method",

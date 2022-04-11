@@ -1,3 +1,5 @@
+#include <cstdio>
+
 #include "util.h"
 
 void print_cuda_info() {
