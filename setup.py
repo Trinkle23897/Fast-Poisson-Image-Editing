@@ -75,15 +75,14 @@ setup(
   install_requires=[
     "opencv-python>=4.5",
     "numpy>=1.21",
-    "mpi4py>=3.1",
   ],
   extras_require={
     "dev": [
-      "pylint",
+      "yapf",
       "isort",
       "mypy",
-      "tqdm",
     ],
+    "mpi": ["mpi4py>=3.1"],
   },
   ext_modules=[
     CMakeExtension("pie/pie_core_gcc"),
