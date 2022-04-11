@@ -7,6 +7,7 @@ from pie.process import (
   ALL_BACKEND,
   CPU_COUNT,
   DEFAULT_BACKEND,
+  BaseProcessor,
   EquProcessor,
   GridProcessor,
 )
@@ -86,6 +87,12 @@ def get_args() -> argparse.Namespace:
     help="MPI sync iteration interval",
     default=100,
   )
+  parser.add_argument(
+    "--grid-x", type=int, help="x axis stride for grid solver", default=16
+  )
+  parser.add_argument(
+    "--grid-y", type=int, help="y axis stride for grid solver", default=16
+  )
   return parser.parse_args()
 
 
@@ -95,15 +102,26 @@ def main() -> None:
     print(pie.__version__)
     exit(0)
 
-  Processor = EquProcessor if args.method == "equ" else GridProcessor
+  proc: BaseProcessor
+  if args.method == "equ":
+    proc = EquProcessor(
+      args.gradient,
+      args.backend,
+      args.cpu,
+      args.mpi_sync_interval,
+      args.block_size,
+    )
+  else:
+    proc = GridProcessor(
+      args.gradient,
+      args.backend,
+      args.cpu,
+      args.mpi_sync_interval,
+      args.block_size,
+      args.grid_x,
+      args.grid_y,
+    )
 
-  proc = Processor(
-    args.gradient,
-    args.backend,
-    args.cpu,
-    args.mpi_sync_interval,
-    args.block_size,
-  )
   if proc.root:
     print(
       f"Successfully initialize PIE {args.method} solver "

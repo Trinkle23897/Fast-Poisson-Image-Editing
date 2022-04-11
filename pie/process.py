@@ -180,12 +180,12 @@ class EquProcessor(BaseProcessor):
     B[1:] = grad
     m = (mask[index_x - 1, index_y] == 0).astype(float).reshape(-1, 1)
     B[1:] += m * tgt[index_x + mask_on_tgt[0] - 1, index_y + mask_on_tgt[1]]
-    m = (mask[index_x + 1, index_y] == 0).astype(float).reshape(-1, 1)
-    B[1:] += m * tgt[index_x + mask_on_tgt[0] + 1, index_y + mask_on_tgt[1]]
     m = (mask[index_x, index_y - 1] == 0).astype(float).reshape(-1, 1)
     B[1:] += m * tgt[index_x + mask_on_tgt[0], index_y + mask_on_tgt[1] - 1]
     m = (mask[index_x, index_y + 1] == 0).astype(float).reshape(-1, 1)
     B[1:] += m * tgt[index_x + mask_on_tgt[0], index_y + mask_on_tgt[1] + 1]
+    m = (mask[index_x + 1, index_y] == 0).astype(float).reshape(-1, 1)
+    B[1:] += m * tgt[index_x + mask_on_tgt[0] + 1, index_y + mask_on_tgt[1]]
 
     self.tgt = tgt.copy()
     self.tgt_index = (index_x + mask_on_tgt[0], index_y + mask_on_tgt[1])
@@ -211,6 +211,8 @@ class GridProcessor(BaseProcessor):
     n_cpu: int = CPU_COUNT,
     min_interval: int = 100,
     block_size: int = 1024,
+    grid_x: int = 8,
+    grid_y: int = 8,
   ):
     core: Optional[Any] = None
     rank = 0
@@ -218,12 +220,12 @@ class GridProcessor(BaseProcessor):
     if backend == "numpy":
       core = np_solver.GridSolver()
     elif backend == "openmp" and pie_core_openmp is not None:
-      core = pie_core_openmp.GridSolver(n_cpu)
+      core = pie_core_openmp.GridSolver(grid_x, grid_y, n_cpu)
     elif backend == "mpi" and pie_core_mpi is not None:
-      core = pie_core_mpi.GridSolver(min_interval)
+      core = pie_core_mpi.GridSolver(grid_x, grid_y, min_interval)
       rank = MPI.COMM_WORLD.Get_rank()
     elif backend == "cuda" and pie_core_cuda is not None:
-      core = pie_core_cuda.GridSolver(block_size)
+      core = pie_core_cuda.GridSolver(grid_x, grid_y, block_size)
 
     super().__init__(gradient, rank, backend, core)
 

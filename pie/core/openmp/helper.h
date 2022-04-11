@@ -31,14 +31,15 @@ class OpenMPEquSolver : public EquSolver {
 class OpenMPGridSolver : public GridSolver {
   unsigned char* imgbuf;
   float* tmp;
+  int m3;
 
  public:
-  explicit OpenMPGridSolver(int n_cpu);
+  explicit OpenMPGridSolver(int grid_x, int grid_y, int n_cpu);
   ~OpenMPGridSolver();
 
   void post_reset();
 
-  inline void update_equation(int id, int x, int y);
+  inline void update_equation(int id);
 
   void calc_error();
 

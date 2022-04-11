@@ -76,12 +76,19 @@ class EquSolver {
 
 class GridSolver {
  protected:
-  int N, M;
+  int N, M, grid_x, grid_y;
   int* mask;
   float *tgt, *grad, err[3];
 
  public:
-  GridSolver() : N(0), M(0), mask(NULL), tgt(NULL), grad(NULL) {}
+  GridSolver(int grid_x, int grid_y)
+      : N(0),
+        M(0),
+        grid_x(grid_x),
+        grid_y(grid_y),
+        mask(NULL),
+        tgt(NULL),
+        grad(NULL) {}
   ~GridSolver() {
     if (N > 0) {
       delete[] mask, tgt, grad;
