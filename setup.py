@@ -86,6 +86,7 @@ setup(
     ],
   },
   ext_modules=[
+    CMakeExtension("pie/pie_core_gcc"),
     CMakeExtension("pie/pie_core_openmp"),
     CMakeExtension("pie/pie_core_mpi"),
     CMakeExtension("pie/pie_core_cuda"),

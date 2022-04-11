@@ -16,6 +16,8 @@ add_subdirectory(pybind11)
 
 include_directories(${PYTHON_INCLUDE_DIRS} pybind11/include pie/core)
 
+add_subdirectory(pie/core/gcc)
+
 find_package(OpenMP)
 if(OpenMP_FOUND)
   add_subdirectory(pie/core/openmp)

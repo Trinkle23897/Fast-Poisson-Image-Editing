@@ -84,15 +84,12 @@ void OpenMPEquSolver::calc_error() {
     int id1 = A[off4 + 1] * 3;
     int id2 = A[off4 + 2] * 3;
     int id3 = A[off4 + 3] * 3;
-    tmp[off3 + 0] = std::abs(
-        4 * X[off3 + 0] - (X[id0 + 0] + X[id1 + 0] + X[id2 + 0] + X[id3 + 0]) -
-        B[off3 + 0]);
-    tmp[off3 + 1] = std::abs(
-        4 * X[off3 + 1] - (X[id0 + 1] + X[id1 + 1] + X[id2 + 1] + X[id3 + 1]) -
-        B[off3 + 1]);
-    tmp[off3 + 2] = std::abs(
-        4 * X[off3 + 2] - (X[id0 + 2] + X[id1 + 2] + X[id2 + 2] + X[id3 + 2]) -
-        B[off3 + 2]);
+    tmp[off3 + 0] = std::abs(B[off3 + 0] + X[id0 + 0] + X[id1 + 0] +
+                             X[id2 + 0] + X[id3 + 0] - X[off3 + 0] * 4.0);
+    tmp[off3 + 1] = std::abs(B[off3 + 1] + X[id0 + 1] + X[id1 + 1] +
+                             X[id2 + 1] + X[id3 + 1] - X[off3 + 1] * 4.0);
+    tmp[off3 + 2] = std::abs(B[off3 + 2] + X[id0 + 2] + X[id1 + 2] +
+                             X[id2 + 2] + X[id3 + 2] - X[off3 + 2] * 4.0);
   }
   memset(err, 0, sizeof(err));
   for (int i = 1; i < N; ++i) {

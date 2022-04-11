@@ -35,7 +35,7 @@ class CudaGridSolver : public GridSolver {
   float *ctgt, *cgrad, *cerr, *tmp;
 
  public:
-  explicit CudaGridSolver(int grid_x, int grid_y);
+  CudaGridSolver(int grid_x, int grid_y);
   ~CudaGridSolver();
 
   void post_reset();

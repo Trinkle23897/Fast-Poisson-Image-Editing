@@ -1,19 +1,17 @@
-#ifndef PIE_CORE_OPENMP_HELPER_H_
-#define PIE_CORE_OPENMP_HELPER_H_
+#ifndef PIE_CORE_GCC_HELPER_H_
+#define PIE_CORE_GCC_HELPER_H_
 
 #include <tuple>
 
 #include "solver.h"
 
-class OpenMPEquSolver : public EquSolver {
+class GCCEquSolver : public EquSolver {
   int* maskbuf;
   unsigned char* imgbuf;
-  float* tmp;
-  int n_mid;
 
  public:
-  explicit OpenMPEquSolver(int n_cpu);
-  ~OpenMPEquSolver();
+  GCCEquSolver();
+  ~GCCEquSolver();
 
   py::array_t<int> partition(py::array_t<int> mask);
   void post_reset();
@@ -26,14 +24,13 @@ class OpenMPEquSolver : public EquSolver {
       int iteration);
 };
 
-class OpenMPGridSolver : public GridSolver {
+class GCCGridSolver : public GridSolver {
   unsigned char* imgbuf;
-  float* tmp;
   int m3;
 
  public:
-  OpenMPGridSolver(int grid_x, int grid_y, int n_cpu);
-  ~OpenMPGridSolver();
+  GCCGridSolver(int grid_x, int grid_y);
+  ~GCCGridSolver();
 
   void post_reset();
 
@@ -45,4 +42,4 @@ class OpenMPGridSolver : public GridSolver {
       int iteration);
 };
 
-#endif  // PIE_CORE_OPENMP_HELPER_H_
+#endif  // PIE_CORE_GCC_HELPER_H_

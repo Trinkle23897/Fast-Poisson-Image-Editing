@@ -11,6 +11,13 @@ DEFAULT_BACKEND = "numpy"
 ALL_BACKEND = ["numpy"]
 
 try:
+  from pie import pie_core_gcc  # type: ignore
+  DEFAULT_BACKEND = "gcc"
+  ALL_BACKEND.append("gcc")
+except ImportError:
+  pie_core_gcc = None
+
+try:
   from pie import pie_core_openmp  # type: ignore
   DEFAULT_BACKEND = "openmp"
   ALL_BACKEND.append("openmp")
@@ -93,6 +100,8 @@ class EquProcessor(BaseProcessor):
 
     if backend == "numpy":
       core = np_solver.EquSolver()
+    elif backend == "gcc":
+      core = pie_core_gcc.EquSolver()
     elif backend == "openmp" and pie_core_openmp is not None:
       core = pie_core_openmp.EquSolver(n_cpu)
     elif backend == "mpi" and pie_core_mpi is not None:
@@ -219,6 +228,8 @@ class GridProcessor(BaseProcessor):
 
     if backend == "numpy":
       core = np_solver.GridSolver()
+    elif backend == "gcc":
+      core = pie_core_gcc.GridSolver(grid_x, grid_y)
     elif backend == "openmp" and pie_core_openmp is not None:
       core = pie_core_openmp.GridSolver(grid_x, grid_y, n_cpu)
     elif backend == "mpi" and pie_core_mpi is not None:

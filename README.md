@@ -43,7 +43,7 @@ $ pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 10
 | Backend                                        | EquSolver          | GridSolver         |
 | ---------------------------------------------- | ------------------ | ------------------ |
 | NumPy                                          | :heavy_check_mark: | :heavy_check_mark: |
-| GCC                                            |                    |                    |
+| GCC                                            | :heavy_check_mark: | :heavy_check_mark: |
 | OpenMP                                         | :heavy_check_mark: | :heavy_check_mark: |
 | CUDA                                           | :heavy_check_mark: | :heavy_check_mark: |
 | MPI                                            | :heavy_check_mark: |                    |
