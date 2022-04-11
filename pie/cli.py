@@ -58,10 +58,10 @@ def get_args() -> argparse.Namespace:
   parser.add_argument("-t", "--target", type=str, help="target image filename")
   parser.add_argument("-o", "--output", type=str, help="output image filename")
   parser.add_argument(
-    "-h0", type=int, help="mask position (height) on source image"
+    "-h0", type=int, help="mask position (height) on source image", default=0
   )
   parser.add_argument(
-    "-w0", type=int, help="mask position (width) on source image"
+    "-w0", type=int, help="mask position (width) on source image", default=0
   )
   parser.add_argument(
     "-h1", type=int, help="mask position (height) on target image"

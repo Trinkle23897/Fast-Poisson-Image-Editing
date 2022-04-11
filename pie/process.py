@@ -48,7 +48,22 @@ class BaseProcessor(ABC):
   def __init__(
     self, gradient: str, rank: int, backend: str, core: Optional[Any]
   ):
-    assert core is not None, f"Invalid backend {backend}."
+    if core is None:
+      print(
+        {
+          "numpy":
+            "Please run `pip install numpy`.",
+          "gcc":
+            "Please install cmake and gcc in your operating system.",
+          "openmp":
+            "Please make sure your gcc is compatible with `-fopenmp` option.",
+          "mpi":
+            "Please install MPI and run `pip install mpi4py`.",
+          "cuda":
+            "Please make sure nvcc and cuda-related libraries are available.",
+        }[backend]
+      )
+      raise AssertionError(f"Invalid backend {backend}.")
     self.gradient = gradient
     self.rank = rank
     self.backend = backend

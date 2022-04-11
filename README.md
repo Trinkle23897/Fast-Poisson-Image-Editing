@@ -18,24 +18,24 @@ Run test suite:
 ```bash
 $ cd tests
 $ ./data.py
-$ pie -s test1_src.jpg -m test1_mask.jpg -t test1_tgt.jpg -o result1.png -h0 0 -w0 0 -h1 -150 -w1 -50 -n 5000 -p 1000 -g max -b openmp
-$ pie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result2.png -h0 0 -w0 0 -h1 130 -w1 130 -n 5000 -p 1000 -g src -b openmp
-$ pie -s test3_src.jpg -m test3_mask.jpg -t test3_tgt.jpg -o result3.png -h0 0 -w0 0 -h1 100 -w1 100 -n 5000 -p 0 -g max -b openmp
-$ pie -s test4_src.jpg -m test4_mask.jpg -t test4_tgt.jpg -o result4.png -h0 0 -w0 0 -h1 100 -w1 100 -n 5000 -p 0 -g max -b openmp
+$ pie -s test1_src.jpg -m test1_mask.jpg -t test1_tgt.jpg -o result1.png -h1 -150 -w1 -50 -n 5000 -p 1000 -g max -b openmp
+$ pie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result2.png -h1 130 -w1 130 -n 5000 -p 1000 -g src -b openmp
+$ pie -s test3_src.jpg -m test3_mask.jpg -t test3_tgt.jpg -o result3.png -h1 100 -w1 100 -n 5000 -p 0 -g max -b openmp
+$ pie -s test4_src.jpg -m test4_mask.jpg -t test4_tgt.jpg -o result4.png -h1 100 -w1 100 -n 5000 -p 0 -g max -b openmp
 $ pie -s test5_src.jpg -m test5_mask.png -t test5_tgt.jpg -o result5.png -h0 -70 -w0 0 -h1 50 -w1 0 -n 25000 -p 0 -g max -b openmp
-$ pie -s test6_src.png -m test6_mask.png -t test6_tgt.png -o result6.png -h0 0 -w0 0 -h1 50 -w1 0 -n 25000 -p 0 -g max -b openmp
-$ pie -s test7_src.jpg -t test7_tgt.jpg -o result.png -h0 0 -w0 0 -h1 50 -w1 30 -n 25000 -p 0 -g max -b openmp
-$ pie -s test8_src.jpg -t test8_tgt.jpg -o result.png -h0 0 -w0 0 -h1 90 -w1 90 -n 25000 -p 0 -g max -b openmp
+$ pie -s test6_src.png -m test6_mask.png -t test6_tgt.png -o result6.png -h1 50 -w1 0 -n 25000 -p 0 -g max -b openmp
+$ pie -s test7_src.jpg -t test7_tgt.jpg -o result.png -h1 50 -w1 30 -n 25000 -p 0 -g max -b openmp
+$ pie -s test8_src.jpg -t test8_tgt.jpg -o result.png -h1 90 -w1 90 -n 25000 -p 0 -g max -b openmp
 ```
 
 ```bash
-$ mpiexec -np 6 pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 100 -n 25000 -p 0 -b mpi --mpi-sync-interval 100
+$ mpiexec -np 6 pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h1 100 -w1 100 -n 25000 -p 0 -b mpi --mpi-sync-interval 100
 ```
 
 Grid size:
 ```bash
-$ pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 100 -n 25000 -p 0 -b openmp -c 12 --method grid --grid-x 16 --grid-y 16
-$ pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h0 0 -w0 0 -h1 100 -w1 100 -n 25000 -p 0 -b cuda --method grid --grid-x 4 --grid-y 128
+$ pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h1 100 -w1 100 -n 25000 -p 0 -b openmp -c 12 --method grid --grid-x 16 --grid-y 16
+$ pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h1 100 -w1 100 -n 25000 -p 0 -b cuda --method grid --grid-x 4 --grid-y 128
 ```
 
 ## Implemented Method
