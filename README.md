@@ -6,7 +6,7 @@
 
 This project aims to provide a fast poisson image editing algorithm that can utilize multi-core CPU or GPU to handle a high-resolution image input.
 
-## Installation & Usage
+## Installation
 
 ### Linux/macOS
 
@@ -32,13 +32,13 @@ $ pip install .
 After installation, you can use `--check-backend` option to verify:
 
 ```bash
-$ pie --check-backend                                                                                
+$ pie --check-backend
 ['numpy', 'taichi-cpu', 'taichi-gpu', 'taichi-cuda', 'gcc', 'openmp', 'mpi', 'cuda']
 ```
 
 The above output shows all extensions have successfully installed.
 
-### Usage
+## Usage
 
 We have prepared the test suite to run:
 
@@ -78,6 +78,8 @@ We have provided 6 backends. Each backend has two solvers: EquSolver and GridSol
 
 For different backend usage, please check out the related documentation under [docs/backend](/docs/backend).
 
+For other usage, please run `pie -h` to see the hint.
+
 ## Benchmark Result
 
 Coming soon! We are the fastest.
@@ -87,16 +89,12 @@ Coming soon! We are the fastest.
 The general idea is to keep most of gradient in source image, while matching the boundary of source image and target image pixels.
 
 The gradient is computed by
-$$
-\nabla(x,y)=4I(x,y)-I(x-1,y)-I(x,y-1)-I(x+1,y)-I(x,y+1)
-$$
-After computing the gradient in source image, the algorithm tries to solve the following problem: given the gradient and the boundary value, calculate the approximate solution that meets the requirement, i.e., to keep target image's gradient as similar as the source image. It can be formulated as
-$$
-A\vec{x}=\vec{b}
-$$
-where $A\in \mathbb{R}^{N\times N}$, $\vec{x}\in \mathbb{R}^N$, $\vec{b}\in \mathbb{R}^N$, where $N$ is the number of pixels in the mask. Therefore, $A$ is a giant sparse matrix because each line of A only contains at most 5 non-zero value.
 
-$N$ is always a large number, i.e., greater than 50k, so the Gauss-Jordan Elimination cannot be directly applied here because of the high time complexity $O(N^3)$. People always use [Jacobi Method](https://en.wikipedia.org/wiki/Jacobi_method) to solve the problem. Thanks to the sparsity of matrix $A$, the overall time complexity is $O(MN)$ where $M$ is the number of iteration performed by poisson image editing.
+![](https://latex.codecogs.com/svg.latex?\nabla(x,y)=4I(x,y)-I(x-1,y)-I(x,y-1)-I(x+1,y)-I(x,y+1))
+
+After computing the gradient in source image, the algorithm tries to solve the following problem: given the gradient and the boundary value, calculate the approximate solution that meets the requirement, i.e., to keep target image's gradient as similar as the source image. It can be formulated as ![](https://latex.codecogs.com/svg.latex?{A\vec{x}=\vec{b}}), where ![](https://latex.codecogs.com/svg.latex?{A\in \mathbb{R}^{N\times N}, \vec{x}\in \mathbb{R}^N, \vec{b}\in \mathbb{R}^N}), where N is the number of pixels in the mask. Therefore, A is a giant sparse matrix because each line of A only contains at most 5 non-zero value.
+
+N is always a large number, i.e., greater than 50k, so the Gauss-Jordan Elimination cannot be directly applied here because of the high time complexity O(N^3). People always use [Jacobi Method](https://en.wikipedia.org/wiki/Jacobi_method) to solve the problem. Thanks to the sparsity of matrix A, the overall time complexity is O(MN) where M is the number of iteration performed by poisson image editing.
 
 This project parallelizes Jacobi method to speed up the computation. To our best knowledge, there's no public project on GitHub that implements poisson image editing with either OpenMP, or MPI, or CUDA. All of them can only handle a small size image workload.
 
@@ -104,7 +102,7 @@ This project parallelizes Jacobi method to speed up the computation. To our best
 
 Usage: `--method {equ,grid}`
 
-EquSolver directly constructs the equations $(4-A)\vec{x}=\vec{b}$ and use Jacobi method to get the solution via $\vec{x}' = (A\vec{x}+\vec{b}) / 4$.
+EquSolver directly constructs the equations ![](https://latex.codecogs.com/svg.latex?(4-A)\vec{x}=\vec{b}) and use Jacobi method to get the solution via ![](https://latex.codecogs.com/svg.latex?{\vec{x}' = (A\vec{x} + \vec{b})/4).
 
 GridSolver uses the same Jacobi iteration, however, it keeps the 2D structure of the original image instead of re-labeling the pixel in the mask. It may take some advantage when the mask region covers all of the image, because in this case GridSolver can save 4 read instructions by directly calculating the neighborhood's coordinate. However, our preliminary result shows GridSolver is slower than EquSolver in general.
 
