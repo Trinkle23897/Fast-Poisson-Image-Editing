@@ -82,7 +82,7 @@ For other usage, please run `pie -h` to see the hint.
 
 ## Benchmark Result
 
-Coming soon! We are the fastest.
+See [docs/benchmark](docs/benchmark).
 
 ## Algorithm Detail
 
