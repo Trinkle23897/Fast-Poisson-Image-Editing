@@ -2,7 +2,7 @@
 
 > Jiayi Weng (jiayiwen), Zixu Chen (zixuc)
 
-[Poisson image editing](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) is a technique that can blend two images together without artifacts. Given a source image and its corresponding mask, and a coordination on target image, this algorithm can always generate amazing result.
+[Poisson Image Editing](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) is a technique that can blend two images together without artifacts. Given a source image and its corresponding mask, and a coordination on target image, this algorithm can always generate amazing result.
 
 This project aims to provide a fast poisson image editing algorithm that can utilize multi-core CPU or GPU to handle a high-resolution image input.
 
@@ -29,52 +29,14 @@ $ pip install .
 | MPI                                            | :heavy_check_mark: | :heavy_check_mark: | `pip install mpi4py` and mpicc (on macOS: `brew install open-mpi`) |
 | [Taichi](https://github.com/taichi-dev/taichi) | :heavy_check_mark: | :heavy_check_mark: | `pip install taichi`                                         |
 
-After installation, you can check `backend` option to verify, e.g.,
+After installation, you can use `--check-backend` option to verify:
 
 ```bash
-$ pie -h
-[Taichi] version 0.9.2, llvm 10.0.0, commit 7a4d73cd, linux, python 3.6.8
-usage: pie [-h] [-v]
-           [-b {numpy,taichi-cpu,taichi-gpu,taichi-cuda,gcc,openmp,mpi}]
-           [-c CPU] [-z BLOCK_SIZE] [--method {equ,grid}] [-s SOURCE]
-           [-m MASK] [-t TARGET] [-o OUTPUT] [-h0 H0] [-w0 W0] [-h1 H1]
-           [-w1 W1] [-g {max,src,avg}] [-n N] [-p P]
-           [--mpi-sync-interval MPI_SYNC_INTERVAL] [--grid-x GRID_X]
-           [--grid-y GRID_Y]
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -v, --version         show the version and exit
-  -b {numpy,taichi-cpu,taichi-gpu,taichi-cuda,gcc,openmp,mpi}, --backend {numpy,taichi-cpu,taichi-gpu,taichi-cuda,gcc,openmp,mpi}
-                        backend choice
-  -c CPU, --cpu CPU     number of CPU used
-  -z BLOCK_SIZE, --block-size BLOCK_SIZE
-                        cuda block size (only for equ solver)
-  --method {equ,grid}   how to parallelize computation
-  -s SOURCE, --source SOURCE
-                        source image filename
-  -m MASK, --mask MASK  mask image filename (default is to use the whole
-                        source image)
-  -t TARGET, --target TARGET
-                        target image filename
-  -o OUTPUT, --output OUTPUT
-                        output image filename
-  -h0 H0                mask position (height) on source image
-  -w0 W0                mask position (width) on source image
-  -h1 H1                mask position (height) on target image
-  -w1 W1                mask position (width) on target image
-  -g {max,src,avg}, --gradient {max,src,avg}
-                        how to calculate gradient for PIE
-  -n N                  how many iteration would you perfer, the more the
-                        better
-  -p P                  output result every P iteration
-  --mpi-sync-interval MPI_SYNC_INTERVAL
-                        MPI sync iteration interval
-  --grid-x GRID_X       x axis stride for grid solver
-  --grid-y GRID_Y       y axis stride for grid solver
+$ pie --check-backend                                                                                
+['numpy', 'taichi-cpu', 'taichi-gpu', 'taichi-cuda', 'gcc', 'openmp', 'mpi', 'cuda']
 ```
 
-The above output shows all extensions have successfully installed via `--backend {numpy,taichi-cpu,taichi-gpu,taichi-cuda,gcc,openmp,mpi}`.
+The above output shows all extensions have successfully installed.
 
 ### Usage
 
@@ -116,6 +78,10 @@ We have provided 6 backends. Each backend has two solvers: EquSolver and GridSol
 
 For different backend usage, please check out the related documentation under [docs/backend](/docs/backend).
 
+## Benchmark Result
+
+Coming soon! We are the fastest.
+
 ## Algorithm detail
 
 The general idea is to keep most of gradient in source image, while matching the boundary of source image and target image pixels.
@@ -144,7 +110,7 @@ GridSolver uses the same Jacobi iteration, however, it keeps the 2D structure of
 
 ### Gradient for PIE
 
-The [PIE paper](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) states some variant of gradient calculation such as Equ. 12: using the maximum gradient to perform "mixed seamless cloning". We also provide such an option in our program, by `-g {max,src,avg}`:
+The [PIE paper](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) states some variant of gradient calculation such as Equ. 12: using the maximum gradient to perform "mixed seamless cloning". We also provide such an option in our program, with `-g {max,src,avg}`:
 
 - `src`: only use the gradient from source image
 - `avg`: use the average gradient of source image and target image
@@ -152,9 +118,10 @@ The [PIE paper](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) states 
 
 The following example shows the difference between these three methods:
 
-| #    | target image                                                 | src                       | avg                       | max                         |
+| #    | target image                                                 | --gradient=src            | --gradient=avg            | --gradient=max              |
 | ---- | ------------------------------------------------------------ | ------------------------- | ------------------------- | --------------------------- |
 | 3    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/bg.jpg) | ![](docs/image/3gsrc.jpg) | ![](docs/image/3gavg.jpg) | ![](docs/image/result3.jpg) |
+| 4    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/bg.jpg) | ![](docs/image/4gsrc.jpg) | ![](docs/image/4gavg.jpg) | ![](docs/image/result4.jpg) |
 | 8    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/dst.jpg) | ![](docs/image/8gsrc.jpg) | ![](docs/image/8gavg.jpg) | ![](docs/image/result8.jpg) |
 
 ## Miscellaneous (for 15-618 course project)

@@ -19,6 +19,9 @@ def get_args() -> argparse.Namespace:
     "-v", "--version", action="store_true", help="show the version and exit"
   )
   parser.add_argument(
+    "--check-backend", action="store_true", help="print all available backends"
+  )
+  parser.add_argument(
     "-b",
     "--backend",
     type=str,
@@ -105,6 +108,9 @@ def main() -> None:
   args = get_args()
   if args.version:
     print(pie.__version__)
+    exit(0)
+  if args.check_backend:
+    print(ALL_BACKEND)
     exit(0)
 
   proc: BaseProcessor
