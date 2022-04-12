@@ -110,20 +110,11 @@ Here are the results:
 | 7    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case0/src.jpg) | /                                                            | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case0/dst.jpg) | ![](docs/image/result7.jpg) |
 | 8    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/src.jpg) | /                                                            | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/dst.jpg) | ![](docs/image/result8.jpg) |
 
+### Backend and Solver
 
+We have provided 6 backends. Each backend has two solvers: EquSolver and GridSolver. You can find the difference between these two solvers in the next section.
 
-
-```bash
-$ mpiexec -np 6 pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h1 100 -w1 100 -n 25000 -p 0 -b mpi --mpi-sync-interval 100
-```
-
-Grid size:
-```bash
-$ pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h1 100 -w1 100 -n 25000 -p 0 -b openmp -c 12 --method grid --grid-x 16 --grid-y 16
-$ pie -s test3_src.jpg -t test3_tgt.jpg -o result.png -h1 100 -w1 100 -n 25000 -p 0 -b cuda --method grid --grid-x 4 --grid-y 128
-```
-
-
+For different backend usage, please check out the related documentation under [docs/backend](/docs/backend).
 
 ## Algorithm detail
 
@@ -141,32 +132,31 @@ where $A\in \mathbb{R}^{N\times N}$, $\vec{x}\in \mathbb{R}^N$, $\vec{b}\in \mat
 
 $N$ is always a large number, i.e., greater than 50k, so the Gauss-Jordan Elimination cannot be directly applied here because of the high time complexity $O(N^3)$. People always use [Jacobi Method](https://en.wikipedia.org/wiki/Jacobi_method) to solve the problem. Thanks to the sparsity of matrix $A$, the overall time complexity is $O(MN)$ where $M$ is the number of iteration performed by poisson image editing.
 
-In this project, we are going to parallelize Jacobi method to speed up the computation. To our best knowledge, there's no public project on GitHub that implements poisson image editing with either OpenMP, or MPI, or CUDA. All of them can only handle a small size image workload.
+This project parallelizes Jacobi method to speed up the computation. To our best knowledge, there's no public project on GitHub that implements poisson image editing with either OpenMP, or MPI, or CUDA. All of them can only handle a small size image workload.
+
+### EquSolver vs GridSolver
+
+Usage: `--method {equ,grid}`
+
+EquSolver directly constructs the equations $(4-A)\vec{x}=\vec{b}$ and use Jacobi method to get the solution via $\vec{x}' = (A\vec{x}+\vec{b}) / 4$.
+
+GridSolver uses the same Jacobi iteration, however, it keeps the 2D structure of the original image instead of re-labeling the pixel in the mask. It may take some advantage when the mask region covers all of the image, because in this case GridSolver can save 4 read instructions by directly calculating the neighborhood's coordinate. However, our preliminary result shows GridSolver is slower than EquSolver in general.
+
+### Gradient for PIE
+
+The [PIE paper](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) states some variant of gradient calculation such as Equ. 12: using the maximum gradient to perform "mixed seamless cloning". We also provide such an option in our program, by `-g {max,src,avg}`:
+
+- `src`: only use the gradient from source image
+- `avg`: use the average gradient of source image and target image
+- `max`: use the max gradient of source and target image
+
+The following example shows the difference between these three methods:
+
+| #    | target image                                                 | src                       | avg                       | max                         |
+| ---- | ------------------------------------------------------------ | ------------------------- | ------------------------- | --------------------------- |
+| 3    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/bg.jpg) | ![](docs/image/3gsrc.jpg) | ![](docs/image/3gavg.jpg) | ![](docs/image/result3.jpg) |
+| 8    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/dst.jpg) | ![](docs/image/8gsrc.jpg) | ![](docs/image/8gavg.jpg) | ![](docs/image/result8.jpg) |
 
 ## Miscellaneous (for 15-618 course project)
 
-Challenge: How to implement a fully-parallelized Jacobi Iteration to support a real-time image fusion?
-
-- Workload/constrains: similar to the 2d-grid example demonstrated in class.
-
-Resources:
-
-- Codebase: https://github.com/Trinkle23897/DIP2018/blob/master/1/image_fusion/image_fusion.cpp, written by Jiayi Weng, one of our group members
-- Computation Resources: GHC (CPU, GPU - 2080), PSC (CPU, GPU), laptop (CPU, GPU - 1060)
-
-Goals:
-
-- [x] 75%: implement one parallel version of PIE
-- [x] 100%: benchmark the algorithm with OpenMP/MPI/CUDA implementation
-- [ ] 125%: include a interactive python frontend that can demonstrate the result in a user-friendly style. Real-time computation on a single GTX-1060 Nvidia GPU.
-
-Platform choice:
-
-- OS: Linux, Ubuntu machine
-- Language: C++/CUDA for core development, Python for interactive frontend
-
-Schedule:
-
-- 3.28 - 4.9: implement parallel version of PIE (OpenMP, MPI, CUDA)
-- 4.11 - 4.22: benchmarking, optimizing, write Python interactive frontend
-- 4.25 - 5.5: write report
+See [docs/report](docs/report).
