@@ -87,7 +87,6 @@ class BaseProcessor(ABC):
       return (a + b) / 2
     # mix gradient, see Equ. 12 in PIE paper
     mask = np.abs(a) < np.abs(b)
-    # mask = (a ** 2).sum(-1) < (b ** 2).sum(-1)
     a[mask] = b[mask]
     return a
 
@@ -105,6 +104,7 @@ class BaseProcessor(ABC):
   def sync(self) -> None:
     self.core.sync()
 
+  @abstractmethod
   def step(self, iteration: int) -> Optional[Tuple[np.ndarray, np.ndarray]]:
     pass
 
@@ -242,7 +242,7 @@ class GridProcessor(BaseProcessor):
 
   def __init__(
     self,
-    gradient: str = "mix",
+    gradient: str = "max",
     backend: str = DEFAULT_BACKEND,
     n_cpu: int = CPU_COUNT,
     min_interval: int = 100,

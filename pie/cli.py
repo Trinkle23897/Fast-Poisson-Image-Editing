@@ -153,7 +153,8 @@ def main() -> None:
     if proc.root:
       result, err = proc.step(args.p)  # type: ignore
       print(f"Iter {i + args.p}, abs error {err}")
-      write_image(f"iter{i + args.p:05d}.png", result)
+      if i + args.p < args.n:
+        write_image(f"iter{i + args.p:05d}.png", result)
     else:
       proc.step(args.p)
 
