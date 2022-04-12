@@ -1,4 +1,4 @@
-# Poisson Image Editing - a parallel implementation
+# Poisson Image Editing - A Parallel Implementation
 
 > Jiayi Weng (jiayiwen), Zixu Chen (zixuc)
 
@@ -82,7 +82,7 @@ For different backend usage, please check out the related documentation under [d
 
 Coming soon! We are the fastest.
 
-## Algorithm detail
+## Algorithm Detail
 
 The general idea is to keep most of gradient in source image, while matching the boundary of source image and target image pixels.
 
