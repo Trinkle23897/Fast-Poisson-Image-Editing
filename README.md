@@ -20,14 +20,14 @@ $ pip install .
 
 ### Extensions
 
-| Backend                                        | EquSolver          | GridSolver         | Dependency for installation                                  |
-| ---------------------------------------------- | ------------------ | ------------------ | ------------------------------------------------------------ |
-| NumPy                                          | :heavy_check_mark: | :heavy_check_mark: | -                                                            |
-| GCC                                            | :heavy_check_mark: | :heavy_check_mark: | cmake, gcc                                                   |
-| OpenMP                                         | :heavy_check_mark: | :heavy_check_mark: | cmake, gcc (on macOS you need to change clang to gcc-11)     |
-| CUDA                                           | :heavy_check_mark: | :heavy_check_mark: | nvcc                                                         |
-| MPI                                            | :heavy_check_mark: | :heavy_check_mark: | `pip install mpi4py` and mpicc (on macOS: `brew install open-mpi`) |
-| [Taichi](https://github.com/taichi-dev/taichi) | :heavy_check_mark: | :heavy_check_mark: | `pip install taichi`                                         |
+| Backend                                        | EquSolver          | GridSolver         | Documentation                                                | Dependency for installation                                  |
+| ---------------------------------------------- | ------------------ | ------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| NumPy                                          | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#numpy) | -                                                            |
+| GCC                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#gcc) | cmake, gcc                                                   |
+| OpenMP                                         | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#openmp) | cmake, gcc (on macOS you need to change clang to gcc-11)     |
+| CUDA                                           | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#cuda) | nvcc                                                         |
+| MPI                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#mpi) | `pip install mpi4py` and mpicc (on macOS: `brew install open-mpi`) |
+| [Taichi](https://github.com/taichi-dev/taichi) | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#taichi) | `pip install taichi`                                         |
 
 After installation, you can use `--check-backend` option to verify:
 
