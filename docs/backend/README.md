@@ -168,7 +168,9 @@ Successfully write image to result.jpg
 
 ### Parallelization Strategy
 
+For [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/pie/core/openmp/equ.cc), it first groups the pixels into two folds by `(i+j)%2`, then parallelizes per-pixel iteration inside a group in each step. This strategy can utilize the thread-local accessment.
 
+For [GridSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/pie/core/openmp/grid.cc), it parallelizes per-grid iteration in each step, where the grid size is `(grid_x, grid_y)`. It simply iterates all pixels in each grid.
 
 ## MPI
 
@@ -200,7 +202,13 @@ Successfully write image to result.jpg
 
 ### Parallelization Strategy
 
+MPI cannot use share-memory program model, so that we need to reduce the amount of data for communication. Each process is only responsible for a part of computation, and synchronized with other process per `mpi_sync_interval` steps.
 
+For [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/pie/core/mpi/equ.cc), it's hard to say which part of the data should be exchanged to other process, since it relabels all pixels at the very beginning of this process. We use `MPI_Bcast` to force sync all data.
+
+For [GridSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/pie/core/mpi/grid.cc), we use line partition: process `i` exchanges its first and last line data with process `i-1` and `i+1` separately. This strategy has a continuous memory layout to exchange, thus has less overhead comparing with block partition.
+
+However, even if we don't use the synchronization in MPI (set `mpi_sync_interval` to be greater than the number of iteration), it is still slower than OpenMP and CUDA backends.
 
 ## CUDA
 
@@ -244,3 +252,8 @@ Successfully write image to result.jpg
 
 ### Parallelization Strategy
 
+The strategy used in CUDA backend is quite similar to OpenMP.
+
+For [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/pie/core/cuda/equ.cu), it performs equation-level parallelization.
+
+For [GridSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/pie/core/cuda/grid.cu), each grid with size `(grid_x, grid_y)` will be in the same block. A thread in a block performs iteration only for a single pixel.
