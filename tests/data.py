@@ -14,13 +14,13 @@ def download(links: List[Tuple[str, str]]) -> None:
 
 
 def square(x: int) -> None:
-  r = int((10**x)**.5 + 2)
+  r = int((4**x)**.5 + 2)
   img = np.zeros([r, r, 3], np.uint8) + 255
   cv2.imwrite(f"square{x}.png", img)
 
 
 def circle(x: int) -> None:
-  r = int(((10**x) * 4 / np.pi)**.5 + 2)
+  r = int(((4**x) * 4 / np.pi)**.5 + 2)
   img = np.zeros([r, r, 3], np.uint8)
   img = cv2.circle(
     img, (int(r / 2), int(r / 2)), int(r / 2), (255, 255, 255), -1
@@ -31,6 +31,6 @@ def circle(x: int) -> None:
 if __name__ == "__main__":
   links = [i.split() for i in open("data.txt").read().splitlines()]
   download(links)
-  for i in range(2, 7):
+  for i in range(6, 11):
     square(i)
     circle(i)
