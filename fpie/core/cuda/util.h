@@ -1,5 +1,5 @@
-#ifndef PIE_CORE_CUDA_UTIL_H_
-#define PIE_CORE_CUDA_UTIL_H_
+#ifndef FPIE_CORE_CUDA_UTIL_H_
+#define FPIE_CORE_CUDA_UTIL_H_
 
 #include <cuda.h>
 #include <cuda_runtime.h>
@@ -38,4 +38,4 @@ inline __host__ __device__ float3 fabs(float3 v) {
 
 void print_cuda_info();
 
-#endif  // PIE_CORE_CUDA_UTIL_H_
+#endif  // FPIE_CORE_CUDA_UTIL_H_

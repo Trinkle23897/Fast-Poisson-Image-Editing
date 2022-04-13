@@ -1,9 +1,9 @@
 import argparse
 import time
 
-import pie
-from pie.io import read_images, write_image
-from pie.process import (
+import fpie
+from fpie.io import read_images, write_image
+from fpie.process import (
   ALL_BACKEND,
   CPU_COUNT,
   DEFAULT_BACKEND,
@@ -107,7 +107,7 @@ def get_args() -> argparse.Namespace:
 def main() -> None:
   args = get_args()
   if args.version:
-    print(pie.__version__)
+    print(fpie.__version__)
     exit(0)
   if args.check_backend:
     print(ALL_BACKEND)

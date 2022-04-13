@@ -20,7 +20,7 @@ Python package version:
 To run and get the time spend:
 
 ```bash
-$ pie -s $NAME.png -t $NAME.png -m $NAME.png -o result.png -n 5000 -b $BACKEND --method $METHOD ...
+$ fpie -s $NAME.png -t $NAME.png -m $NAME.png -o result.png -n 5000 -b $BACKEND --method $METHOD ...
 ```
 
 The following table shows the best performance of corresponding backend choice, i.e., tuning other parameters on square10/circle10 and apply them to other tests, instead of using the default value.
@@ -31,26 +31,26 @@ The benchmark commands for squareX and circleX:
 
 ```bash
 # numpy
-pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b numpy --method equ
-pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b numpy --method equ
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b numpy --method equ
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b numpy --method equ
 # gcc
-pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b gcc --method equ
-pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b gcc --method equ
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b gcc --method equ
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b gcc --method equ
 # openmp
-pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b openmp --method equ -c 8
-pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b openmp --method equ -c 8
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b openmp --method equ -c 8
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b openmp --method equ -c 8
 # mpi
-mpiexec -np 8 pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b mpi --method equ --mpi-sync-interval 100
-mpiexec -np 8 pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b mpi --method equ --mpi-sync-interval 100
+mpiexec -np 8 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b mpi --method equ --mpi-sync-interval 100
+mpiexec -np 8 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b mpi --method equ --mpi-sync-interval 100
 # cuda
-pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method equ -z 1024
-pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method equ -z 1024
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method equ -z 1024
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method equ -z 1024
 # taichi-cpu
-pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-cpu --method equ -c 8
-pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-cpu --method equ -c 8
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-cpu --method equ -c 8
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-cpu --method equ -c 8
 # taichi-gpu
-pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-gpu --method equ -z 1024
-pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-gpu --method equ -z 1024
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-gpu --method equ -z 1024
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-gpu --method equ -z 1024
 ```
 
 | EquSolver  | square6 | square7 | square8 | square9 | square10 |
@@ -81,26 +81,26 @@ The benchmark commands for squareX and circleX:
 
 ```bash
 # numpy
-pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b numpy --method grid
-pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b numpy --method grid
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b numpy --method grid
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b numpy --method grid
 # gcc
-pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b gcc --method grid --grid-x 8 --grid-y 8
-pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b gcc --method grid --grid-x 8 --grid-y 8 
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b gcc --method grid --grid-x 8 --grid-y 8
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b gcc --method grid --grid-x 8 --grid-y 8 
 # openmp
-pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b openmp --method grid -c 8 --grid-x 2 --grid-y 16
-pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b openmp --method grid -c 8 --grid-x 2 --grid-y 16
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b openmp --method grid -c 8 --grid-x 2 --grid-y 16
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b openmp --method grid -c 8 --grid-x 2 --grid-y 16
 # mpi
-mpiexec -np 8 pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b mpi --method grid --mpi-sync-interval 100
-mpiexec -np 8 pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b mpi --method grid --mpi-sync-interval 100
+mpiexec -np 8 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b mpi --method grid --mpi-sync-interval 100
+mpiexec -np 8 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b mpi --method grid --mpi-sync-interval 100
 # cuda
-pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method grid -z 1024 --grid-x 2 --grid-y 128
-pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method grid -z 1024 --grid-x 2 --grid-y 128
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method grid -z 1024 --grid-x 2 --grid-y 128
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method grid -z 1024 --grid-x 2 --grid-y 128
 # taichi-cpu
-pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-cpu --method grid -c 8 --grid-x 16 --grid-y 64
-pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-cpu --method grid -c 8 --grid-x 16 --grid-y 64
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-cpu --method grid -c 8 --grid-x 16 --grid-y 64
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-cpu --method grid -c 8 --grid-x 16 --grid-y 64
 # taichi-gpu
-pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-gpu --method grid -z 1024 --grid-x 16 --grid-y 64
-pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-gpu --method grid -z 1024 --grid-x 16 --grid-y 64
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-gpu --method grid -z 1024 --grid-x 16 --grid-y 64
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-gpu --method grid -z 1024 --grid-x 16 --grid-y 64
 ```
 | GridSolver | square6 | square7 | square8 | square9 | square10 |
 | ---------- | ------- | ------- | ------- | ------- | -------- |

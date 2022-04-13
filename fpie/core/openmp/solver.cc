@@ -1,6 +1,6 @@
 #include "helper.h"
 
-PYBIND11_MODULE(pie_core_openmp, m) {
+PYBIND11_MODULE(core_openmp, m) {
   py::class_<OpenMPEquSolver>(m, "EquSolver")
       .def(py::init<int>())
       .def("partition", &OpenMPEquSolver::partition)

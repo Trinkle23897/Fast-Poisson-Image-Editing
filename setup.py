@@ -10,7 +10,7 @@ from setuptools.command.build_ext import build_ext
 
 def get_version() -> str:
   # https://packaging.python.org/guides/single-sourcing-package-version/
-  with open(os.path.join("pie", "__init__.py"), "r") as f:
+  with open(os.path.join("fpie", "__init__.py"), "r") as f:
     init = f.read().split()
   return init[init.index("__version__") + 2][1:-1]
 
@@ -59,7 +59,7 @@ def get_description():
 
 
 setup(
-  name="pie",
+  name="fpie",
   version=get_version(),
   author="Jiayi Weng",
   author_email="trinkle23897@gmail.com",
@@ -69,9 +69,9 @@ setup(
   long_description=get_description(),
   long_description_content_type="text/markdown",
   packages=find_packages(exclude=["tests", "tests.*"]),
-  package_data={"pie": ["pie/pie_core_*.so"]},
+  package_data={"fpie": ["fpie/core_*.so"]},
   entry_points={
-    "console_scripts": ["pie=pie.cli:main"],
+    "console_scripts": ["fpie=fpie.cli:main"],
   },
   install_requires=[
     "opencv-python>=4.5",
@@ -86,7 +86,7 @@ setup(
     "mpi": ["mpi4py>=3.1"],
     "taichi": ["taichi>=0.8"],
   },
-  ext_modules=[CMakeExtension("pie")],
+  ext_modules=[CMakeExtension("fpie")],
   cmdclass={"build_ext": CMakeBuild},
   zip_safe=False,
   classifiers=[

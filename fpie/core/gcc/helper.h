@@ -1,26 +1,20 @@
-#ifndef PIE_CORE_MPI_HELPER_H_
-#define PIE_CORE_MPI_HELPER_H_
+#ifndef FPIE_CORE_GCC_HELPER_H_
+#define FPIE_CORE_GCC_HELPER_H_
 
 #include <tuple>
 
 #include "solver.h"
 
-class MPIEquSolver : public EquSolver {
+class GCCEquSolver : public EquSolver {
   int* maskbuf;
   unsigned char* imgbuf;
-  float* tmp;
-  int proc_id, n_proc, min_interval, *offset;
 
  public:
-  explicit MPIEquSolver(int min_interval);
-
-  ~MPIEquSolver();
+  GCCEquSolver();
+  ~GCCEquSolver();
 
   py::array_t<int> partition(py::array_t<int> mask);
-
   void post_reset();
-
-  void sync();
 
   inline void update_equation(int i);
 
@@ -30,18 +24,14 @@ class MPIEquSolver : public EquSolver {
       int iteration);
 };
 
-class MPIGridSolver : public GridSolver {
+class GCCGridSolver : public GridSolver {
   unsigned char* imgbuf;
-  int proc_id, n_proc, min_interval, *offset;
 
  public:
-  explicit MPIGridSolver(int min_interval);
-
-  ~MPIGridSolver();
+  GCCGridSolver(int grid_x, int grid_y);
+  ~GCCGridSolver();
 
   void post_reset();
-
-  void sync();
 
   inline void update_equation(int id);
 
@@ -51,4 +41,4 @@ class MPIGridSolver : public GridSolver {
       int iteration);
 };
 
-#endif  // PIE_CORE_MPI_HELPER_H_
+#endif  // FPIE_CORE_GCC_HELPER_H_

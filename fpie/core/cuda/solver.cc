@@ -4,7 +4,7 @@
 
 #include "helper.h"
 
-PYBIND11_MODULE(pie_core_cuda, m) {
+PYBIND11_MODULE(core_cuda, m) {
   py::class_<CudaEquSolver>(m, "EquSolver")
       .def(py::init<int>())
       .def("partition", &CudaEquSolver::partition)

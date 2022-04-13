@@ -1,5 +1,5 @@
-#ifndef PIE_CORE_SOLVER_H_
-#define PIE_CORE_SOLVER_H_
+#ifndef FPIE_CORE_SOLVER_H_
+#define FPIE_CORE_SOLVER_H_
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -147,4 +147,4 @@ class GridSolver {
   }
 };
 
-#endif  // PIE_CORE_SOLVER_H_
+#endif  // FPIE_CORE_SOLVER_H_

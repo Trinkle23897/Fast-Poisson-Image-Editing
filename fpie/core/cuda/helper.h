@@ -1,5 +1,5 @@
-#ifndef PIE_CORE_CUDA_HELPER_H_
-#define PIE_CORE_CUDA_HELPER_H_
+#ifndef FPIE_CORE_CUDA_HELPER_H_
+#define FPIE_CORE_CUDA_HELPER_H_
 
 #include <tuple>
 
@@ -43,4 +43,4 @@ class CudaGridSolver : public GridSolver {
       int iteration);
 };
 
-#endif  // PIE_CORE_CUDA_HELPER_H_
+#endif  // FPIE_CORE_CUDA_HELPER_H_

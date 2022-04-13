@@ -29,5 +29,5 @@ jobs:
       run: |
         cd tests
         python3 data.py benchmark
-        pie --check-backend
-        pie -s circle6.png -t circle6.png -m circle6.png -o result.png -n 5000
+        fpie --check-backend
+        fpie -s circle6.png -t circle6.png -m circle6.png -o result.png -n 5000

@@ -1,6 +1,6 @@
 #include "helper.h"
 
-PYBIND11_MODULE(pie_core_mpi, m) {
+PYBIND11_MODULE(core_mpi, m) {
   py::class_<MPIEquSolver>(m, "EquSolver")
       .def(py::init<int>())
       .def("partition", &MPIEquSolver::partition)

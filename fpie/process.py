@@ -4,49 +4,47 @@ from typing import Any, Optional, Tuple
 
 import numpy as np
 
-from pie import np_solver
+from fpie import np_solver
 
 CPU_COUNT = os.cpu_count() or 1
 DEFAULT_BACKEND = "numpy"
 ALL_BACKEND = ["numpy"]
 
 try:
-  from pie import taichi_solver
+  from fpie import taichi_solver
   ALL_BACKEND += ["taichi-cpu", "taichi-gpu", "taichi-cuda"]
   DEFAULT_BACKEND = "taichi-cpu"
 except ImportError:
   taichi_solver = None  # type: ignore
 
 try:
-  from pie import pie_core_gcc  # type: ignore
+  from fpie import core_gcc  # type: ignore
   DEFAULT_BACKEND = "gcc"
   ALL_BACKEND.append("gcc")
 except ImportError:
-  pie_core_gcc = None
+  core_gcc = None
 
 try:
-  from pie import pie_core_openmp  # type: ignore
+  from fpie import core_openmp  # type: ignore
   DEFAULT_BACKEND = "openmp"
   ALL_BACKEND.append("openmp")
 except ImportError:
-  pie_core_openmp = None
+  core_openmp = None
 
 try:
   from mpi4py import MPI
-except ImportError:
-  MPI = None  # type: ignore
 
-try:
-  from pie import pie_core_mpi  # type: ignore
+  from fpie import core_mpi  # type: ignore
   ALL_BACKEND.append("mpi")
 except ImportError:
-  pie_core_mpi = None
+  MPI = None  # type: ignore
+  core_mpi = None
 
 try:
-  from pie import pie_core_cuda  # type: ignore
+  from fpie import core_cuda  # type: ignore
   ALL_BACKEND.append("cuda")
 except ImportError:
-  pie_core_cuda = None
+  core_cuda = None
 
 
 class BaseProcessor(ABC):
@@ -126,14 +124,14 @@ class EquProcessor(BaseProcessor):
     if backend == "numpy":
       core = np_solver.EquSolver()
     elif backend == "gcc":
-      core = pie_core_gcc.EquSolver()
-    elif backend == "openmp" and pie_core_openmp is not None:
-      core = pie_core_openmp.EquSolver(n_cpu)
-    elif backend == "mpi" and pie_core_mpi is not None:
-      core = pie_core_mpi.EquSolver(min_interval)
+      core = core_gcc.EquSolver()
+    elif backend == "openmp" and core_openmp is not None:
+      core = core_openmp.EquSolver(n_cpu)
+    elif backend == "mpi" and core_mpi is not None:
+      core = core_mpi.EquSolver(min_interval)
       rank = MPI.COMM_WORLD.Get_rank()
-    elif backend == "cuda" and pie_core_cuda is not None:
-      core = pie_core_cuda.EquSolver(block_size)
+    elif backend == "cuda" and core_cuda is not None:
+      core = core_cuda.EquSolver(block_size)
     elif backend.startswith("taichi") and taichi_solver is not None:
       core = taichi_solver.EquSolver(backend, n_cpu, block_size)
 
@@ -256,14 +254,14 @@ class GridProcessor(BaseProcessor):
     if backend == "numpy":
       core = np_solver.GridSolver()
     elif backend == "gcc":
-      core = pie_core_gcc.GridSolver(grid_x, grid_y)
-    elif backend == "openmp" and pie_core_openmp is not None:
-      core = pie_core_openmp.GridSolver(grid_x, grid_y, n_cpu)
-    elif backend == "mpi" and pie_core_mpi is not None:
-      core = pie_core_mpi.GridSolver(min_interval)
+      core = core_gcc.GridSolver(grid_x, grid_y)
+    elif backend == "openmp" and core_openmp is not None:
+      core = core_openmp.GridSolver(grid_x, grid_y, n_cpu)
+    elif backend == "mpi" and core_mpi is not None:
+      core = core_mpi.GridSolver(min_interval)
       rank = MPI.COMM_WORLD.Get_rank()
-    elif backend == "cuda" and pie_core_cuda is not None:
-      core = pie_core_cuda.GridSolver(grid_x, grid_y)
+    elif backend == "cuda" and core_cuda is not None:
+      core = core_cuda.GridSolver(grid_x, grid_y)
     elif backend.startswith("taichi") and taichi_solver is not None:
       core = taichi_solver.GridSolver(
         grid_x, grid_y, backend, n_cpu, block_size

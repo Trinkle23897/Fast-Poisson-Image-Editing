@@ -1,6 +1,6 @@
 #include "helper.h"
 
-PYBIND11_MODULE(pie_core_gcc, m) {
+PYBIND11_MODULE(core_gcc, m) {
   py::class_<GCCEquSolver>(m, "EquSolver")
       .def(py::init<>())
       .def("partition", &GCCEquSolver::partition)

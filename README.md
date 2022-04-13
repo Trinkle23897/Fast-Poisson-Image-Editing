@@ -1,7 +1,7 @@
 # Poisson Image Editing - A Parallel Implementation
 
-[![PyPI](https://img.shields.io/pypi/v/pie)](https://pypi.org/project/pie/)
-[![Unittest](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/workflows/Unittest/badge.svg?branch=master)](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/actions)
+[![PyPI](https://img.shields.io/pypi/v/fpie)](https://pypi.org/project/fpie/)
+[![Unittest](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/workflows/Test/badge.svg?branch=main)](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/actions)
 
 > Jiayi Weng (jiayiwen), Zixu Chen (zixuc)
 
@@ -17,6 +17,9 @@ This project aims to provide a fast poisson image editing algorithm (based on [J
 # install cmake >= 3.4
 # if you don't have sudo (like GHC), install cmake from source
 # on macOS, type `brew install cmake`
+$ pip install fpie
+
+# or install from source
 $ pip install .
 ```
 
@@ -34,7 +37,7 @@ $ pip install .
 After installation, you can use `--check-backend` option to verify:
 
 ```bash
-$ pie --check-backend
+$ fpie --check-backend
 ['numpy', 'taichi-cpu', 'taichi-gpu', 'taichi-cuda', 'gcc', 'openmp', 'mpi', 'cuda']
 ```
 
@@ -51,14 +54,14 @@ $ cd tests && ./data.py
 This script will download 8 tests from GitHub, and create 10 images for benchmarking (5 circle, 5 square). To run:
 
 ```bash
-$ pie -s test1_src.jpg -m test1_mask.jpg -t test1_tgt.jpg -o result1.jpg -h1 -150 -w1 -50 -n 5000 -g max
-$ pie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result2.jpg -h1 130 -w1 130 -n 5000 -g src
-$ pie -s test3_src.jpg -m test3_mask.jpg -t test3_tgt.jpg -o result3.jpg -h1 100 -w1 100 -n 5000 -g max
-$ pie -s test4_src.jpg -m test4_mask.jpg -t test4_tgt.jpg -o result4.jpg -h1 100 -w1 100 -n 5000 -g max
-$ pie -s test5_src.jpg -m test5_mask.png -t test5_tgt.jpg -o result5.jpg -h0 -70 -w0 0 -h1 50 -w1 0 -n 5000 -g max
-$ pie -s test6_src.png -m test6_mask.png -t test6_tgt.png -o result6.jpg -h1 50 -w1 0 -n 5000 -g max
-$ pie -s test7_src.jpg -t test7_tgt.jpg -o result7.jpg -h1 50 -w1 30 -n 5000 -g max
-$ pie -s test8_src.jpg -t test8_tgt.jpg -o result8.jpg -h1 90 -w1 90 -n 10000 -g max
+$ fpie -s test1_src.jpg -m test1_mask.jpg -t test1_tgt.jpg -o result1.jpg -h1 -150 -w1 -50 -n 5000 -g max
+$ fpie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result2.jpg -h1 130 -w1 130 -n 5000 -g src
+$ fpie -s test3_src.jpg -m test3_mask.jpg -t test3_tgt.jpg -o result3.jpg -h1 100 -w1 100 -n 5000 -g max
+$ fpie -s test4_src.jpg -m test4_mask.jpg -t test4_tgt.jpg -o result4.jpg -h1 100 -w1 100 -n 5000 -g max
+$ fpie -s test5_src.jpg -m test5_mask.png -t test5_tgt.jpg -o result5.jpg -h0 -70 -w0 0 -h1 50 -w1 0 -n 5000 -g max
+$ fpie -s test6_src.png -m test6_mask.png -t test6_tgt.png -o result6.jpg -h1 50 -w1 0 -n 5000 -g max
+$ fpie -s test7_src.jpg -t test7_tgt.jpg -o result7.jpg -h1 50 -w1 30 -n 5000 -g max
+$ fpie -s test8_src.jpg -t test8_tgt.jpg -o result8.jpg -h1 90 -w1 90 -n 10000 -g max
 ```
 
 Here are the results:
@@ -80,7 +83,7 @@ We have provided 6 backends. Each backend has two solvers: EquSolver and GridSol
 
 For different backend usage, please check out the related documentation under [docs/backend](/docs/backend).
 
-For other usage, please run `pie -h` to see the hint.
+For other usage, please run `fpie -h` to see the hint.
 
 ## Benchmark Result
 
