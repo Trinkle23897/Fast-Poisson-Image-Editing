@@ -35,7 +35,8 @@ pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ope
 # mpi
 
 # cuda
-
+pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method equ -z 1024
+pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method equ -z 1024
 # taichi-cpu
 
 # taichi-gpu
@@ -49,7 +50,7 @@ pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ope
 | GCC        | 0.08s   | 0.30s   | 1.21s   | 4.99s   | 22.00s   |
 | OpenMP     | 0.02s   | 0.04s   | 0.14s   | 0.59s   | 8.63s    |
 | MPI        |         |         |         |         |          |
-| CUDA       |         |         |         |         |          |
+| CUDA       | 0.02s   | 0.02s   | 0.04s   | 0.19s   | 0.70s    |
 | Taichi-CPU |         |         |         |         |          |
 | Taichi-GPU |         |         |         |         |          |
 
@@ -60,7 +61,7 @@ pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ope
 | GCC        | 0.08s   | 0.31s   | 1.21s   | 4.84s   | 22.16s   |
 | OpenMP     | 0.02s   | 0.04s   | 0.13s   | 0.49s   | 8.07s    |
 | MPI        |         |         |         |         |          |
-| CUDA       |         |         |         |         |          |
+| CUDA       | 0.02s   | 0.02s   | 0.04s   | 0.19s   | 0.70s    |
 | Taichi-CPU |         |         |         |         |          |
 | Taichi-GPU |         |         |         |         |          |
 
@@ -77,11 +78,12 @@ pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b gcc
 pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b gcc --method grid --grid-x 8 --grid-y 8 
 # openmp
 pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b openmp --method grid -c 8 --grid-x 2 --grid-y 16
-
+pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b openmp --method grid -c 8 --grid-x 2 --grid-y 16
 # mpi
 
 # cuda
-
+pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method grid -z 1024 --grid-x 2 --grid-y 128
+pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method grid -z 1024 --grid-x 2 --grid-y 128
 # taichi-cpu
 
 # taichi-gpu
@@ -94,7 +96,7 @@ pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b ope
 | GCC        | 0.09s   | 0.35s   | 1.38s   | 5.53s   | 24.73s   |
 | OpenMP     | 0.02s   | 0.06s   | 0.20s   | 0.79s   | 5.44s    |
 | MPI        |         |         |         |         |          |
-| CUDA       |         |         |         |         |          |
+| CUDA       | 0.01s   | 0.02s   | 0.03s   | 0.15s   | 0.57s    |
 | Taichi-CPU |         |         |         |         |          |
 | Taichi-GPU |         |         |         |         |          |
 
@@ -103,9 +105,9 @@ pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b ope
 | # of vars  | 5476    | 21316   | 84100   | 335241  | 1338649  |
 | NumPy      | 0.85s   | 3.09s   | 13.20s  | 56.32s  | 224.65s  |
 | GCC        | 0.10s   | 0.38s   | 1.48s   | 5.83s   | 25.06s   |
-| OpenMP     |         |         |         |         |          |
+| OpenMP     | 0.02s   | 0.07s   | 0.40s   | 0.99s   | 6.36s    |
 | MPI        |         |         |         |         |          |
-| CUDA       |         |         |         |         |          |
+| CUDA       | 0.01s   | 0.01s   | 0.03s   | 0.15s   | 0.59s    |
 | Taichi-CPU |         |         |         |         |          |
 | Taichi-GPU |         |         |         |         |          |
 
