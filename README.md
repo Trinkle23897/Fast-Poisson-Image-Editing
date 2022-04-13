@@ -1,5 +1,8 @@
 # Poisson Image Editing - A Parallel Implementation
 
+[![PyPI](https://img.shields.io/pypi/v/pie)](https://pypi.org/project/pie/)
+[![Unittest](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/workflows/Unittest/badge.svg?branch=master)](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/actions)
+
 > Jiayi Weng (jiayiwen), Zixu Chen (zixuc)
 
 [Poisson Image Editing](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) is a technique that can blend two images together without artifacts. Given a source image and its corresponding mask, and a coordination on target image, this algorithm can always generate amazing result.
@@ -14,7 +17,6 @@ This project aims to provide a fast poisson image editing algorithm (based on [J
 # install cmake >= 3.4
 # if you don't have sudo (like GHC), install cmake from source
 # on macOS, type `brew install cmake`
-$ git submodule update --init --recursive  # this is to initialize pybind11
 $ pip install .
 ```
 
