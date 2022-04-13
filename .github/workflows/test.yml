@@ -1,11 +1,14 @@
-name: Lint
+name: Test
 
 on: [push, pull_request]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
+  test:
+    runs-on: ${{ matrix.os }}
     if: "!contains(github.event.head_commit.message, 'ci skip')"
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
     steps:
     - name: Cancel previous run
       uses: styfle/cancel-workflow-action@0.9.1
@@ -18,19 +21,13 @@ jobs:
         python-version: 3.8
     - name: Upgrade pip
       run: |
-        python -m pip install --upgrade pip
-    - name: flake8
+        python -m pip install --upgrade pip setuptools wheel
+    - name: Install
       run: |
-        make flake8
-    - name: isort and yapf
+        python -m pip install .
+    - name: Test
       run: |
-        make py-format
-    - name: cpplint
-      run: |
-        make cpplint
-    - name: clang-format
-      run: |
-        make clang-format
-    - name: cmake-format
-      run: |
-        make cmake-format
+        cd tests
+        python3 data.py benchmark
+        pie --check-backend
+        pie -s circle6.png -t circle6.png -m circle6.png -o result.png -n 5000

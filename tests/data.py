@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 from typing import List, Tuple
 
 import cv2
@@ -29,8 +30,9 @@ def circle(x: int) -> None:
 
 
 if __name__ == "__main__":
-  links = [i.split() for i in open("data.txt").read().splitlines()]
-  download(links)
+  if sys.argv[-1] != "benchmark":
+    links = [i.split() for i in open("data.txt").read().splitlines()]
+    download(links)
   for i in range(6, 11):
     square(i)
     circle(i)
