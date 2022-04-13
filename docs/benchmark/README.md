@@ -38,9 +38,11 @@ pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ope
 pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method equ -z 1024
 pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method equ -z 1024
 # taichi-cpu
-
+pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-cpu --method equ -c 8
+pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-cpu --method equ -c 8
 # taichi-gpu
-
+pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-gpu --method equ -z 1024
+pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-gpu --method equ -z 1024
 ```
 
 | EquSolver  | square6 | square7 | square8 | square9 | square10 |
@@ -51,8 +53,8 @@ pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cud
 | OpenMP     | 0.02s   | 0.04s   | 0.14s   | 0.59s   | 8.63s    |
 | MPI        |         |         |         |         |          |
 | CUDA       | 0.02s   | 0.02s   | 0.04s   | 0.19s   | 0.70s    |
-| Taichi-CPU |         |         |         |         |          |
-| Taichi-GPU |         |         |         |         |          |
+| Taichi-CPU | 0.44s   | 0.52s   | 0.77s   | 1.94s   | 12.87s   |
+| Taichi-GPU | 0.57s   | 0.58s   | 0.60s   | 0.83s   | 1.44s    |
 
 | EquSolver  | circle6 | circle7 | circle8 | circle9 | circle10 |
 | ---------- | ------- | ------- | ------- | ------- | -------- |
@@ -62,8 +64,8 @@ pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cud
 | OpenMP     | 0.02s   | 0.04s   | 0.13s   | 0.49s   | 8.07s    |
 | MPI        |         |         |         |         |          |
 | CUDA       | 0.02s   | 0.02s   | 0.04s   | 0.19s   | 0.70s    |
-| Taichi-CPU |         |         |         |         |          |
-| Taichi-GPU |         |         |         |         |          |
+| Taichi-CPU | 0.45s   | 0.52s   | 0.77s   | 1.84s   | 12.88s   |
+| Taichi-GPU | 0.57s   | 0.57s   | 0.60s   | 0.79s   | 1.44s    |
 
 ### GridSolver
 
@@ -85,9 +87,11 @@ pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ope
 pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method grid -z 1024 --grid-x 2 --grid-y 128
 pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method grid -z 1024 --grid-x 2 --grid-y 128
 # taichi-cpu
-
+pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-cpu --method grid -c 8 --grid-x 16 --grid-y 64
+pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-cpu --method grid -c 8 --grid-x 16 --grid-y 64
 # taichi-gpu
-
+pie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-gpu --method grid -z 1024 --grid-x 16 --grid-y 64
+pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-gpu --method grid -z 1024 --grid-x 16 --grid-y 64
 ```
 | GridSolver | square6 | square7 | square8 | square9 | square10 |
 | ---------- | ------- | ------- | ------- | ------- | -------- |
@@ -97,8 +101,8 @@ pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cud
 | OpenMP     | 0.02s   | 0.06s   | 0.20s   | 0.79s   | 5.44s    |
 | MPI        |         |         |         |         |          |
 | CUDA       | 0.01s   | 0.02s   | 0.03s   | 0.15s   | 0.57s    |
-| Taichi-CPU |         |         |         |         |          |
-| Taichi-GPU |         |         |         |         |          |
+| Taichi-CPU | 0.60s   | 0.79s   | 1.56s   | 4.90s   | 26.45s   |
+| Taichi-GPU | 0.63s   | 0.64s   | 0.70s   | 1.02s   | 2.15s    |
 
 | GridSolver | circle6 | circle7 | circle8 | circle9 | circle10 |
 | ---------- | ------- | ------- | ------- | ------- | -------- |
@@ -108,8 +112,8 @@ pie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cud
 | OpenMP     | 0.02s   | 0.07s   | 0.40s   | 0.99s   | 6.36s    |
 | MPI        |         |         |         |         |          |
 | CUDA       | 0.01s   | 0.01s   | 0.03s   | 0.15s   | 0.59s    |
-| Taichi-CPU |         |         |         |         |          |
-| Taichi-GPU |         |         |         |         |          |
+| Taichi-CPU | 0.62s   | 0.78s   | 1.60s   | 5.32s   | 27.67s   |
+| Taichi-GPU | 0.63s   | 0.64s   | 0.71s   | 1.05s   | 2.25s    |
 
 
 ## Per backend performance
