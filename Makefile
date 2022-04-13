@@ -2,7 +2,7 @@ SHELL        = /bin/bash
 PROJECT_NAME = pie
 PYTHON_FILES = $(shell find setup.py pie tests -type f -name "*.py")
 CPP_FILES    = $(shell find pie -type f -name "*.h" -o -name "*.cc" -o -name "*.cu")
-CMAKE_FILES  = $(shell find pie -type f -name "CMakeLists.txt") CMakeLists.txt
+CMAKE_FILES  = $(shell find pie -type f -name "CMakeLists.txt") $(shell find cmake_modules -type f) CMakeLists.txt
 COMMIT_HASH  = $(shell git log -1 --format=%h)
 
 # installation

@@ -30,6 +30,7 @@ class CMakeBuild(build_ext):
 
   def build_extension(self, ext):
     extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+    extdir = os.path.join(extdir, ext.name)
 
     # required for auto-detection of auxiliary "native" libs
     if not extdir.endswith(os.path.sep):
@@ -85,12 +86,7 @@ setup(
     "mpi": ["mpi4py>=3.1"],
     "taichi": ["taichi>=0.8"],
   },
-  ext_modules=[
-    CMakeExtension("pie/pie_core_gcc"),
-    CMakeExtension("pie/pie_core_openmp"),
-    CMakeExtension("pie/pie_core_mpi"),
-    CMakeExtension("pie/pie_core_cuda"),
-  ],
+  ext_modules=[CMakeExtension("pie")],
   cmdclass={"build_ext": CMakeBuild},
   zip_safe=False,
   classifiers=[
