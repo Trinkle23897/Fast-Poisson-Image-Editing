@@ -11,4 +11,5 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3")
 
 pybind11_add_module(core_cuda solver.cc equ.cu grid.cu utils.cu)
+set_target_properties(core_cuda PROPERTIES CUDA_ARCHITECTURES OFF)
 target_link_libraries(core_cuda PRIVATE cudart)
