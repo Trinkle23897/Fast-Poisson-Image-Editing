@@ -77,13 +77,23 @@ Here are the results:
 | 7    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case0/src.jpg) | /                                                            | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case0/dst.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result7.jpg) |
 | 8    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/src.jpg) | /                                                            | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/dst.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result8.jpg) |
 
+### GUI
+
+```bash
+$ fpie-gui -s test3_src.jpg -t test3_tgt.jpg -o result.jpg -b cuda
+```
+
+![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/gui.png)
+
+We provide a simple GUI for real-time seamless cloning. You need to use your mouse to draw a rectangle on top of the source image, and click a point in target image, after that the result will automatically be generated. In the end, you can press ESC to end the program.
+
 ### Backend and Solver
 
 We have provided 6 backends. Each backend has two solvers: EquSolver and GridSolver. You can find the difference between these two solvers in the next section.
 
 For different backend usage, please check out the related documentation under [docs/backend](/docs/backend).
 
-For other usage, please run `fpie -h` to see the hint.
+For other usage, please run `fpie -h` or `fpie-gui -h` to see the hint.
 
 ## Benchmark Result
 

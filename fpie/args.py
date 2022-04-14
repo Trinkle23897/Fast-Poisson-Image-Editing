@@ -1,4 +1,5 @@
 import argparse
+import os
 
 import fpie
 from fpie.process import ALL_BACKEND, CPU_COUNT, DEFAULT_BACKEND
@@ -12,6 +13,9 @@ def get_args(gen_type: str) -> argparse.Namespace:
   parser.add_argument(
     "--check-backend", action="store_true", help="print all available backends"
   )
+  if gen_type == "gui" and "mpi" in ALL_BACKEND:
+    # gui doesn't support MPI backend
+    ALL_BACKEND.remove("mpi")
   parser.add_argument(
     "-b",
     "--backend",
@@ -83,12 +87,13 @@ def get_args(gen_type: str) -> argparse.Namespace:
     parser.add_argument(
       "-p", type=int, help="output result every P iteration", default=0
     )
-  parser.add_argument(
-    "--mpi-sync-interval",
-    type=int,
-    help="MPI sync iteration interval",
-    default=100,
-  )
+  if "mpi" in ALL_BACKEND:
+    parser.add_argument(
+      "--mpi-sync-interval",
+      type=int,
+      help="MPI sync iteration interval",
+      default=100,
+    )
   parser.add_argument(
     "--grid-x", type=int, help="x axis stride for grid solver", default=8
   )
@@ -103,5 +108,12 @@ def get_args(gen_type: str) -> argparse.Namespace:
   if args.check_backend:
     print(ALL_BACKEND)
     exit(0)
+  if not os.path.exists(args.source):
+    print(f"Source image {args.source} not found.")
+    exit(1)
+  if not os.path.exists(args.target):
+    print(f"Target image {args.target} not found.")
+    exit(1)
+  args.mpi_sync_interval = getattr(args, "mpi_sync_interval", 0)
 
   return args
