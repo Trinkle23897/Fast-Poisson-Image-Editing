@@ -1,15 +1,11 @@
-#ifndef FPIE_CORE_SOLVER_H_
-#define FPIE_CORE_SOLVER_H_
+#ifndef FPIE_CORE_BASE_SOLVER_H_
+#define FPIE_CORE_BASE_SOLVER_H_
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include <chrono>
 #include <tuple>
-
-typedef std::chrono::high_resolution_clock Clock;
-typedef std::chrono::duration<double> dsec;
 
 namespace py = pybind11;
 
@@ -147,4 +143,4 @@ class GridSolver {
   }
 };
 
-#endif  // FPIE_CORE_SOLVER_H_
+#endif  // FPIE_CORE_BASE_SOLVER_H_

@@ -1,4 +1,4 @@
-#include "helper.h"
+#include "solver.h"
 
 PYBIND11_MODULE(core_mpi, m) {
   py::class_<MPIEquSolver>(m, "EquSolver")

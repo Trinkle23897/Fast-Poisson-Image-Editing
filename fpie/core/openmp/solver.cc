@@ -1,4 +1,4 @@
-#include "helper.h"
+#include "solver.h"
 
 PYBIND11_MODULE(core_openmp, m) {
   py::class_<OpenMPEquSolver>(m, "EquSolver")

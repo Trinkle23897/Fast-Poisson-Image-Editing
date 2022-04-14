@@ -1,6 +1,6 @@
 #include <cstdio>
 
-#include "util.h"
+#include "utils.h"
 
 void print_cuda_info() {
   int deviceCount = 0;

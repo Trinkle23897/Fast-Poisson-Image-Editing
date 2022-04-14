@@ -1,6 +1,6 @@
 #include <omp.h>
 
-#include "helper.h"
+#include "solver.h"
 
 OpenMPGridSolver::OpenMPGridSolver(int grid_x, int grid_y, int n_cpu)
     : imgbuf(NULL), tmp(NULL), GridSolver(grid_x, grid_y) {

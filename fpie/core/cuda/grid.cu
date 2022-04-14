@@ -1,4 +1,5 @@
-#include "helper.h"
+#include "solver.h"
+#include "utils.h"
 
 CudaGridSolver::CudaGridSolver(int grid_x, int grid_y)
     : imgbuf(NULL),

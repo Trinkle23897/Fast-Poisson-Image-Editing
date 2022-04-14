@@ -1,6 +1,6 @@
 #include <omp.h>
 
-#include "helper.h"
+#include "solver.h"
 
 OpenMPEquSolver::OpenMPEquSolver(int n_cpu)
     : maskbuf(NULL), imgbuf(NULL), tmp(NULL), n_mid(0), EquSolver() {

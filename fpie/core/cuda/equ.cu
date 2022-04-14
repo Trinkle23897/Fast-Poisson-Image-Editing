@@ -1,4 +1,5 @@
-#include "helper.h"
+#include "solver.h"
+#include "utils.h"
 
 CudaEquSolver::CudaEquSolver(int block_size)
     : maskbuf(NULL),

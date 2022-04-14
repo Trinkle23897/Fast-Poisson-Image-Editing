@@ -1,4 +1,4 @@
-#include "helper.h"
+#include "solver.h"
 
 PYBIND11_MODULE(core_gcc, m) {
   py::class_<GCCEquSolver>(m, "EquSolver")

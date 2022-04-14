@@ -1,4 +1,4 @@
-#include "helper.h"
+#include "solver.h"
 
 GCCEquSolver::GCCEquSolver() : maskbuf(NULL), imgbuf(NULL), EquSolver() {}
 

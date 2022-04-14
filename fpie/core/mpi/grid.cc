@@ -1,6 +1,6 @@
 #include <mpi.h>
 
-#include "helper.h"
+#include "solver.h"
 
 MPIGridSolver::MPIGridSolver(int min_interval)
     : imgbuf(NULL), min_interval(min_interval), GridSolver(0, 0) {

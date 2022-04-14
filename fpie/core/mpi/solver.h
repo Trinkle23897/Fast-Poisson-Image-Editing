@@ -1,22 +1,26 @@
-#ifndef FPIE_CORE_OPENMP_HELPER_H_
-#define FPIE_CORE_OPENMP_HELPER_H_
+#ifndef FPIE_CORE_MPI_SOLVER_H_
+#define FPIE_CORE_MPI_SOLVER_H_
 
 #include <tuple>
 
-#include "solver.h"
+#include "base_solver.h"
 
-class OpenMPEquSolver : public EquSolver {
+class MPIEquSolver : public EquSolver {
   int* maskbuf;
   unsigned char* imgbuf;
   float* tmp;
-  int n_mid;
+  int proc_id, n_proc, min_interval, *offset;
 
  public:
-  explicit OpenMPEquSolver(int n_cpu);
-  ~OpenMPEquSolver();
+  explicit MPIEquSolver(int min_interval);
+
+  ~MPIEquSolver();
 
   py::array_t<int> partition(py::array_t<int> mask);
+
   void post_reset();
+
+  void sync();
 
   inline void update_equation(int i);
 
@@ -26,15 +30,18 @@ class OpenMPEquSolver : public EquSolver {
       int iteration);
 };
 
-class OpenMPGridSolver : public GridSolver {
+class MPIGridSolver : public GridSolver {
   unsigned char* imgbuf;
-  float* tmp;
+  int proc_id, n_proc, min_interval, *offset;
 
  public:
-  OpenMPGridSolver(int grid_x, int grid_y, int n_cpu);
-  ~OpenMPGridSolver();
+  explicit MPIGridSolver(int min_interval);
+
+  ~MPIGridSolver();
 
   void post_reset();
+
+  void sync();
 
   inline void update_equation(int id);
 
@@ -44,4 +51,4 @@ class OpenMPGridSolver : public GridSolver {
       int iteration);
 };
 
-#endif  // FPIE_CORE_OPENMP_HELPER_H_
+#endif  // FPIE_CORE_MPI_SOLVER_H_

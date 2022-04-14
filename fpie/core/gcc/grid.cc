@@ -1,4 +1,4 @@
-#include "helper.h"
+#include "solver.h"
 
 GCCGridSolver::GCCGridSolver(int grid_x, int grid_y)
     : imgbuf(NULL), GridSolver(grid_x, grid_y) {}

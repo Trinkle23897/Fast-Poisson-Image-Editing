@@ -1,6 +1,6 @@
 #include <mpi.h>
 
-#include "helper.h"
+#include "solver.h"
 
 MPIEquSolver::MPIEquSolver(int min_interval)
     : maskbuf(NULL),

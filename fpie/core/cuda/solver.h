@@ -1,10 +1,9 @@
-#ifndef FPIE_CORE_CUDA_HELPER_H_
-#define FPIE_CORE_CUDA_HELPER_H_
+#ifndef FPIE_CORE_CUDA_SOLVER_H_
+#define FPIE_CORE_CUDA_SOLVER_H_
 
 #include <tuple>
 
-#include "solver.h"
-#include "util.h"
+#include "base_solver.h"
 
 class CudaEquSolver : public EquSolver {
  protected:
@@ -43,4 +42,4 @@ class CudaGridSolver : public GridSolver {
       int iteration);
 };
 
-#endif  // FPIE_CORE_CUDA_HELPER_H_
+#endif  // FPIE_CORE_CUDA_SOLVER_H_
