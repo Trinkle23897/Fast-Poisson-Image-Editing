@@ -71,7 +71,7 @@ setup(
   packages=find_packages(exclude=["tests", "tests.*"]),
   package_data={"fpie": ["fpie/core_*.so"]},
   entry_points={
-    "console_scripts": ["fpie=fpie.cli:main"],
+    "console_scripts": ["fpie=fpie.cli:main", "fpie-gui=fpie.gui:main"],
   },
   install_requires=[
     "opencv-python>=4.5",

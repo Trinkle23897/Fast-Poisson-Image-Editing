@@ -38,7 +38,7 @@ After installation, you can use `--check-backend` option to verify:
 
 ```bash
 $ fpie --check-backend
-['numpy', 'taichi-cpu', 'taichi-gpu', 'taichi-cuda', 'gcc', 'openmp', 'mpi', 'cuda']
+['numpy', 'taichi-cpu', 'taichi-gpu', 'gcc', 'openmp', 'mpi', 'cuda']
 ```
 
 The above output shows all extensions have successfully installed.

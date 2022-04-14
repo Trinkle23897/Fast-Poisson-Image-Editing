@@ -12,7 +12,7 @@ ALL_BACKEND = ["numpy"]
 
 try:
   from fpie import taichi_solver
-  ALL_BACKEND += ["taichi-cpu", "taichi-gpu", "taichi-cuda"]
+  ALL_BACKEND += ["taichi-cpu", "taichi-gpu"]
   DEFAULT_BACKEND = "taichi-cpu"
 except ImportError:
   taichi_solver = None  # type: ignore

@@ -81,10 +81,10 @@ Successfully write image to result.jpg
 
 ## Taichi
 
-[Taichi](https://github.com/taichi-dev/taichi) is an open-source, imperative, parallel programming language for high-performance numerical computation. We provide 3 choices: `taichi-cpu` for CPU-level parallelization, `taichi-gpu` and `taichi-cuda` for GPU-level parallelization. You can install taichi via `pip install taichi`.
+[Taichi](https://github.com/taichi-dev/taichi) is an open-source, imperative, parallel programming language for high-performance numerical computation. We provide 2 choices: `taichi-cpu` for CPU-level parallelization, `taichi-gpu` for GPU-level parallelization. You can install taichi via `pip install taichi`.
 
 - For `taichi-cpu`: use `-c` or `--cpu` to determine how many CPUs it will use;
-- For `taichi-gpu` or `taichi-cuda`: use `-z` or `--block-size` to determine the number of threads used in a block.
+- For `taichi-gpu`: use `-z` or `--block-size` to determine the number of threads used in a block.
 
 The parallelization strategy for Taichi backend is written by Taichi itself.
 
