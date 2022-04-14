@@ -1,4 +1,5 @@
 find_package(CUDA REQUIRED)
+enable_language(CUDA)
 
 find_package(PythonInterp 3 REQUIRED)
 set(PYTHON_VERSION_FULL ${PYTHON_VERSION_STRING})
@@ -9,7 +10,5 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3")
 
-cuda_add_library(cudasolver SHARED equ.cu grid.cu util.cu)
-
-pybind11_add_module(core_cuda solver.cc)
-target_link_libraries(core_cuda PRIVATE cudasolver)
+pybind11_add_module(core_cuda solver.cu equ.cu grid.cu util.cu)
+target_link_libraries(core_cuda PRIVATE cudart)

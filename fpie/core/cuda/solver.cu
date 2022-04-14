@@ -1,8 +1,7 @@
-#include "solver.h"
-
 #include <tuple>
 
 #include "helper.h"
+#include "solver.h"
 
 PYBIND11_MODULE(core_cuda, m) {
   py::class_<CudaEquSolver>(m, "EquSolver")

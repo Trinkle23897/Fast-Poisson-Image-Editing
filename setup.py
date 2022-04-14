@@ -84,7 +84,7 @@ setup(
       "mypy",
     ],
     "mpi": ["mpi4py>=3.1"],
-    "taichi": ["taichi>=0.8"],
+    "taichi": ["taichi>=1.0"],
   },
   ext_modules=[CMakeExtension("fpie")],
   cmdclass={"build_ext": CMakeBuild},
