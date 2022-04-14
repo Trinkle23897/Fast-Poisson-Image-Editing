@@ -75,8 +75,8 @@ class GUI(object):
   ) -> None:
     if event == cv2.EVENT_LBUTTONDOWN:
       self.gui_tgt = self.tgt.copy()
-      mask_x = self.x1 - self.x0
-      mask_y = self.y1 - self.y0
+      mask_x = min(self.x1 - self.x0, self.tgt.shape[1] - x)
+      mask_y = min(self.y1 - self.y0, self.tgt.shape[0] - y)
       cv2.rectangle(
         self.gui_tgt,
         (x, y),
