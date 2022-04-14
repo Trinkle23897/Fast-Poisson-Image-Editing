@@ -68,7 +68,6 @@ class GUI(object):
       )
       self.x0, self.x1 = min(self.x0, self.x1), max(self.x0, self.x1)
       self.y0, self.y1 = min(self.y0, self.y1), max(self.y0, self.y1)
-      print(self.x0, self.y0, self.x1, self.y1)
 
   def targetCallback(
     self, event: int, x: int, y: int, flags: int, param: Any
@@ -87,7 +86,10 @@ class GUI(object):
       mask = np.zeros([mask_y, mask_x], np.uint8) + 255
       self.proc.reset(self.src, mask, self.tgt, (self.y0, self.x0), (y, x))
       self.gui_out, err = self.proc.step(self.n)  # type: ignore
-      print(f"Abs Error: {err}")
+      print(
+        f"Args: -h0 {self.y0} -w0 {self.x0} -h1 {y} -w1 {x}\t"
+        f"mask size {mask.shape}, abs Error: {err}"
+      )
 
 
 def main() -> None:

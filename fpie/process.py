@@ -42,6 +42,7 @@ except ImportError:
 
 try:
   from fpie import core_cuda  # type: ignore
+  DEFAULT_BACKEND = "cuda"
   ALL_BACKEND.append("cuda")
 except ImportError:
   core_cuda = None
