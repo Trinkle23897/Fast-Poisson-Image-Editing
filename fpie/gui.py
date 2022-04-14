@@ -30,9 +30,9 @@ class GUI(object):
     self.proc = proc
 
     cv2.namedWindow("source")
-    cv2.setMouseCallback("source", self.sourceCallback)
+    cv2.setMouseCallback("source", self.source_callback)
     cv2.namedWindow("target")
-    cv2.setMouseCallback("target", self.targetCallback)
+    cv2.setMouseCallback("target", self.target_callback)
     self.gui_src = self.src.copy()
     self.gui_tgt = self.tgt.copy()
     self.gui_out = self.tgt.copy()
@@ -47,7 +47,7 @@ class GUI(object):
     write_image(self.out, self.gui_out)
     cv2.destroyAllWindows()
 
-  def sourceCallback(
+  def source_callback(
     self, event: int, x: int, y: int, flags: int, param: Any
   ) -> None:
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -69,7 +69,7 @@ class GUI(object):
       self.x0, self.x1 = min(self.x0, self.x1), max(self.x0, self.x1)
       self.y0, self.y1 = min(self.y0, self.y1), max(self.y0, self.y1)
 
-  def targetCallback(
+  def target_callback(
     self, event: int, x: int, y: int, flags: int, param: Any
   ) -> None:
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -87,7 +87,7 @@ class GUI(object):
       self.proc.reset(self.src, mask, self.tgt, (self.y0, self.x0), (y, x))
       self.gui_out, err = self.proc.step(self.n)  # type: ignore
       print(
-        f"Args: -h0 {self.y0} -w0 {self.x0} -h1 {y} -w1 {x}\t"
+        f"Args: -h0 {self.y0} -w0 {self.x0} -h1 {y} -w1 {x} -n {self.n}\t"
         f"mask size {mask.shape}, abs Error: {err}"
       )
 
