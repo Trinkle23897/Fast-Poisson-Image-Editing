@@ -114,5 +114,9 @@ def main() -> None:
       args.grid_x,
       args.grid_y,
     )
+  print(
+    f"Successfully initialize PIE {args.method} solver "
+    f"with {args.backend} backend"
+  )
 
   GUI(proc, args.source, args.target, args.output, args.n)

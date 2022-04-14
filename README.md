@@ -80,12 +80,12 @@ Here are the results:
 ### GUI
 
 ```bash
-$ fpie-gui -s test3_src.jpg -t test3_tgt.jpg -o result.jpg -b cuda
+$ fpie-gui -s test3_src.jpg -t test3_tgt.jpg -o result.jpg -b cuda -n 10000
 ```
 
 ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/gui.png)
 
-We provide a simple GUI for real-time seamless cloning. You need to use your mouse to draw a rectangle on top of the source image, and click a point in target image, after that the result will automatically be generated. In the end, you can press ESC to end the program.
+We provide a simple GUI for real-time seamless cloning. You need to use your mouse to draw a rectangle on top of the source image, and click a point in target image. After that the result will automatically be generated. In the end, you can press ESC to terminate the program.
 
 ### Backend and Solver
 
