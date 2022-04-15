@@ -14,10 +14,12 @@ class EquSolver(object):
     self.block_dim = block_size
     ti.init(arch=getattr(ti, backend.split("-")[-1]))
     self.N = 0
+    self.fb: ti.FieldsBuilder
+    self.fbst: ti._snode.snode_tree.SNodeTree
+    self.terr = ti.field(ti.f32, (3,))
     self.tA = ti.field(ti.i32)
     self.tB = ti.field(ti.f32)
     self.tX = ti.field(ti.f32)
-    self.terr = ti.field(ti.f32, (3,))
     self.tmp = ti.field(ti.f32)
 
   def partition(self, mask: np.ndarray) -> np.ndarray:
@@ -29,10 +31,19 @@ class EquSolver(object):
     self.A = A
     self.B = B
     self.X = X
-    ti.root.dense(ti.ij, A.shape).place(self.tA)
-    ti.root.dense(ti.ij, B.shape).place(self.tB)
-    ti.root.dense(ti.ij, X.shape).place(self.tX)
-    ti.root.dense(ti.ij, X.shape).place(self.tmp)
+    if hasattr(self, "fbst"):
+      self.fbst.destroy()
+      self.tA = ti.field(ti.i32)
+      self.tB = ti.field(ti.f32)
+      self.tX = ti.field(ti.f32)
+      self.tmp = ti.field(ti.f32)
+    self.fb = ti.FieldsBuilder()
+    layout = self.fb.dense(ti.i, N)
+    layout.dense(ti.j, 4).place(self.tA)
+    layout.dense(ti.j, 3).place(self.tB)
+    layout.dense(ti.j, 3).place(self.tX)
+    layout.dense(ti.j, 3).place(self.tmp)
+    self.fbst = self.fb.finalize()
     self.tA.from_numpy(A)
     self.tB.from_numpy(B)
     self.tX.from_numpy(X)
@@ -112,11 +123,13 @@ class GridSolver(object):
     self.parallelize = n_cpu
     self.block_dim = block_size
     ti.init(arch=getattr(ti, backend.split("-")[-1]))
+    self.fb: ti.FieldsBuilder
+    self.fbst: ti._snode.snode_tree.SNodeTree
+    self.terr = ti.field(ti.f32, (3,))
     self.tmask = ti.field(ti.i32)
     self.ttgt = ti.field(ti.f32)
     self.tgrad = ti.field(ti.f32)
     self.tmp = ti.field(ti.f32)
-    self.terr = ti.field(ti.f32, (3,))
 
   def reset(
     self, N: int, mask: np.ndarray, tgt: np.ndarray, grad: np.ndarray
@@ -132,15 +145,23 @@ class GridSolver(object):
 
     self.N, self.M = N, M = mask.shape
     bx, by = N // gx, M // gy
-    layout = ti.root.dense(ti.ij, (bx, by)).dense(ti.ij, (gx, gy))
     self.mask = mask
     self.tgt = tgt
     self.grad = grad
 
+    if hasattr(self, "fbst"):
+      self.fbst.destroy()
+      self.tmask = ti.field(ti.i32)
+      self.ttgt = ti.field(ti.f32)
+      self.tgrad = ti.field(ti.f32)
+      self.tmp = ti.field(ti.f32)
+    self.fb = ti.FieldsBuilder()
+    layout = self.fb.dense(ti.ij, (bx, by)).dense(ti.ij, (gx, gy))
     layout.place(self.tmask)
     layout.dense(ti.k, 3).place(self.ttgt)
     layout.dense(ti.k, 3).place(self.tgrad)
     layout.dense(ti.k, 3).place(self.tmp)
+    self.fbst = self.fb.finalize()
     self.tmask.from_numpy(mask)
     self.ttgt.from_numpy(tgt)
     self.tgrad.from_numpy(grad)

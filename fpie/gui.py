@@ -1,3 +1,4 @@
+import time
 from typing import Any
 
 import cv2
@@ -84,11 +85,13 @@ class GUI(object):
         1,
       )
       mask = np.zeros([mask_y, mask_x], np.uint8) + 255
+      t = time.time()
       self.proc.reset(self.src, mask, self.tgt, (self.y0, self.x0), (y, x))
       self.gui_out, err = self.proc.step(self.n)  # type: ignore
+      t = time.time() - t
       print(
-        f"Args: -h0 {self.y0} -w0 {self.x0} -h1 {y} -w1 {x} -n {self.n}\t"
-        f"mask size {mask.shape}, abs Error: {err}"
+        f"Time elapsed: {t:.2f}s, mask size {mask.shape}, abs Error: {err}\t"
+        f"Args: -n {self.n} -h0 {self.y0} -w0 {self.x0} -h1 {y} -w1 {x}"
       )
 
 
