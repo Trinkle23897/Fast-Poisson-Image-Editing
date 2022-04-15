@@ -212,9 +212,7 @@ However, even if we don't use the synchronization in MPI (set `mpi_sync_interval
 
 ## CUDA
 
-CUDA backend needs to specify the number of threads in one block it will use, with `-z` or `--block-size` option (default value is 1024).
-
-There's no other parameters for CUDA EquSolver:
+CUDA EquSolver needs to specify the number of threads in one block it will use, with `-z` or `--block-size` option (default value is 1024):
 
 ```bash
 $ fpie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result.jpg -h1 130 -w1 130 -n 5000 -g src -b cuda --method equ -z 256
@@ -232,10 +230,10 @@ Time elapsed: 0.06s
 Successfully write image to result.jpg
 ```
 
-For CUDA GridSolver, you also need to specify `--grid-x` and `--grid-y` described in the first section:
+For CUDA GridSolver, you also need to specify `--grid-x` and `--grid-y` described in the first section, instead of `-z`:
 
 ```bash
-$ fpie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result.jpg -h1 130 -w1 130 -n 5000 -g src -b cuda --method grid --grid-x 4 --grid-y 128 -z 1024
+$ fpie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result.jpg -h1 130 -w1 130 -n 5000 -g src -b cuda --method grid --grid-x 4 --grid-y 128
 ---------------------------------------------------------
 Found 1 CUDA devices
 Device 0: NVIDIA GeForce GTX 1060

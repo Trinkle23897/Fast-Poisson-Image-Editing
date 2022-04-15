@@ -103,8 +103,8 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b op
 mpiexec -np 8 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b mpi --method grid --mpi-sync-interval 100
 mpiexec -np 8 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b mpi --method grid --mpi-sync-interval 100
 # cuda
-fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method grid -z 1024 --grid-x 2 --grid-y 128
-fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method grid -z 1024 --grid-x 2 --grid-y 128
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method grid --grid-x 2 --grid-y 128
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method grid --grid-x 2 --grid-y 128
 # taichi-cpu
 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-cpu --method grid -c 8 --grid-x 8 --grid-y 128
 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-cpu --method grid -c 8 --grid-x 8 --grid-y 128
@@ -143,15 +143,48 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ta
 
 ## Per backend performance
 
-In this section, we will perform ablation studies on OpenMP/MPI/CUDA backend. We use circle9 with 25000 iterations as the experiment setting.
+In this section, we will perform ablation studies on OpenMP/MPI/CUDA backend. We use circle9/10 with 5000 iterations as the experiment setting.
 
 ### OpenMP
+
+![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/openmp.png)
 
 Command to run:
 
 ```bash
-
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b openmp --method equ -c 8
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b openmp --method grid -c 8 --grid-x 2 --grid-y 16
 ```
+
+<!--openmp-->
+
+| circle9   | 1       | 2       | 4       | 6       | 8       |
+| --------- | ------- | ------- | ------- | ------- | ------- |
+| # of vars | 262338  | 262338  | 262338  | 262338  | 262338  |
+| EquSolver | 3.5689s | 1.7679s | 0.8987s | 0.6344s | 0.4982s |
+
+<!--openmp-->
+
+| circle9    | 1       | 2       | 4       | 6       | 8       |
+| ---------- | ------- | ------- | ------- | ------- | ------- |
+| # of vars  | 335241  | 335241  | 335241  | 335241  | 335241  |
+| GridSolver | 6.2717s | 3.1530s | 1.8758s | 1.2955s | 0.9897s |
+
+<!--openmp-->
+
+| circle10  | 1        | 2       | 4       | 6       | 8       |
+| --------- | -------- | ------- | ------- | ------- | ------- |
+| # of vars | 1049486  | 1049486 | 1049486 | 1049486 | 1049486 |
+| EquSolver | 16.9218s | 9.2764s | 7.8828s | 8.2016s | 8.0285s |
+
+<!--openmp-->
+
+| circle10   | 1        | 2        | 4       | 6       | 8       |
+| ---------- | -------- | -------- | ------- | ------- | ------- |
+| # of vars  | 1338649  | 1338649  | 1338649 | 1338649 | 1338649 |
+| GridSolver | 26.7571s | 13.5669s | 8.2486s | 6.4654s | 6.2539s |
+
+<!--openmp-->
 
 ### MPI
 
