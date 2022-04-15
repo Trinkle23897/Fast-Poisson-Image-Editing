@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import math
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -15,7 +16,7 @@ data = {
 }
 
 
-def parse_benchmark_table(raw: str) -> np.ndarray:
+def parse_benchmark_table(raw: str) -> Tuple[np.ndarray, int, int]:
   global data
   raw = raw.replace("# of vars", "N").strip().splitlines()
   head, raw = raw[0], raw[2:]
@@ -33,15 +34,17 @@ def parse_benchmark_table(raw: str) -> np.ndarray:
     result[i[0].strip()] = np.array(a)
   base = result["N"]
   del result["N"]
+  t = []
   for k, v in result.items():
     v = v / base / 5000 * 1e9
+    t += v.tolist()
     for n, i in zip(base, v):
       data["Problem Size"].append(n)
       data["Time per Op (ns)"].append(i)
       data["Backend"].append(k)
       data["Method"].append(method)
       data["Problem Type"].append(prob_type)
-  return base.astype(int)
+  return base.astype(int), min(t), max(t)
 
 
 def main() -> None:
@@ -51,9 +54,6 @@ def main() -> None:
   base = []
   for i in [1, 2, 4, 5]:
     base.append(parse_benchmark_table(raw[i]))
-  tmin, tmax = min(data["Time per Op (ns)"]), max(data["Time per Op (ns)"])
-  y = np.logspace(math.log10(tmin), math.log10(tmax), 6)
-  y = (y * 100).astype(int) / 100.
   data = pd.DataFrame(data)
   print(data)
   g = sns.FacetGrid(
@@ -72,6 +72,9 @@ def main() -> None:
   g.add_legend(bbox_to_anchor=(0.52, 1.02), ncol=7)
   axes = g.axes.flatten()
   for ax, b in zip(axes, base):
+    b, tmin, tmax = b
+    y = np.logspace(math.log10(tmin), math.log10(tmax), 6)
+    y = (y * 100).astype(int) / 100.
     ax.set(xscale="log", yscale="log")
     ax.set(xticks=b, yticks=y)
     ax.set(xticklabels=b, yticklabels=y)
