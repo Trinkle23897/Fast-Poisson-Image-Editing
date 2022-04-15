@@ -188,12 +188,45 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b op
 
 ### MPI
 
+![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/mpi.png)
+
 
 Command to run:
 
 ```bash
+mpiexec -np 8 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b mpi --method equ --mpi-sync-interval 100
+mpiexec -np 8 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b mpi --method grid --mpi-sync-interval 100
 ```
 
+<!--mpi-->
+
+| circle9   | 1       | 2       | 4       | 6       | 8       |
+| --------- | ------- | ------- | ------- | ------- | ------- |
+| # of vars | 262338  | 262338  | 262338  | 262338  | 262338  |
+| EquSolver | 4.9217s | 2.4655s | 1.3378s | 0.9310s | 0.7996s |
+
+<!--mpi-->
+
+| circle9    | 1       | 2       | 4       | 6       | 8       |
+| ---------- | ------- | ------- | ------- | ------- | ------- |
+| # of vars  | 335241  | 335241  | 335241  | 335241  | 335241  |
+| GridSolver | 6.2136s | 3.1381s | 1.8817s | 1.3124s | 0.9822s |
+
+<!--mpi-->
+
+| circle10  | 1        | 2        | 4       | 6       | 8       |
+| --------- | -------- | -------- | ------- | ------- | ------- |
+| # of vars | 1049486  | 1049486  | 1049486 | 1049486 | 1049486 |
+| EquSolver | 22.1275s | 11.5566s | 8.2541s | 8.2208s | 8.3238s |
+
+<!--mpi-->
+
+| circle10   | 1        | 2        | 4       | 6       | 8       |
+| ---------- | -------- | -------- | ------- | ------- | ------- |
+| # of vars  | 1338649  | 1338649  | 1338649 | 1338649 | 1338649 |
+| GridSolver | 26.8360s | 13.6866s | 8.3945s | 6.6107s | 5.8929s |
+
+<!--mpi-->
 
 ### CUDA
 

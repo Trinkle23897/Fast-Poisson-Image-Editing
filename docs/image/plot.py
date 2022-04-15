@@ -117,8 +117,11 @@ def ablation(backend, new_col):
   base = []
   for i in [1, 2, 3, 4]:
     base.append(parse_table(raw[i], backend, new_col))
-  tmin = min([i[1] for i in base])
-  tmax = max([i[2] for i in base])
+  # tmin = min([i[1] for i in base])
+  # tmax = max([i[2] for i in base])
+  # print(tmin, tmax)
+  tmin = 0.35
+  tmax = 4.4
   data = pd.DataFrame(data)
   print(data)
   g = sns.FacetGrid(
@@ -151,3 +154,4 @@ def ablation(backend, new_col):
 if __name__ == '__main__':
   benchmark()
   ablation("openmp", "# of Threads")
+  ablation("mpi", "# of Workers")
