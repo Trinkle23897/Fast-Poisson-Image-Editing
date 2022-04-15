@@ -97,6 +97,8 @@ For other usage, please run `fpie -h` or `fpie-gui -h` to see the hint.
 
 ## Benchmark Result
 
+![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/benchmark.png)
+
 See [docs/benchmark](docs/benchmark).
 
 ## Algorithm Detail
