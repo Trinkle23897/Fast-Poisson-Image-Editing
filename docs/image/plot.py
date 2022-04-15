@@ -115,13 +115,19 @@ def ablation(backend, new_col):
   sep = f"<!--{backend}-->"
   raw = open("../benchmark/README.md").read().split(sep)
   base = []
-  for i in [1, 2, 3, 4]:
-    base.append(parse_table(raw[i], backend, new_col))
-  # tmin = min([i[1] for i in base])
-  # tmax = max([i[2] for i in base])
-  # print(tmin, tmax)
-  tmin = 0.35
-  tmax = 4.4
+  if backend != "cuda":
+    for i in [1, 2, 3, 4]:
+      base.append(parse_table(raw[i], backend, new_col))
+    # tmin = min([i[1] for i in base])
+    # tmax = max([i[2] for i in base])
+    # print(tmin, tmax)
+    tmin = 0.35
+    tmax = 4.4
+  else:
+    for i in [1, 2]:
+      base.append(parse_table(raw[i], backend, new_col))
+    tmin = min([i[1] for i in base])
+    tmax = max([i[2] for i in base])
   data = pd.DataFrame(data)
   print(data)
   g = sns.FacetGrid(
@@ -140,9 +146,14 @@ def ablation(backend, new_col):
   axes = g.axes.flatten()
   for ax, b in zip(axes, base):
     b = b[0]
-    y = np.logspace(math.log10(tmin), math.log10(tmax), 6)
-    y = (y * 100).astype(int) / 100.
-    ax.set(xscale="log", yscale="log")
+    if backend != "cuda":
+      y = np.logspace(math.log10(tmin), math.log10(tmax), 6)
+      y = (y * 100).astype(int) / 100.
+      ax.set(xscale="log", yscale="log")
+    else:
+      y = np.linspace(tmin, tmax, 6)
+      y = (y * 1000).astype(int) / 1000.
+      ax.set(xscale="log")
     ax.set(xticks=b, yticks=y)
     ax.set(xticklabels=b, yticklabels=y)
     title = ax.get_title()
@@ -155,3 +166,4 @@ if __name__ == '__main__':
   benchmark()
   ablation("openmp", "# of Threads")
   ablation("mpi", "# of Workers")
+  ablation("cuda", "# of Threads per Block")

@@ -47,8 +47,8 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b op
 mpiexec -np 8 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b mpi --method equ --mpi-sync-interval 100
 mpiexec -np 8 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b mpi --method equ --mpi-sync-interval 100
 # cuda
-fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method equ -z 1024
-fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method equ -z 1024
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method equ -z 256
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method equ -z 256
 # taichi-cpu
 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-cpu --method equ -c 8
 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-cpu --method equ -c 8
@@ -66,7 +66,7 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ta
 | GCC        | 0.0740s | 0.3013s | 1.2061s  | 5.0351s  | 22.0276s  |
 | OpenMP     | 0.0176s | 0.0423s | 0.1447s  | 0.5835s  | 8.6203s   |
 | MPI        | 0.0127s | 0.0488s | 0.1757s  | 0.8253s  | 8.3310s   |
-| CUDA       | 0.0168s | 0.0179s | 0.0357s  | 0.1931s  | 0.7037s   |
+| CUDA       | 0.0112s | 0.0141s | 0.0272s  | 0.1835s  | 0.6967s   |
 | Taichi-CPU | 0.4437s | 0.5178s | 0.7667s  | 1.9061s  | 13.2009s  |
 | Taichi-GPU | 0.5730s | 0.5727s | 0.6022s  | 0.8101s  | 1.4430s   |
 
@@ -79,7 +79,7 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ta
 | GCC        | 0.0764s | 0.3062s | 1.2115s  | 4.9785s  | 22.1516s  |
 | OpenMP     | 0.0179s | 0.0391s | 0.1301s  | 0.5177s  | 8.2778s   |
 | MPI        | 0.0131s | 0.0494s | 0.1767s  | 0.8155s  | 8.3823s   |
-| CUDA       | 0.0171s | 0.0180s | 0.0361s  | 0.1929s  | 0.7037s   |
+| CUDA       | 0.0113s | 0.0139s | 0.0274s  | 0.1831s  | 0.6966s   |
 | Taichi-CPU | 0.4461s | 0.5148s | 0.7687s  | 1.8646s  | 12.9343s  |
 | Taichi-GPU | 0.5735s | 0.5679s | 0.5971s  | 0.7987s  | 1.4379s   |
 
@@ -230,8 +230,26 @@ mpiexec -np 8 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png
 
 ### CUDA
 
+![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/cuda.png)
 
 Command to run:
 
 ```bash
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method equ -z 1024
 ```
+
+<!--cuda-->
+
+| circle9   | 16     | 32   | 64     | 128 | 256    | 512    | 1024       |
+| --------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- |
+| # of vars | 262338 | 262338 | 262338  | 262338 | 262338  | 262338 | 262338  |
+| EquSolver | 0.1885s | 0.1844s | 0.1841s | 0.1831s | 0.1823s | 0.1861s | 0.1893s |
+
+<!--cuda-->
+
+| circle10  | 16      | 32      | 64      | 128     | 256     | 512     | 1024    |
+| --------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- |
+| # of vars | 1049486 | 1049486 | 1049486 | 1049486 | 1049486 | 1049486 | 1049486 |
+| EquSolver | 0.7220s | 0.7038s | 0.7012s | 0.6976s | 0.6973s | 0.6983s | 0.7037s |
+
+<!--cuda-->
