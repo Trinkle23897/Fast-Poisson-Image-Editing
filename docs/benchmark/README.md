@@ -13,7 +13,7 @@ Python package version:
 - numpy==1.19.5
 - opencv-python==4.5.5.64
 - mpi4py==3.1.3
-- taichi==0.9.2
+- taichi==1.0.0
 
 ## Problem size vs backend
 
@@ -53,27 +53,27 @@ fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b ta
 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-gpu --method equ -z 1024
 ```
 
-| EquSolver  | square6 | square7 | square8 | square9 | square10 |
-| ---------- | ------- | ------- | ------- | ------- | -------- |
-| # of vars  | 4097    | 16385   | 65537   | 262145  | 1048577  |
-| NumPy      | 0.84s   | 3.24s   | 12.25s  | 52.12s  | 222.44s  |
-| GCC        | 0.08s   | 0.30s   | 1.21s   | 4.99s   | 22.00s   |
-| OpenMP     | 0.02s   | 0.04s   | 0.14s   | 0.59s   | 8.63s    |
-| MPI        | 0.01s   | 0.05s   | 0.18s   | 0.79s   | 8.32s    |
-| CUDA       | 0.02s   | 0.02s   | 0.04s   | 0.19s   | 0.70s    |
-| Taichi-CPU | 0.44s   | 0.52s   | 0.77s   | 1.94s   | 12.87s   |
-| Taichi-GPU | 0.57s   | 0.58s   | 0.60s   | 0.83s   | 1.44s    |
+| EquSolver  | square6 | square7 | square8  | square9  | square10  |
+| ---------- | ------- | ------- | -------- | -------- | --------- |
+| # of vars  | 4097    | 16385   | 65537    | 262145   | 1048577   |
+| NumPy      | 0.8367s | 3.2142s | 12.1836s | 52.4939s | 230.5375s |
+| GCC        | 0.0740s | 0.3013s | 1.2061s  | 5.0351s  | 22.0276s  |
+| OpenMP     | 0.0176s | 0.0423s | 0.1447s  | 0.5835s  | 8.6203s   |
+| MPI        | 0.0127s | 0.0488s | 0.1757s  | 0.8253s  | 8.3310s   |
+| CUDA       | 0.0168s | 0.0179s | 0.0357s  | 0.1931s  | 0.7037s   |
+| Taichi-CPU | 0.4543s | 0.6026s | 0.9466s  | 5.3780s  | 26.8017s  |
+| Taichi-GPU | 0.5996s | 0.6080s | 0.7082s  | 1.2080s  | 3.0777s   |
 
-| EquSolver  | circle6 | circle7 | circle8 | circle9 | circle10 |
-| ---------- | ------- | ------- | ------- | ------- | -------- |
-| # of vars  | 4256    | 16676   | 65972   | 262338  | 1049486  |
-| NumPy      | 0.86s   | 3.27s   | 12.33s  | 52.42s  | 222.85s  |
-| GCC        | 0.08s   | 0.31s   | 1.21s   | 4.84s   | 22.16s   |
-| OpenMP     | 0.02s   | 0.04s   | 0.13s   | 0.49s   | 8.07s    |
-| MPI        | 0.01s   | 0.05s   | 0.18s   | 0.78s   | 8.37s    |
-| CUDA       | 0.02s   | 0.02s   | 0.04s   | 0.19s   | 0.70s    |
-| Taichi-CPU | 0.45s   | 0.52s   | 0.77s   | 1.84s   | 12.88s   |
-| Taichi-GPU | 0.57s   | 0.57s   | 0.60s   | 0.79s   | 1.44s    |
+| EquSolver  | circle6 | circle7 | circle8  | circle9  | circle10  |
+| ---------- | ------- | ------- | -------- | -------- | --------- |
+| # of vars  | 4256    | 16676   | 65972    | 262338   | 1049486   |
+| NumPy      | 0.8618s | 3.2280s | 12.5615s | 52.7161s | 226.5578s |
+| GCC        | 0.0764s | 0.3062s | 1.2115s  | 4.9785s  | 22.1516s  |
+| OpenMP     | 0.0179s | 0.0391s | 0.1301s  | 0.5177s  | 8.2778s   |
+| MPI        | 0.0131s | 0.0494s | 0.1767s  | 0.8155s  | 8.3823s   |
+| CUDA       | 0.0171s | 0.0180s | 0.0361s  | 0.1929s  | 0.7037s   |
+| Taichi-CPU | 0.4590s | 0.6184s | 0.9756s  | 5.2301s  | 26.0120s  |
+| Taichi-GPU | 0.6027s | 0.6069s | 0.7087s  | 1.2180s  | 3.0856s   |
 
 ### GridSolver
 
@@ -102,27 +102,27 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ta
 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-gpu --method grid -z 1024 --grid-x 16 --grid-y 64
 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-gpu --method grid -z 1024 --grid-x 16 --grid-y 64
 ```
-| GridSolver | square6 | square7 | square8 | square9 | square10 |
-| ---------- | ------- | ------- | ------- | ------- | -------- |
-| # of vars  | 4356    | 16900   | 66564   | 264196  | 1052676  |
-| NumPy      | 0.79s   | 2.84s   | 12.35s  | 50.62s  | 208.60s  |
-| GCC        | 0.09s   | 0.35s   | 1.38s   | 5.53s   | 24.73s   |
-| OpenMP     | 0.02s   | 0.06s   | 0.20s   | 0.79s   | 5.44s    |
-| MPI        | 0.01s   | 0.05s   | 0.20s   | 0.79s   | 5.48s    |
-| CUDA       | 0.01s   | 0.02s   | 0.03s   | 0.15s   | 0.57s    |
-| Taichi-CPU | 0.60s   | 0.79s   | 1.56s   | 4.90s   | 26.45s   |
-| Taichi-GPU | 0.63s   | 0.64s   | 0.70s   | 1.02s   | 2.15s    |
+| GridSolver | square6 | square7 | square8  | square9  | square10  |
+| ---------- | ------- | ------- | -------- | -------- | --------- |
+| # of vars  | 4356    | 16900   | 66564    | 264196   | 1052676   |
+| NumPy      | 0.7809s | 2.8823s | 12.3242s | 51.7496s | 209.5504s |
+| GCC        | 0.0884s | 0.3504s | 1.3832s  | 5.5402s  | 24.6482s  |
+| OpenMP     | 0.0177s | 0.0547s | 0.2011s  | 0.7805s  | 5.4012s   |
+| MPI        | 0.0136s | 0.0516s | 0.1999s  | 0.7956s  | 5.4109s   |
+| CUDA       | 0.0116s | 0.0152s | 0.0330s  | 0.1458s  | 0.5738s   |
+| Taichi-CPU | 0.5938s | 0.7886s | 1.5504s  | 4.8253s  | 26.3012s  |
+| Taichi-GPU | 0.6195s | 0.6642s | 0.7013s  | 1.0272s  | 2.1536s   |
 
-| GridSolver | circle6 | circle7 | circle8 | circle9 | circle10 |
-| ---------- | ------- | ------- | ------- | ------- | -------- |
-| # of vars  | 5476    | 21316   | 84100   | 335241  | 1338649  |
-| NumPy      | 0.85s   | 3.09s   | 13.20s  | 56.32s  | 224.65s  |
-| GCC        | 0.10s   | 0.38s   | 1.48s   | 5.83s   | 25.06s   |
-| OpenMP     | 0.02s   | 0.07s   | 0.40s   | 0.99s   | 6.36s    |
-| MPI        | 0.02s   | 0.06s   | 0.25s   | 0.98s   | 5.81s    |
-| CUDA       | 0.01s   | 0.01s   | 0.03s   | 0.15s   | 0.59s    |
-| Taichi-CPU | 0.62s   | 0.78s   | 1.60s   | 5.32s   | 27.67s   |
-| Taichi-GPU | 0.63s   | 0.64s   | 0.71s   | 1.05s   | 2.25s    |
+| GridSolver | circle6 | circle7 | circle8  | circle9  | circle10  |
+| ---------- | ------- | ------- | -------- | -------- | --------- |
+| # of vars  | 5476    | 21316   | 84100    | 335241   | 1338649   |
+| NumPy      | 0.8554s | 3.0602s | 13.1915s | 55.3018s | 224.0399s |
+| GCC        | 0.0997s | 0.3768s | 1.4753s  | 5.8558s  | 25.1236s  |
+| OpenMP     | 0.0219s | 0.0670s | 0.2498s  | 0.9838s  | 6.0868s   |
+| MPI        | 0.0155s | 0.0614s | 0.2446s  | 0.9810s  | 5.8527s   |
+| CUDA       | 0.0113s | 0.0150s | 0.0334s  | 0.1507s  | 0.5954s   |
+| Taichi-CPU | 0.5839s | 0.7836s | 1.5850s  | 5.2483s  | 27.1422s  |
+| Taichi-GPU | 0.6343s | 0.6349s | 0.7112s  | 1.0513s  | 2.2637s   |
 
 
 ## Per backend performance

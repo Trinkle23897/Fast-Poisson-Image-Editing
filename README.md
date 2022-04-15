@@ -119,11 +119,15 @@ Usage: `--method {equ,grid}`
 
 EquSolver directly constructs the equations ![](https://latex.codecogs.com/svg.latex?(4-A)\vec{x}=\vec{b}) and use Jacobi method to get the solution via ![](https://latex.codecogs.com/svg.latex?{\vec{x}'=(A\vec{x}+\vec{b})/4).
 
-GridSolver uses the same Jacobi iteration, however, it keeps the 2D structure of the original image instead of re-labeling the pixel in the mask. It may take some advantage when the mask region covers all of the image, because in this case GridSolver can save 4 read instructions by directly calculating the neighborhood's coordinate. However, our preliminary result shows GridSolver is slower than EquSolver in general.
+GridSolver uses the same Jacobi iteration, however, it keeps the 2D structure of the original image instead of re-labeling the pixel in the mask. It may take some advantage when the mask region covers all of the image, because in this case GridSolver can save 4 read instructions by directly calculating the neighborhood's coordinate.
+
+If the GridSolver's parameter is carefully tuned (`--grid-x` and `--grid-y`), it can always perform better than EquSolver with different backend configuration.
 
 ### Gradient for PIE
 
-The [PIE paper](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) states some variant of gradient calculation such as Equ. 12: using the maximum gradient to perform "mixed seamless cloning". We also provide such an option in our program, with `-g {max,src,avg}`:
+Usage: `-g {max,src,avg}`
+
+The [PIE paper](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) states some variant of gradient calculation such as Equ. 12: using the maximum gradient to perform "mixed seamless cloning". We also provide such an option in our program:
 
 - `src`: only use the gradient from source image
 - `avg`: use the average gradient of source image and target image
