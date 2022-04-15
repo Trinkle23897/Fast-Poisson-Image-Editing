@@ -90,7 +90,7 @@ class GUI(object):
       self.gui_out, err = self.proc.step(self.n)  # type: ignore
       t = time.time() - t
       print(
-        f"Time elapsed: {t:.2f}s, mask size {mask.shape}, abs Error: {err}\t"
+        f"Time elapsed: {t:.4f}s, mask size {mask.shape}, abs Error: {err}\t"
         f"Args: -n {self.n} -h0 {self.y0} -w0 {self.x0} -h1 {y} -w1 {x}"
       )
 

@@ -55,6 +55,6 @@ def main() -> None:
 
   if proc.root:
     dt = time.time() - t
-    print(f"Time elapsed: {dt:.2f}s")
+    print(f"Time elapsed: {dt:.4f}s")
     write_image(args.output, result)
     print(f"Successfully write image to {args.output}")

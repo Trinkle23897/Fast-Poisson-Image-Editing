@@ -1,6 +1,6 @@
 SHELL        = /bin/bash
 PROJECT_NAME = fpie
-PYTHON_FILES = $(shell find setup.py fpie tests -type f -name "*.py")
+PYTHON_FILES = $(shell find setup.py fpie tests docs -type f -name "*.py")
 CPP_FILES    = $(shell find fpie -type f -name "*.h" -o -name "*.cc" -o -name "*.cu")
 CMAKE_FILES  = $(shell find fpie -type f -name "CMakeLists.txt") $(shell find cmake_modules -type f) CMakeLists.txt
 COMMIT_HASH  = $(shell git log -1 --format=%h)

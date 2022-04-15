@@ -13,7 +13,7 @@ Goals:
 
 - [x] 75%: implement one parallel version of PIE
 - [x] 100%: benchmark the algorithm with OpenMP/MPI/CUDA implementation
-- [ ] 125%: include a interactive python frontend that can demonstrate the result in a user-friendly style. Real-time computation on a single GTX-1060 Nvidia GPU.
+- [x] 125%: include a interactive python frontend that can demonstrate the result in a user-friendly style. Real-time computation on a single GTX-1060 Nvidia GPU.
 
 Platform choice:
 
@@ -22,9 +22,9 @@ Platform choice:
 
 Schedule:
 
-- 3.28 - 4.9: implement parallel version of PIE (OpenMP, MPI, CUDA)
-- 4.11 - 4.22: benchmarking, optimizing, write Python interactive frontend
-- 4.25 - 5.5: write report
+- [x] 3.28 - 4.9: implement parallel version of PIE (OpenMP, MPI, CUDA)
+- [x] 4.11 - 4.22: benchmarking, optimizing, write Python interactive frontend
+- [ ] 4.25 - 5.5: write report
 
 ## Milestone
 
