@@ -67,8 +67,8 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ta
 | OpenMP     | 0.0176s | 0.0423s | 0.1447s  | 0.5835s  | 8.6203s   |
 | MPI        | 0.0127s | 0.0488s | 0.1757s  | 0.8253s  | 8.3310s   |
 | CUDA       | 0.0168s | 0.0179s | 0.0357s  | 0.1931s  | 0.7037s   |
-| Taichi-CPU | 0.4543s | 0.6026s | 0.9466s  | 5.3780s  | 26.8017s  |
-| Taichi-GPU | 0.5996s | 0.6080s | 0.7082s  | 1.2080s  | 3.0777s   |
+| Taichi-CPU | 0.4437s | 0.5178s | 0.7667s  | 1.9061s  | 13.2009s  |
+| Taichi-GPU | 0.5730s | 0.5727s | 0.6022s  | 0.8101s  | 1.4430s   |
 
 <!--benchmark-->
 
@@ -80,8 +80,8 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ta
 | OpenMP     | 0.0179s | 0.0391s | 0.1301s  | 0.5177s  | 8.2778s   |
 | MPI        | 0.0131s | 0.0494s | 0.1767s  | 0.8155s  | 8.3823s   |
 | CUDA       | 0.0171s | 0.0180s | 0.0361s  | 0.1929s  | 0.7037s   |
-| Taichi-CPU | 0.4590s | 0.6184s | 0.9756s  | 5.2301s  | 26.0120s  |
-| Taichi-GPU | 0.6027s | 0.6069s | 0.7087s  | 1.2180s  | 3.0856s   |
+| Taichi-CPU | 0.4461s | 0.5148s | 0.7687s  | 1.8646s  | 12.9343s  |
+| Taichi-GPU | 0.5735s | 0.5679s | 0.5971s  | 0.7987s  | 1.4379s   |
 
 <!--benchmark-->
 
@@ -106,8 +106,8 @@ mpiexec -np 8 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png
 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b cuda --method grid -z 1024 --grid-x 2 --grid-y 128
 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b cuda --method grid -z 1024 --grid-x 2 --grid-y 128
 # taichi-cpu
-fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-cpu --method grid -c 8 --grid-x 16 --grid-y 64
-fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-cpu --method grid -c 8 --grid-x 16 --grid-y 64
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-cpu --method grid -c 8 --grid-x 8 --grid-y 128
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-cpu --method grid -c 8 --grid-x 8 --grid-y 128
 # taichi-gpu
 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b taichi-gpu --method grid -z 1024 --grid-x 16 --grid-y 64
 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b taichi-gpu --method grid -z 1024 --grid-x 16 --grid-y 64
@@ -123,8 +123,8 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ta
 | OpenMP     | 0.0177s | 0.0547s | 0.2011s  | 0.7805s  | 5.4012s   |
 | MPI        | 0.0136s | 0.0516s | 0.1999s  | 0.7956s  | 5.4109s   |
 | CUDA       | 0.0116s | 0.0152s | 0.0330s  | 0.1458s  | 0.5738s   |
-| Taichi-CPU | 0.5938s | 0.7886s | 1.5504s  | 4.8253s  | 26.3012s  |
-| Taichi-GPU | 0.6195s | 0.6642s | 0.7013s  | 1.0272s  | 2.1536s   |
+| Taichi-CPU | 0.5308s | 0.8638s | 1.6196s  | 4.8147s  | 20.2245s  |
+| Taichi-GPU | 0.6538s | 0.6505s | 0.6638s  | 0.8298s  | 1.3439s   |
 
 <!--benchmark-->
 
@@ -136,8 +136,8 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ta
 | OpenMP     | 0.0219s | 0.0670s | 0.2498s  | 0.9838s  | 6.0868s   |
 | MPI        | 0.0155s | 0.0614s | 0.2446s  | 0.9810s  | 5.8527s   |
 | CUDA       | 0.0113s | 0.0150s | 0.0334s  | 0.1507s  | 0.5954s   |
-| Taichi-CPU | 0.5839s | 0.7836s | 1.5850s  | 5.2483s  | 27.1422s  |
-| Taichi-GPU | 0.6343s | 0.6349s | 0.7112s  | 1.0513s  | 2.2637s   |
+| Taichi-CPU | 0.5558s | 0.8727s | 1.6317s  | 4.8740s  | 20.2178s  |
+| Taichi-GPU | 0.6447s | 0.6418s | 0.6521s  | 0.8309s  | 1.3578s   |
 
 <!--benchmark-->
 
