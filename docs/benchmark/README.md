@@ -37,6 +37,9 @@ The benchmark commands for squareX and circleX:
 # numpy
 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b numpy --method equ
 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b numpy --method equ
+# numba
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b numba --method equ
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b numba --method equ
 # gcc
 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b gcc --method equ
 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b gcc --method equ
@@ -63,6 +66,7 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ta
 | ---------- | ------- | ------- | -------- | -------- | --------- |
 | # of vars  | 4097    | 16385   | 65537    | 262145   | 1048577   |
 | NumPy      | 0.8367s | 3.2142s | 12.1836s | 52.4939s | 230.5375s |
+| Numba      | 0.7257s | 1.9472s | 7.0761s  | 32.4084s | 149.3390s |
 | GCC        | 0.0740s | 0.3013s | 1.2061s  | 5.0351s  | 22.0276s  |
 | OpenMP     | 0.0176s | 0.0423s | 0.1447s  | 0.5835s  | 8.6203s   |
 | MPI        | 0.0127s | 0.0488s | 0.1757s  | 0.8253s  | 8.3310s   |
@@ -76,6 +80,7 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ta
 | ---------- | ------- | ------- | -------- | -------- | --------- |
 | # of vars  | 4256    | 16676   | 65972    | 262338   | 1049486   |
 | NumPy      | 0.8618s | 3.2280s | 12.5615s | 52.7161s | 226.5578s |
+| Numba      | 0.7430s | 1.9789s | 7.1499s  | 32.1932s | 132.7537s |
 | GCC        | 0.0764s | 0.3062s | 1.2115s  | 4.9785s  | 22.1516s  |
 | OpenMP     | 0.0179s | 0.0391s | 0.1301s  | 0.5177s  | 8.2778s   |
 | MPI        | 0.0131s | 0.0494s | 0.1767s  | 0.8155s  | 8.3823s   |
@@ -93,6 +98,9 @@ The benchmark commands for squareX and circleX:
 # numpy
 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b numpy --method grid
 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b numpy --method grid
+# numba
+fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b numba --method grid
+fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b numba --method grid
 # gcc
 fpie -s square10.png -t square10.png -m square10.png -o result.png -n 5000 -b gcc --method grid --grid-x 8 --grid-y 8
 fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b gcc --method grid --grid-x 8 --grid-y 8 
@@ -119,6 +127,7 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ta
 | ---------- | ------- | ------- | -------- | -------- | --------- |
 | # of vars  | 4356    | 16900   | 66564    | 264196   | 1052676   |
 | NumPy      | 0.7809s | 2.8823s | 12.3242s | 51.7496s | 209.5504s |
+| Numba      | 1.5838s | 6.0720s | 24.0901s | 99.5048s | 410.6119s |
 | GCC        | 0.0884s | 0.3504s | 1.3832s  | 5.5402s  | 24.6482s  |
 | OpenMP     | 0.0177s | 0.0547s | 0.2011s  | 0.7805s  | 5.4012s   |
 | MPI        | 0.0136s | 0.0516s | 0.1999s  | 0.7956s  | 5.4109s   |
@@ -128,22 +137,23 @@ fpie -s circle10.png -t circle10.png -m circle10.png -o result.png -n 5000 -b ta
 
 <!--benchmark-->
 
-| GridSolver | circle6 | circle7 | circle8  | circle9  | circle10  |
-| ---------- | ------- | ------- | -------- | -------- | --------- |
-| # of vars  | 5476    | 21316   | 84100    | 335241   | 1338649   |
-| NumPy      | 0.8554s | 3.0602s | 13.1915s | 55.3018s | 224.0399s |
-| GCC        | 0.0997s | 0.3768s | 1.4753s  | 5.8558s  | 25.1236s  |
-| OpenMP     | 0.0219s | 0.0670s | 0.2498s  | 0.9838s  | 6.0868s   |
-| MPI        | 0.0155s | 0.0614s | 0.2446s  | 0.9810s  | 5.8527s   |
-| CUDA       | 0.0113s | 0.0150s | 0.0334s  | 0.1507s  | 0.5954s   |
-| Taichi-CPU | 0.5558s | 0.8727s | 1.6317s  | 4.8740s  | 20.2178s  |
-| Taichi-GPU | 0.6447s | 0.6418s | 0.6521s  | 0.8309s  | 1.3578s   |
+| GridSolver | circle6 | circle7 | circle8  | circle9   | circle10  |
+| ---------- | ------- | ------- | -------- | --------- | --------- |
+| # of vars  | 5476    | 21316   | 84100    | 335241    | 1338649   |
+| NumPy      | 0.8554s | 3.0602s | 13.1915s | 55.3018s  | 224.0399s |
+| Numba      | 1.8680s | 7.1174s | 28.1826s | 117.5155s | 481.5718s |
+| GCC        | 0.0997s | 0.3768s | 1.4753s  | 5.8558s   | 25.1236s  |
+| OpenMP     | 0.0219s | 0.0670s | 0.2498s  | 0.9838s   | 6.0868s   |
+| MPI        | 0.0155s | 0.0614s | 0.2446s  | 0.9810s   | 5.8527s   |
+| CUDA       | 0.0113s | 0.0150s | 0.0334s  | 0.1507s   | 0.5954s   |
+| Taichi-CPU | 0.5558s | 0.8727s | 1.6317s  | 4.8740s   | 20.2178s  |
+| Taichi-GPU | 0.6447s | 0.6418s | 0.6521s  | 0.8309s   | 1.3578s   |
 
 <!--benchmark-->
 
 ## Per backend performance
 
-In this section, we will perform ablation studies on OpenMP/MPI/CUDA backend. We use circle9/10 with 5000 iterations as the experiment setting.
+In this section, we will perform ablation studies with OpenMP/MPI/CUDA backend. We use circle9/10 with 5000 iterations as the experiment setting.
 
 ### OpenMP
 

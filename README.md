@@ -27,7 +27,8 @@ $ pip install .
 
 | Backend                                        | EquSolver          | GridSolver         | Documentation                                                | Dependency for installation                                  |
 | ---------------------------------------------- | ------------------ | ------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| NumPy                                          | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#numpy) | -                                                            |
+| NumPy                                          | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#numpy) | `pip install numpy`                                          |
+| [Numba](https://github.com/numba/numba)        | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#numba) | `pip install numba`                                          |
 | GCC                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#gcc) | cmake, gcc                                                   |
 | OpenMP                                         | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#openmp) | cmake, gcc (on macOS you need to change clang to gcc-11)     |
 | CUDA                                           | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#cuda) | nvcc                                                         |
@@ -38,7 +39,7 @@ After installation, you can use `--check-backend` option to verify:
 
 ```bash
 $ fpie --check-backend
-['numpy', 'taichi-cpu', 'taichi-gpu', 'gcc', 'openmp', 'mpi', 'cuda']
+['numpy', 'numba', 'taichi-cpu', 'taichi-gpu', 'gcc', 'openmp', 'mpi', 'cuda']
 ```
 
 The above output shows all extensions have successfully installed.
@@ -89,7 +90,7 @@ We provide a simple GUI for real-time seamless cloning. You need to use your mou
 
 ### Backend and Solver
 
-We have provided 6 backends. Each backend has two solvers: EquSolver and GridSolver. You can find the difference between these two solvers in the next section.
+We have provided 7 backends. Each backend has two solvers: EquSolver and GridSolver. You can find the difference between these two solvers in the next section.
 
 For different backend usage, please check out the related documentation under [docs/backend](/docs/backend).
 

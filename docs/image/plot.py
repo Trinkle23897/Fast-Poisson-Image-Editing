@@ -76,6 +76,8 @@ def benchmark():
   base = []
   for i in [1, 2, 4, 5]:
     base.append(parse_table(raw[i], "benchmark"))
+  tmin = min([i[1] for i in base])
+  tmax = max([i[2] for i in base])
   data = pd.DataFrame(data)
   print(data)
   g = sns.FacetGrid(
@@ -91,10 +93,11 @@ def benchmark():
   g.map(sns.lineplot, "Problem Size", "Time per Op (ns)", marker="o")
 
   g.set_axis_labels("Problem Size", "Time per Op (ns)")
-  g.add_legend(bbox_to_anchor=(0.52, 1.02), ncol=7)
+  g.add_legend(bbox_to_anchor=(0.52, 1.02), ncol=8)
   axes = g.axes.flatten()
   for ax, b in zip(axes, base):
-    b, tmin, tmax = b
+    # b, tmin, tmax = b
+    b = b[0]
     y = np.logspace(math.log10(tmin), math.log10(tmax), 6)
     y = (y * 100).astype(int) / 100.
     ax.set(xscale="log", yscale="log")
@@ -151,8 +154,8 @@ def ablation(backend, new_col):
       y = (y * 100).astype(int) / 100.
       ax.set(xscale="log", yscale="log")
     else:
-      y = np.linspace(tmin, tmax, 6)
-      y = (y * 1000).astype(int) / 1000.
+      y = np.linspace(tmin, tmax + 0.0001, 6)
+      y = (y * 10000).astype(int) / 10000.
       ax.set(xscale="log")
     ax.set(xticks=b, yticks=y)
     ax.set(xticklabels=b, yticklabels=y)

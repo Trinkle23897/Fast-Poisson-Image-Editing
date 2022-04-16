@@ -51,7 +51,31 @@ Time elapsed: 3.09s
 Successfully write image to result.jpg
 ```
 
-For NumPy backend, GridSolver is a little bit faster than EquSolver. However, for other backends, GridSolver is always slower than EquSolver.
+## Numba
+
+This backend use NumPy vectorized operation together with numba jit function for parallel computation.
+
+There's no extra parameter for Numba EquSolver:
+
+```bash
+$ fpie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result.jpg -h1 130 -w1 130 -n 5000 -g src -b numba --method equ
+Successfully initialize PIE equ solver with numba backend
+# of vars: 12559
+Iter 5000, abs error [449.83978128 445.02560616 635.9542823 ]
+Time elapsed: 1.5883s
+Successfully write image to result.jpg
+```
+
+There's no extra parameter for Numba GridSolver:
+
+```bash
+$ fpie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result.jpg -h1 130 -w1 130 -n 5000 -g src -b numba --method grid
+Successfully initialize PIE grid solver with numba backend
+# of vars: 17227
+Iter 5000, abs error [449.89603 445.08475 635.89545]
+Time elapsed: 5.6462s
+Successfully write image to result.jpg
+```
 
 ## GCC
 
