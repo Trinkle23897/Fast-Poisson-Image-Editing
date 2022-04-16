@@ -11,6 +11,13 @@ DEFAULT_BACKEND = "numpy"
 ALL_BACKEND = ["numpy"]
 
 try:
+  from fpie import numba_solver
+  ALL_BACKEND += ["numba"]
+  DEFAULT_BACKEND = "numba"
+except ImportError:
+  numba_solver = None  # type: ignore
+
+try:
   from fpie import taichi_solver
   ALL_BACKEND += ["taichi-cpu", "taichi-gpu"]
   DEFAULT_BACKEND = "taichi-cpu"
@@ -58,6 +65,8 @@ class BaseProcessor(ABC):
       error_msg = {
         "numpy":
           "Please run `pip install numpy`.",
+        "numba":
+          "Please run `pip install numba`.",
         "gcc":
           "Please install cmake and gcc in your operating system.",
         "openmp":
@@ -124,6 +133,8 @@ class EquProcessor(BaseProcessor):
 
     if backend == "numpy":
       core = np_solver.EquSolver()
+    elif backend == "numba" and numba_solver is not None:
+      core = numba_solver.EquSolver()
     elif backend == "gcc":
       core = core_gcc.EquSolver()
     elif backend == "openmp" and core_openmp is not None:
@@ -254,6 +265,8 @@ class GridProcessor(BaseProcessor):
 
     if backend == "numpy":
       core = np_solver.GridSolver()
+    elif backend == "numba" and numba_solver is not None:
+      core = numba_solver.GridSolver()
     elif backend == "gcc":
       core = core_gcc.GridSolver(grid_x, grid_y)
     elif backend == "openmp" and core_openmp is not None:

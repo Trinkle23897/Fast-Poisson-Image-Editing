@@ -76,6 +76,9 @@ setup(
   install_requires=[
     "opencv-python>=4.5",
     "numpy>=1.18",
+    # these packages are universal
+    "taichi>=1.0",
+    "numba>=0.51",
   ],
   extras_require={
     "dev": [
@@ -83,8 +86,7 @@ setup(
       "isort",
       "mypy",
     ],
-    "mpi": ["mpi4py>=3.1"],
-    "taichi": ["taichi>=1.0"],
+    "mpi": ["mpi4py>=3.1"],  # cannot install on mac M1
   },
   ext_modules=[CMakeExtension("fpie")],
   cmdclass={"build_ext": CMakeBuild},
