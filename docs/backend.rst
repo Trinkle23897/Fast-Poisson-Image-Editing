@@ -213,6 +213,8 @@ For OpenMP GridSolver, you also need to specify ``--grid-x`` and
    Time elapsed: 0.10s
    Successfully write image to result.jpg
 
+.. _parallelization-strategy-openmp:
+
 Parallelization Strategy
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -263,7 +265,7 @@ the parallelization strategy we used, see the next section.
    Time elapsed: 0.13s
    Successfully write image to result.jpg
 
-.. _parallelization-strategy-1:
+.. _parallelization-strategy-mpi:
 
 Parallelization Strategy
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -332,7 +334,7 @@ For CUDA GridSolver, you also need to specify ``--grid-x`` and
    Time elapsed: 0.07s
    Successfully write image to result.jpg
 
-.. _parallelization-strategy-2:
+.. _parallelization-strategy-cuda:
 
 Parallelization Strategy
 ~~~~~~~~~~~~~~~~~~~~~~~~

@@ -78,7 +78,6 @@ doc-clean:
 	cd docs && make clean
 
 md2rst:
-	pandoc docs/backend.md --from markdown --to rst -s -o docs/backend.rst
 	pandoc docs/benchmark.md --from markdown --to rst -s -o docs/benchmark.rst
 	pandoc docs/report.md --from markdown --to rst -s -o docs/report.rst
 
