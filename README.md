@@ -70,14 +70,14 @@ Here are the results:
 
 | #    | Source image                                                 | Mask image                                                   | Target image                                                 | Result image                                                 |
 | ---- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 1    | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_src.jpg) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_mask.jpg) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_target.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result1.jpg) |
-| 2    | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_src.png) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_mask.png) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_target.png) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result2.jpg) |
-| 3    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/fg.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/mask.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/bg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result3.jpg) |
-| 4    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/fg.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/mask.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/bg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result4.jpg) |
-| 5    | ![](https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/source1.jpg) | ![](https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/mask1.png) | ![](https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/target1.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result5.jpg) |
-| 6    | ![](https://github.com/willemmanuel/poisson-image-editing/raw/master/input/1/source.png) | ![](https://github.com/willemmanuel/poisson-image-editing/raw/master/input/1/mask.png) | ![](https://github.com/willemmanuel/poisson-image-editing/raw/master/input/1/target.png) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result6.jpg) |
-| 7    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case0/src.jpg) | /                                                            | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case0/dst.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result7.jpg) |
-| 8    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/src.jpg) | /                                                            | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/dst.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result8.jpg) |
+| 1    | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_src.jpg) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_mask.jpg) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_target.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/result1.jpg) |
+| 2    | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_src.png) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_mask.png) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_target.png) | ![](https://fpie.readthedocs.io/en/main/_images/result2.jpg) |
+| 3    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/fg.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/mask.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/bg.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/result3.jpg) |
+| 4    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/fg.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/mask.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/bg.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/result4.jpg) |
+| 5    | ![](https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/source1.jpg) | ![](https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/mask1.png) | ![](https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/target1.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/result5.jpg) |
+| 6    | ![](https://github.com/willemmanuel/poisson-image-editing/raw/master/input/1/source.png) | ![](https://github.com/willemmanuel/poisson-image-editing/raw/master/input/1/mask.png) | ![](https://github.com/willemmanuel/poisson-image-editing/raw/master/input/1/target.png) | ![](https://fpie.readthedocs.io/en/main/_images/result6.jpg) |
+| 7    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case0/src.jpg) | /                                                            | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case0/dst.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/result7.jpg) |
+| 8    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/src.jpg) | /                                                            | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/dst.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/result8.jpg) |
 
 ### GUI
 
@@ -85,7 +85,7 @@ Here are the results:
 $ fpie-gui -s test3_src.jpg -t test3_tgt.jpg -o result.jpg -b cuda -n 10000
 ```
 
-![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/gui.png)
+![](https://fpie.readthedocs.io/en/main/_images/gui.png)
 
 We provide a simple GUI for real-time seamless cloning. You need to use your mouse to draw a rectangle on top of the source image, and click a point in target image. After that the result will automatically be generated. In the end, you can press ESC to terminate the program.
 
@@ -99,7 +99,7 @@ For other usage, please run `fpie -h` or `fpie-gui -h` to see the hint.
 
 ## Benchmark Result
 
-![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/benchmark.png)
+![](https://fpie.readthedocs.io/en/main/_images/benchmark.png)
 
 See [benchmark result](https://fpie.readthedocs.io/en/main/benchmark.html).
 
@@ -139,11 +139,11 @@ The [PIE paper](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) states 
 
 The following example shows the difference between these three methods:
 
-| #    | target image                                                 | --gradient=src                                               | --gradient=avg                                               | --gradient=max                                               |
-| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 3    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/bg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/3gsrc.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/3gavg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result3.jpg) |
-| 4    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/bg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/4gsrc.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/4gavg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result4.jpg) |
-| 8    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/dst.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/8gsrc.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/8gavg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result8.jpg) |
+| #    | target image                                                 | --gradient=src                                             | --gradient=avg                                             | --gradient=max                                               |
+| ---- | ------------------------------------------------------------ | ---------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------ |
+| 3    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/bg.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/3gsrc.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/3gavg.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/result3.jpg) |
+| 4    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/bg.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/4gsrc.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/4gavg.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/result4.jpg) |
+| 8    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/dst.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/8gsrc.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/8gavg.jpg) | ![](https://fpie.readthedocs.io/en/main/_images/result8.jpg) |
 
 ## Miscellaneous (for 15-618 course project)
 
