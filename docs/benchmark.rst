@@ -344,7 +344,7 @@ EquSolver 0.7220s 0.7038s 0.7012s 0.6976s 0.6973s 0.6983s 0.7037s
 
    <!--cuda-->
 
-.. |image0| image:: https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/benchmark.png
-.. |image1| image:: https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/openmp.png
-.. |image2| image:: https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/mpi.png
-.. |image3| image:: https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/cuda.png
+.. |image0| image:: /_static/images/benchmark.png
+.. |image1| image:: /_static/images/openmp.png
+.. |image2| image:: /_static/images/mpi.png
+.. |image3| image:: /_static/images/cuda.png
