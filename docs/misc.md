@@ -38,4 +38,4 @@ At the poster session we plan to show a live demo of this project, and on the ot
 
 ## Final Report
 
-See [report.md](report.md).
+See [report](https://fpie.readthedocs.io/en/main/report.html).

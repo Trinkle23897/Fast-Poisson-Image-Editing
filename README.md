@@ -1,7 +1,7 @@
 # Poisson Image Editing - A Parallel Implementation
 
 [![PyPI](https://img.shields.io/pypi/v/fpie)](https://pypi.org/project/fpie/)
-[![Docs](https://img.shields.io/readthedocs/fpie)](https://fpie.readthedocs.io/)
+[![Docs](https://readthedocs.org/projects/fpie/badge/?version=main)](https://fpie.readthedocs.io)
 [![Test](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/workflows/Test/badge.svg?branch=main)](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/actions)
 
 > Jiayi Weng (jiayiwen), Zixu Chen (zixuc)
@@ -28,13 +28,13 @@ $ pip install .
 
 | Backend                                        | EquSolver          | GridSolver         | Documentation                                                | Dependency for installation                                  |
 | ---------------------------------------------- | ------------------ | ------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| NumPy                                          | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#numpy) | `pip install numpy`                                          |
-| [Numba](https://github.com/numba/numba)        | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#numba) | `pip install numba`                                          |
-| GCC                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#gcc) | cmake, gcc                                                   |
-| OpenMP                                         | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#openmp) | cmake, gcc (on macOS you need to change clang to gcc-11)     |
-| CUDA                                           | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#cuda) | nvcc                                                         |
-| MPI                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#mpi) | `pip install mpi4py` and mpicc (on macOS: `brew install open-mpi`) |
-| [Taichi](https://github.com/taichi-dev/taichi) | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#taichi) | `pip install taichi`                                         |
+| NumPy                                          | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#numpy) | `pip install numpy`                                          |
+| [Numba](https://github.com/numba/numba)        | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#numba) | `pip install numba`                                          |
+| GCC                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#gcc) | cmake, gcc                                                   |
+| OpenMP                                         | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#openmp) | cmake, gcc (on macOS you need to change clang to gcc-11)     |
+| CUDA                                           | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#cuda) | nvcc                                                         |
+| MPI                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#mpi) | `pip install mpi4py` and mpicc (on macOS: `brew install open-mpi`) |
+| [Taichi](https://github.com/taichi-dev/taichi) | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#taichi) | `pip install taichi`                                         |
 
 After installation, you can use `--check-backend` option to verify:
 
@@ -93,7 +93,7 @@ We provide a simple GUI for real-time seamless cloning. You need to use your mou
 
 We have provided 7 backends. Each backend has two solvers: EquSolver and GridSolver. You can find the difference between these two solvers in the next section.
 
-For different backend usage, please check out the related documentation under [docs/backend.md](/docs/backend.md).
+For different backend usage, please check out the related documentation [here](https://fpie.readthedocs.io/en/main/backend.html).
 
 For other usage, please run `fpie -h` or `fpie-gui -h` to see the hint.
 
@@ -101,7 +101,7 @@ For other usage, please run `fpie -h` or `fpie-gui -h` to see the hint.
 
 ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/benchmark.png)
 
-See [docs/benchmark.md](docs/benchmark.md).
+See [benchmark result](https://fpie.readthedocs.io/en/main/benchmark.html).
 
 ## Algorithm Detail
 

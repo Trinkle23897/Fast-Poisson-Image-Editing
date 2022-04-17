@@ -15,3 +15,12 @@ vectorized
 maipo
 squareX
 circleX
+fpie
+poisson
+macOS
+cmake
+gcc
+nvcc
+benchmarking
+Equ
+src
