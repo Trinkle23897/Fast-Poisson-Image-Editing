@@ -34,3 +34,9 @@ jobs:
     - name: cmake-format
       run: |
         make cmake-format
+    - name: docstyle
+      run: |
+        make docstyle
+    - name: spelling
+      run: |
+        make spelling

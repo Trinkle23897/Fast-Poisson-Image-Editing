@@ -1,7 +1,8 @@
 # Poisson Image Editing - A Parallel Implementation
 
 [![PyPI](https://img.shields.io/pypi/v/fpie)](https://pypi.org/project/fpie/)
-[![Unittest](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/workflows/Test/badge.svg?branch=main)](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/actions)
+[![Docs](https://img.shields.io/readthedocs/fpie)](https://fpie.readthedocs.io/)
+[![Test](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/workflows/Test/badge.svg?branch=main)](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/actions)
 
 > Jiayi Weng (jiayiwen), Zixu Chen (zixuc)
 
@@ -27,13 +28,13 @@ $ pip install .
 
 | Backend                                        | EquSolver          | GridSolver         | Documentation                                                | Dependency for installation                                  |
 | ---------------------------------------------- | ------------------ | ------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| NumPy                                          | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#numpy) | `pip install numpy`                                          |
-| [Numba](https://github.com/numba/numba)        | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#numba) | `pip install numba`                                          |
-| GCC                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#gcc) | cmake, gcc                                                   |
-| OpenMP                                         | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#openmp) | cmake, gcc (on macOS you need to change clang to gcc-11)     |
-| CUDA                                           | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#cuda) | nvcc                                                         |
-| MPI                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#mpi) | `pip install mpi4py` and mpicc (on macOS: `brew install open-mpi`) |
-| [Taichi](https://github.com/taichi-dev/taichi) | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend#taichi) | `pip install taichi`                                         |
+| NumPy                                          | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#numpy) | `pip install numpy`                                          |
+| [Numba](https://github.com/numba/numba)        | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#numba) | `pip install numba`                                          |
+| GCC                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#gcc) | cmake, gcc                                                   |
+| OpenMP                                         | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#openmp) | cmake, gcc (on macOS you need to change clang to gcc-11)     |
+| CUDA                                           | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#cuda) | nvcc                                                         |
+| MPI                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#mpi) | `pip install mpi4py` and mpicc (on macOS: `brew install open-mpi`) |
+| [Taichi](https://github.com/taichi-dev/taichi) | :heavy_check_mark: | :heavy_check_mark: | [docs](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/tree/main/docs/backend.md#taichi) | `pip install taichi`                                         |
 
 After installation, you can use `--check-backend` option to verify:
 
@@ -69,14 +70,14 @@ Here are the results:
 
 | #    | Source image                                                 | Mask image                                                   | Target image                                                 | Result image                                                 |
 | ---- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 1    | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_src.jpg) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_mask.jpg) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_target.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result1.jpg) |
-| 2    | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_src.png) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_mask.png) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_target.png) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result2.jpg) |
-| 3    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/fg.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/mask.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/bg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result3.jpg) |
-| 4    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/fg.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/mask.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/bg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result4.jpg) |
-| 5    | ![](https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/source1.jpg) | ![](https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/mask1.png) | ![](https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/target1.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result5.jpg) |
-| 6    | ![](https://github.com/willemmanuel/poisson-image-editing/raw/master/input/1/source.png) | ![](https://github.com/willemmanuel/poisson-image-editing/raw/master/input/1/mask.png) | ![](https://github.com/willemmanuel/poisson-image-editing/raw/master/input/1/target.png) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result6.jpg) |
-| 7    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case0/src.jpg) | /                                                            | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case0/dst.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result7.jpg) |
-| 8    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/src.jpg) | /                                                            | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/dst.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result8.jpg) |
+| 1    | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_src.jpg) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_mask.jpg) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test1_target.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result1.jpg) |
+| 2    | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_src.png) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_mask.png) | ![](https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_target.png) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result2.jpg) |
+| 3    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/fg.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/mask.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/bg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result3.jpg) |
+| 4    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/fg.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/mask.jpg) | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/bg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result4.jpg) |
+| 5    | ![](https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/source1.jpg) | ![](https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/mask1.png) | ![](https://github.com/PPPW/poisson-image-editing/raw/master/figs/example1/target1.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result5.jpg) |
+| 6    | ![](https://github.com/willemmanuel/poisson-image-editing/raw/master/input/1/source.png) | ![](https://github.com/willemmanuel/poisson-image-editing/raw/master/input/1/mask.png) | ![](https://github.com/willemmanuel/poisson-image-editing/raw/master/input/1/target.png) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result6.jpg) |
+| 7    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case0/src.jpg) | /                                                            | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case0/dst.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result7.jpg) |
+| 8    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/src.jpg) | /                                                            | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/dst.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result8.jpg) |
 
 ### GUI
 
@@ -84,7 +85,7 @@ Here are the results:
 $ fpie-gui -s test3_src.jpg -t test3_tgt.jpg -o result.jpg -b cuda -n 10000
 ```
 
-![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/gui.png)
+![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/gui.png)
 
 We provide a simple GUI for real-time seamless cloning. You need to use your mouse to draw a rectangle on top of the source image, and click a point in target image. After that the result will automatically be generated. In the end, you can press ESC to terminate the program.
 
@@ -92,15 +93,15 @@ We provide a simple GUI for real-time seamless cloning. You need to use your mou
 
 We have provided 7 backends. Each backend has two solvers: EquSolver and GridSolver. You can find the difference between these two solvers in the next section.
 
-For different backend usage, please check out the related documentation under [docs/backend](/docs/backend).
+For different backend usage, please check out the related documentation under [docs/backend.md](/docs/backend.md).
 
 For other usage, please run `fpie -h` or `fpie-gui -h` to see the hint.
 
 ## Benchmark Result
 
-![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/benchmark.png)
+![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/benchmark.png)
 
-See [docs/benchmark](docs/benchmark).
+See [docs/benchmark.md](docs/benchmark.md).
 
 ## Algorithm Detail
 
@@ -140,10 +141,10 @@ The following example shows the difference between these three methods:
 
 | #    | target image                                                 | --gradient=src                                               | --gradient=avg                                               | --gradient=max                                               |
 | ---- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 3    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/bg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/3gsrc.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/3gavg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result3.jpg) |
-| 4    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/bg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/4gsrc.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/4gavg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result4.jpg) |
-| 8    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/dst.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/8gsrc.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/8gavg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/image/result8.jpg) |
+| 3    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/1/bg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/3gsrc.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/3gavg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result3.jpg) |
+| 4    | ![](https://github.com/cheind/poisson-image-editing/raw/master/etc/images/2/bg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/4gsrc.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/4gavg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result4.jpg) |
+| 8    | ![](https://github.com/peihaowang/PoissonImageEditing/raw/master/showcases/case3/dst.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/8gsrc.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/8gavg.jpg) | ![](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/raw/main/docs/_static/images/result8.jpg) |
 
 ## Miscellaneous (for 15-618 course project)
 
-See [docs/report](docs/report).
+See [docs/misc.md](docs/misc.md).

@@ -1,3 +1,5 @@
+# MISC
+
 ## Proposal
 
 Challenge: How to implement a fully-parallelized Jacobi Iteration to support a real-time image fusion?
@@ -33,3 +35,7 @@ In Apr. 11th, we have finished all implementations for parallel PIE algorithm. E
 Most of the results are in the homepage README file. We are going to polish the documentation and running benchmark experiments this week. Then do some ablation study and write report in the next week. If we have extra time, we will implement an interactive frontend for creating mask image.
 
 At the poster session we plan to show a live demo of this project, and on the other hand, briefly describe the benchmark result to demonstrate its high-performance.
+
+## Final Report
+
+See [report.md](report.md).

@@ -116,7 +116,7 @@ There's no other parameters for Taichi EquSolver:
 
 ```bash
 # taichi-cpu
-$ fpie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result.jpg -h1 130 -w1 130 -n 5000 -g src -b taichi-cpu --method equ -c 6 
+$ fpie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result.jpg -h1 130 -w1 130 -n 5000 -g src -b taichi-cpu --method equ -c 6
 [Taichi] version 0.9.2, llvm 10.0.0, commit 7a4d73cd, linux, python 3.8.10
 [Taichi] Starting on arch=x64
 Successfully initialize PIE equ solver with taichi-cpu backend
@@ -154,7 +154,7 @@ Successfully write image to result.jpg
 
 ```bash
 # taichi-gpu
-$ fpie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result.jpg -h1 130 -w1 130 -n 5000 -g src -b taichi-gpu --method grid --grid-x 8 --grid-y 8 -z 64 
+$ fpie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result.jpg -h1 130 -w1 130 -n 5000 -g src -b taichi-gpu --method grid --grid-x 8 --grid-y 8 -z 64
 [Taichi] version 0.9.2, llvm 10.0.0, commit 7a4d73cd, linux, python 3.8.10
 [Taichi] Starting on arch=cuda
 Successfully initialize PIE grid solver with taichi-gpu backend
@@ -192,7 +192,7 @@ Successfully write image to result.jpg
 
 ### Parallelization Strategy
 
-For [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/openmp/equ.cc), it first groups the pixels into two folds by `(i+j)%2`, then parallelizes per-pixel iteration inside a group in each step. This strategy can utilize the thread-local accessment.
+For [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/openmp/equ.cc), it first groups the pixels into two folds by `(i+j)%2`, then parallelizes per-pixel iteration inside a group in each step. This strategy can utilize the thread-local assessment.
 
 For [GridSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/openmp/grid.cc), it parallelizes per-grid iteration in each step, where the grid size is `(grid_x, grid_y)`. It simply iterates all pixels in each grid.
 
@@ -207,7 +207,7 @@ Apart from that, you need to specify the synchronization interval for MPI backen
 MPI EquSolver and GridSolver don't have any other arguments because of the parallelization strategy we used, see the next section.
 
 ```bash
-$ mpiexec -np 6 fpie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result.jpg -h1 130 -w1 130 -n 5000 -g src -b mpi --method equ --mpi-sync-interval 100 
+$ mpiexec -np 6 fpie -s test2_src.png -m test2_mask.png -t test2_tgt.png -o result.jpg -h1 130 -w1 130 -n 5000 -g src -b mpi --method equ --mpi-sync-interval 100
 Successfully initialize PIE equ solver with mpi backend
 # of vars: 12559
 Iter 5000, abs error [264.6767  269.55304 368.4869 ]

@@ -1,0 +1,17 @@
+parallelizes
+parallelization
+pseudocode
+py
+backend
+backends
+taichi
+opencv
+mpi
+mpicc
+numpy
+numba
+jit
+vectorized
+maipo
+squareX
+circleX

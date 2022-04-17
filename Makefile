@@ -30,6 +30,13 @@ clang-format-install:
 cmake-format-install:
 	$(call check_install, cmakelang)
 
+doc-install:
+	$(call check_install, pydocstyle)
+	$(call check_install, doc8)
+	$(call check_install, sphinx)
+	$(call check_install, sphinx_rtd_theme)
+	$(call check_install_extra, sphinxcontrib.spelling, sphinxcontrib.spelling pyenchant)
+
 auditwheel-install:
 	$(call check_install_extra, auditwheel, auditwheel typed-ast)
 
@@ -55,9 +62,29 @@ clang-format: clang-format-install
 cmake-format: cmake-format-install
 	cmake-format --check ${CMAKE_FILES}
 
-lint: flake8 py-format clang-format cmake-format cpplint mypy
+# documentation
 
-format: py-format-install clang-format-install cmake-format-install
+docstyle: doc-install
+#	pydocstyle $(PROJECT_NAME)
+	doc8 docs && cd docs && make html SPHINXOPTS="-W"
+
+doc: doc-install
+	cd docs && make html && cd _build/html && python3 -m http.server
+
+spelling: doc-install
+	cd docs && make spelling SPHINXOPTS="-W"
+
+doc-clean:
+	cd docs && make clean
+
+md2rst:
+	pandoc docs/backend.md --from markdown --to rst -s -o docs/backend.rst
+	pandoc docs/benchmark.md --from markdown --to rst -s -o docs/benchmark.rst
+	pandoc docs/report.md --from markdown --to rst -s -o docs/report.rst
+
+lint: flake8 py-format clang-format cmake-format cpplint mypy docstyle spelling
+
+format: py-format-install clang-format-install cmake-format-install md2rst
 	isort $(PYTHON_FILES)
 	yapf -ir $(PYTHON_FILES)
 	clang-format-11 -style=file -i $(CPP_FILES)

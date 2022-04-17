@@ -72,7 +72,7 @@ def benchmark():
   global data
   reset_data()
   sep = "<!--benchmark-->"
-  raw = open("../benchmark/README.md").read().split(sep)
+  raw = open("../../benchmark.md").read().split(sep)
   base = []
   for i in [1, 2, 4, 5]:
     base.append(parse_table(raw[i], "benchmark"))
@@ -116,7 +116,7 @@ def ablation(backend, new_col):
   global data
   reset_data(new_col)
   sep = f"<!--{backend}-->"
-  raw = open("../benchmark/README.md").read().split(sep)
+  raw = open("../../benchmark.md").read().split(sep)
   base = []
   if backend != "cuda":
     for i in [1, 2, 3, 4]:
