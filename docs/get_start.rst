@@ -106,6 +106,44 @@ under `docs/backend.md </docs/backend.md>`__.
 For other usage, please run ``fpie -h`` or ``fpie-gui -h`` to see the
 hint.
 
+.. code:: bash
+
+   $ fpie -h
+   usage: fpie [-h] [-v] [--check-backend] [-b {numpy,numba,taichi-cpu,taichi-gpu,gcc,openmp,mpi,cuda}] [-c CPU] [-z BLOCK_SIZE]
+               [--method {equ,grid}] [-s SOURCE] [-m MASK] [-t TARGET] [-o OUTPUT] [-h0 H0] [-w0 W0] [-h1 H1] [-w1 W1] [-g {max,src,avg}]
+               [-n N] [-p P] [--mpi-sync-interval MPI_SYNC_INTERVAL] [--grid-x GRID_X] [--grid-y GRID_Y]
+
+   optional arguments:
+     -h, --help            show this help message and exit
+     -v, --version         show the version and exit
+     --check-backend       print all available backends
+     -b {numpy,numba,taichi-cpu,taichi-gpu,gcc,openmp,mpi,cuda}, --backend {numpy,numba,taichi-cpu,taichi-gpu,gcc,openmp,mpi,cuda}
+                           backend choice
+     -c CPU, --cpu CPU     number of CPU used
+     -z BLOCK_SIZE, --block-size BLOCK_SIZE
+                           cuda block size (only for equ solver)
+     --method {equ,grid}   how to parallelize computation
+     -s SOURCE, --source SOURCE
+                           source image filename
+     -m MASK, --mask MASK  mask image filename (default is to use the whole source image)
+     -t TARGET, --target TARGET
+                           target image filename
+     -o OUTPUT, --output OUTPUT
+                           output image filename
+     -h0 H0                mask position (height) on source image
+     -w0 W0                mask position (width) on source image
+     -h1 H1                mask position (height) on target image
+     -w1 W1                mask position (width) on target image
+     -g {max,src,avg}, --gradient {max,src,avg}
+                           how to calculate gradient for PIE
+     -n N                  how many iteration would you perfer, the more the better
+     -p P                  output result every P iteration
+     --mpi-sync-interval MPI_SYNC_INTERVAL
+                           MPI sync iteration interval
+     --grid-x GRID_X       x axis stride for grid solver
+     --grid-y GRID_Y       y axis stride for grid solver
+
+
 Benchmark Result
 ----------------
 
@@ -126,12 +164,14 @@ The gradient is computed by
 After computing the gradient in source image, the algorithm tries to
 solve the following problem: given the gradient and the boundary value,
 calculate the approximate solution that meets the requirement, i.e., to
-keep target image’s gradient as similar as the source image. It can be
-formulated as :math:`A\vec{x}=\vec{b}`, where
+keep target image’s gradient as similar as the source image.
+
+This process can be formulated as :math:`(4-A)\vec{x}=\vec{b}`, where
 :math:`A\in\mathbb{R}^{N\times N}`, :math:`\vec{x}\in\mathbb{R}^N`,
-:math:`\vec{b}\in\mathbb{R}^N`, where N is the number of pixels in the
-mask. Therefore, A is a giant sparse matrix because each line of A only
-contains at most 5 non-zero value.
+:math:`\vec{b}\in\mathbb{R}^N`, :math:`N` is the number of pixels in the
+mask, :math:`A` is a giant sparse matrix because each line of A only
+contains at most 4 non-zero value (neighborhood), :math:`\vec{b}` is the
+gradient from source image, and :math:`\vec{x}` is the result value.
 
 :math:`N` is always a large number, i.e., greater than 50k, so the
 Gauss-Jordan Elimination cannot be directly applied here because of the
