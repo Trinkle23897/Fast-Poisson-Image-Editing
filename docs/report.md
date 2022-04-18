@@ -50,7 +50,7 @@ out = merge(tgt, X, mask)
 write_image(out_name, out)
 ```
 
-GridSolver uses the same Jacobi iteration, however, it keeps the 2D structure of the original image instead of re-labeling the pixel in the mask. It may take some advantage when the mask region covers all of the image, because in this case GridSolver can save 4 read instructions by directly calculating the neighborhood's coordinate. Meanwhile, it has a better locality of fetching related data.
+GridSolver uses the same Jacobi iteration, however, it keeps the 2D structure of the original image instead of re-labeling the pixel in the mask. It may take some advantage when the mask region covers all of the image, because in this case GridSolver can save 4 read instructions by directly calculating the neighborhood's coordinate. Meanwhile, it has a better locality of fetching required data per iteration if we properly setup the access pattern (will be discussed in the next section).
 
 ```python
 """ GridSolver pseudocode."""
@@ -82,6 +82,12 @@ The bottleneck for both solvers is the for-loop and can be easily parallelized. 
   - If your project involved many iterations of optimization, please describe this process as well. What did you try that did not work? How did you arrive at your solution? The notes you have been writing throughout your project should be helpful here. Convince us you worked hard to arrive at a good solution.
   - If you started with an existing piece of code, please mention it (and where it came from) here.
 
+
+
+### Access Pattern
+
+grid-x grid-y
+
 ### Synchronization
 
 
@@ -90,11 +96,29 @@ The bottleneck for both solvers is the for-loop and can be easily parallelized. 
 
 #### OpenMP
 
+For [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/openmp/equ.cc), it first groups the pixels into two folds by `(i+j)%2`, then parallelizes per-pixel iteration inside a group in each step. This strategy can utilize the thread-local assessment.
+
+For [GridSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/openmp/grid.cc), it parallelizes per-grid iteration in each step, where the grid size is `(grid_x, grid_y)`. It simply iterates all pixels in each grid.
+
 #### MPI
+
+MPI cannot use share-memory program model, so that we need to reduce the amount of data for communication. Each process is only responsible for a part of computation, and synchronized with other process per `mpi_sync_interval` steps.
+
+For [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/mpi/equ.cc), it's hard to say which part of the data should be exchanged to other process, since it relabels all pixels at the very beginning of this process. We use `MPI_Bcast` to force sync all data.
+
+For [GridSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/mpi/grid.cc), we use line partition: process `i` exchanges its first and last line data with process `i-1` and `i+1` separately. This strategy has a continuous memory layout to exchange, thus has less overhead comparing with block partition.
+
+However, even if we don't use the synchronization in MPI (set `mpi_sync_interval` to be greater than the number of iteration), it is still slower than OpenMP and CUDA backends.
+
 
 #### CUDA
 
 
+The strategy used in CUDA backend is quite similar to OpenMP.
+
+For [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/cuda/equ.cu), it performs equation-level parallelization.
+
+For [GridSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/cuda/grid.cu), each grid with size `(grid_x, grid_y)` will be in the same block. A thread in a block performs iteration only for a single pixel.
 
 ## Experiments
 
@@ -113,7 +137,17 @@ If the GridSolver's parameter `grid_x` and `grid_y` is carefully tuned, it can a
 
 ### Benchmark Analysis for 3rd-party Backend
 
+numpy vs numba: hard to say
+
+numpy vs gcc: gcc is much faster
+
+taichi: cpu: equal or better than gcc; gpu: good performance; both of them need a large amount of data to show its advantage
+
 ### Benchmark Analysis for Non 3rd-party Backend
+
+OpenMP and MPI can achieve almost the same speed. MPI's converge speed is slower.
+
+CUDA is super fast
 
 ### Case study: OpenMP
 
