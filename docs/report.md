@@ -50,7 +50,7 @@ out = merge(tgt, X, mask)
 write_image(out_name, out)
 ```
 
-GridSolver uses the same Jacobi iteration, however, it keeps the 2D structure of the original image instead of re-labeling the pixel in the mask. It may take some advantage when the mask region covers all of the image, because in this case GridSolver can save 4 read instructions by directly calculating the neighborhood's coordinate. Meanwhile, it has a better locality of fetching required data per iteration if we properly setup the access pattern (will be discussed in the next section).
+GridSolver uses the same Jacobi iteration, however, it keeps the 2D structure of the original image instead of re-labeling the pixel in the mask. It may take some advantage when the mask region covers all of the image, because in this case GridSolver can save 4 read instructions by directly calculating the neighborhood's coordinate. Meanwhile, it has a better locality of fetching required data per iteration if we properly setup the access pattern (will be discussed in Section [Access Pattern](#access-pattern)).
 
 ```python
 """ GridSolver pseudocode."""
@@ -69,30 +69,96 @@ for _ in range(n_iter):
 write_image(out_name, tgt)
 ```
 
-The bottleneck for both solvers is the for-loop and can be easily parallelized. The implementation detail and parallelization strategies will be discussed in the next section.
+The bottleneck for both solvers is the for-loop and can be easily parallelized. The implementation detail and parallelization strategies will be discussed in Section [Parallelization Strategy](#parallelization-strategy).
 
 
 ## Method
 
-- APPROACH: Tell us how your implementation works. Your description should be sufficiently detailed to provide the course staff a basic understanding of your approach. Again, it might be very useful to include a figure here illustrating components of the system and/or their mapping to parallel hardware.
-  - Break down the workload. Where are the dependencies in the program? How much parallelism is there? Is it data-parallel? Where is the locality? Is it amenable to SIMD execution?
-  - Describe the technologies used. What language/APIs? What machines did you target?
-  - Describe how you mapped the problem to your target parallel machine(s). IMPORTANT: How do the data structures and operations you described in part 2 map to machine concepts like cores and threads. (or warps, thread blocks, gangs, etc.)
-  - Did you change the original serial algorithm to enable better mapping to a parallel machine?
-  - If your project involved many iterations of optimization, please describe this process as well. What did you try that did not work? How did you arrive at your solution? The notes you have been writing throughout your project should be helpful here. Convince us you worked hard to arrive at a good solution.
-  - If you started with an existing piece of code, please mention it (and where it came from) here.
+### Language and Hardware Setup
 
+We start to build PIE with the help of [pybind11](https://github.com/pybind/pybind11) because our goal is to benchmark multiple parallelization approaches, including hand-written CUDA code and other 3rd-party libraries such as NumPy.
 
+One of our project goal is to let the algorithm run on any \*nix machine and can have a real-time interactive result demonstration. For this reason, we don't choose super computing cluster as the hardware setup. Instead, we choose GHC machine to develop and measure the performance, which has 8x i7-9700 cores and an Nvidia RTX 2080Ti.
 
 ### Access Pattern
 
-grid-x grid-y
+For EquSolver, we can re-organize the pixel order to achieve a better locality when performing parallel operations. Specifically, we can group all pixels into two folds by `(x + y) % 2`. Here is a small example:
 
-### Synchronization
+```
+# before
+x1   x2   x3   x4   x5
+x6   x7   x8   x9   x10
+x11  x12  x13  x14  x15
+...
 
+# re-order
+x1   x10  x2   x11  x3
+x12  x4   x13  x5   x14
+x6   x15  x7   x16  x8
+...
+```
 
+By doing so, every pixel's 4 neighbors are closer with each other. The ideal access pattern is to separately iterate these two groups, i.e.,
+
+```python
+for _ in range(n_iter):
+    parallel for i in range(1, p):
+        # i < p, neighbor >= p
+        x_[i] = calc(b[i], neighbor(x, i))
+
+    parallel for i in range(p, N):
+        # i >= p, neighbor < p
+        x[i] = calc(b[i], neighbor(x_, i))
+```
+
+Unfortunately, we only observe a clear advantage with OpenMP EquSolver. For other backend, the sequential id assignment is much better than re-order. The related discussion is in Section [Parallelization Strategy - OpenMP](#openmp).
+
+For GridSolver, since it keeps most of the 2D structure of the image, we can use block-level access pattern instead of a sequential one to improve cache hit rate. Here is a Python pseudocode to show how it works:
+
+```python
+N, M = tgt.shape[:2]
+# here is a sequential scan:
+parallel for i in range(N):
+    parallel for j in range(M):
+        if mask[i, j]:
+	        tgt_[i, j] = calc(grad[i, j], neighbor(tgt, i, j))
+# however, we can use block-level access pattern to improve the cache hit rate:
+parallel for i in range(N // grid_x):
+    parallel for j in range(M // grid_y):
+        # the grid size is (grid_x, grid_y)
+        for x in range(i * grid_x, (i + 1) * grid_x):
+            for y in range(j * grid_y, (j + 1) * grid_y):
+                if mask[x, y]:
+	                tgt_[x, y] = calc(grad[x, y], neighbor(tgt, x, y))
+```
+
+### Synchronization vs Converge Speed
+
+Since Jacobi Method is an iterative method to solve a matrix equation, there is a trade-off between the quality of solution and the frequency of synchronization.
+
+The naive approach is to create another matrix to store the solution. Once all pixels' calculation has been finished, the algorithm will refresh the original array with the new value:
+
+```python
+for _ in range(n_iter):
+    tmp = np.zeros_like(x)
+    parallel for i in range(1, N):
+        tmp[i] = calc(b[i], neighbor(x, i))
+    x = tmp
+```
+
+It's quite similar to the "gradient decent" method in machine learning by using all data samples to perform only one step optimization. Interestingly, "stochastic gradient decent"-style Jacobi Method works quite well:
+
+```python
+for _ in range(n_iter):
+    parallel for i in range(1, N):
+        x[i] = calc(b[i], neighbor(x, i))
+```
+
+It's because Jacobi Method guarantees its convergence, and w/o such a barrier, the error per pixel will always become smaller. Comparing with the original approach, it also has a faster converge speed.
 
 ### Parallelization Strategy
+
+- Describe how you mapped the problem to your target parallel machine(s). IMPORTANT: How do the data structures and operations you described in part 2 map to machine concepts like cores and threads. (or warps, thread blocks, gangs, etc.)
 
 #### OpenMP
 
@@ -167,3 +233,8 @@ CUDA is super fast
 
 [1] Pérez, Patrick, Michel Gangnet, and Andrew Blake. "Poisson image editing." *ACM SIGGRAPH 2003 Papers*. 2003. 313-318.
 
+[2] Harris, Charles R., et al. "Array programming with NumPy." *Nature* 585.7825 (2020): 357-362.
+
+[3] Lam, Siu Kwan, Antoine Pitrou, and Stanley Seibert. "Numba: A llvm-based python jit compiler." *Proceedings of the Second Workshop on the LLVM Compiler Infrastructure in HPC*. 2015.
+
+[4] Hu, Yuanming, et al. "Taichi: a language for high-performance computation on spatially sparse data structures." *ACM Transactions on Graphics (TOG)* 38.6 (2019): 1-16.
