@@ -136,6 +136,8 @@ parallel for i in range(N // grid_x):
 
 Since Jacobi Method is an iterative method to solve a matrix equation, there is a trade-off between the quality of solution and the frequency of synchronization.
 
+#### Share-memory Programming Model
+
 The naive approach is to create another matrix to store the solution. Once all pixels' calculation has been finished, the algorithm will refresh the original array with the new value:
 
 ```python
@@ -156,35 +158,46 @@ for _ in range(n_iter):
 
 It's because Jacobi Method guarantees its convergence, and w/o such a barrier, the error per pixel will always become smaller. Comparing with the original approach, it also has a faster converge speed.
 
+#### Non Share-memory Programming Model
+
+The above approach works with share-memory programming model such as OpenMP and CUDA. However, for non share-memory programming model such as MPI, the above approach cannot work well. The solution will be discussed in Section [Parallelization Strategy - MPI](mpi).
+
 ### Parallelization Strategy
 
-- Describe how you mapped the problem to your target parallel machine(s). IMPORTANT: How do the data structures and operations you described in part 2 map to machine concepts like cores and threads. (or warps, thread blocks, gangs, etc.)
+This section will cover the implementation detail with three different backend (OpenMP/MPI/CUDA) and two different solvers (EquSolver/GridSolver).
 
 #### OpenMP
 
-For [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/openmp/equ.cc), it first groups the pixels into two folds by `(i+j)%2`, then parallelizes per-pixel iteration inside a group in each step. This strategy can utilize the thread-local assessment.
+As discussed before, OpenMP [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/openmp/equ.cc) first groups the pixels into two folds by `(x + y) % 2`, then parallelizes per-pixel iteration inside a group in each step.
 
-For [GridSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/openmp/grid.cc), it parallelizes per-grid iteration in each step, where the grid size is `(grid_x, grid_y)`. It simply iterates all pixels in each grid.
+This strategy can utilize the thread-local assessment because the position of four neighborhood become closer. However, it needs to go over the entire array twice because of the split of pixels. In some cases, such as CUDA, this approach introduces an overhead that exceeds the original computational cost. However, in OpenMP, it has a significant runtime improvement.
+
+OpenMP [GridSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/openmp/grid.cc) assigns equal amount of blocks for each threads, with size `(grid_x, grid_y)` per block. Each process simply iterates all pixels in each block independently.
+
+We use static assignment for both solvers to minimize the runtime task-assignment overhead, since the workload per pixel/grid is even.
 
 #### MPI
 
-MPI cannot use share-memory program model, so that we need to reduce the amount of data for communication. Each process is only responsible for a part of computation, and synchronized with other process per `mpi_sync_interval` steps.
+MPI cannot use share-memory program model. We need to reduce the amount of data communicated while maintaining the quality of the solution.
 
-For [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/mpi/equ.cc), it's hard to say which part of the data should be exchanged to other process, since it relabels all pixels at the very beginning of this process. We use `MPI_Bcast` to force sync all data.
+Each MPI process is only responsible for a part of computation, and synchronized with other process per `mpi_sync_interval` steps, denoted as $S$ in this section. When $S$ is too small, the synchronization overhead dominates the computation; when $S$ is too large, each process computes solution independently without global information, therefore the quality of the solution gradually deteriorates.
 
-For [GridSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/mpi/grid.cc), we use line partition: process `i` exchanges its first and last line data with process `i-1` and `i+1` separately. This strategy has a continuous memory layout to exchange, thus has less overhead comparing with block partition.
+For MPI [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/mpi/equ.cc), it's hard to say which part of the data should be exchanged to other process, since it relabels all pixels at the very beginning of this process. We assign each process with equal amount of equations and use `MPI_Bcast` to force sync all data per $S$ iterations.
 
-However, even if we don't use the synchronization in MPI (set `mpi_sync_interval` to be greater than the number of iteration), it is still slower than OpenMP and CUDA backends.
+MPI [GridSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/mpi/grid.cc) uses line partition: process `i` exchanges its first and last line data with process `i-1` and `i+1` separately per $S$ iterations. This strategy has a continuous memory layout to exchange, thus has less overhead comparing with block-level partition.
+
+The workload per pixel is small and fixed. In fact, this type of workload is not suitable for MPI.
 
 
 #### CUDA
 
+The strategy used on the CUDA backend is quite similar to OpenMP.
 
-The strategy used in CUDA backend is quite similar to OpenMP.
-
-For [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/cuda/equ.cu), it performs equation-level parallelization.
+CUDA [EquSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/cuda/equ.cu) performs equation-level parallelization. It has sequential labeling instead of grouping to two folds as OpenMP. Each block is assigned with equal amount of equations to perform Jacobi Method independently. A thread in a block performs iteration only for a single equation. We also tested the share-memory kernel, but it's much slower than non share-memory version kernel.
 
 For [GridSolver](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/cuda/grid.cu), each grid with size `(grid_x, grid_y)` will be in the same block. A thread in a block performs iteration only for a single pixel.
+
+There's no barrier in both solvers' iteration process. The reason has been discussed in Section [Share-memory Programming Model](#share-memory-programming-model).
 
 ## Experiments
 

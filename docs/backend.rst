@@ -220,7 +220,7 @@ Parallelization Strategy
 
 For
 `EquSolver <https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/openmp/equ.cc>`__,
-it first groups the pixels into two folds by ``(i+j)%2``, then
+it first groups the pixels into two folds by ``(x + y) % 2``, then
 parallelizes per-pixel iteration inside a group in each step. This
 strategy can utilize the thread-local assessment.
 
@@ -270,27 +270,29 @@ the parallelization strategy we used, see the next section.
 Parallelization Strategy
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-MPI cannot use share-memory program model, so that we need to reduce the
-amount of data for communication. Each process is only responsible for a
-part of computation, and synchronized with other process per
-``mpi_sync_interval`` steps.
+MPI cannot use share-memory program model. We need to reduce the amount
+of data communicated while maintaining the quality of the solution.
+
+Each MPI process is only responsible for a part of computation, and
+synchronized with other process per ``mpi_sync_interval`` steps, denoted
+as :math:`S` here. When :math:`S` is too small, the synchronization
+overhead dominates the computation; when :math:`S` is too large, each
+process computes solution independently without global information,
+therefore the quality of the solution gradually deteriorates.
 
 For
 `EquSolver <https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/mpi/equ.cc>`__,
 it’s hard to say which part of the data should be exchanged to other
 process, since it relabels all pixels at the very beginning of this
-process. We use ``MPI_Bcast`` to force sync all data.
+process. We use ``MPI_Bcast`` to force sync all data per :math:`S`
+iterations.
 
 For
 `GridSolver <https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/mpi/grid.cc>`__,
 we use line partition: process ``i`` exchanges its first and last line
-data with process ``i-1`` and ``i+1`` separately. This strategy has a
-continuous memory layout to exchange, thus has less overhead comparing
-with block partition.
-
-However, even if we don’t use the synchronization in MPI (set
-``mpi_sync_interval`` to be greater than the number of iteration), it is
-still slower than OpenMP and CUDA backends.
+data with process ``i-1`` and ``i+1`` separately per :math:`S`
+iterations. This strategy has a continuous memory layout to exchange,
+thus has less overhead comparing with block-level partition.
 
 CUDA
 ----
@@ -339,7 +341,7 @@ For CUDA GridSolver, you also need to specify ``--grid-x`` and
 Parallelization Strategy
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The strategy used in CUDA backend is quite similar to OpenMP.
+The strategy used on the CUDA backend is quite similar to OpenMP.
 
 For
 `EquSolver <https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/fpie/core/cuda/equ.cu>`__,
