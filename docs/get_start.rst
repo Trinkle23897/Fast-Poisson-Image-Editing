@@ -192,7 +192,7 @@ EquSolver vs GridSolver
 Usage: ``--method {equ,grid}``
 
 EquSolver directly constructs the equations :math:`(4-A)\vec{x}=\vec{b}`
-and use Jacobi method to get the solution via
+by re-labeling the pixel, and use Jacobi method to get the solution via
 :math:`\vec{x}'=(A\vec{x}+\vec{b})/4`.
 
 GridSolver uses the same Jacobi iteration, however, it keeps the 2D
