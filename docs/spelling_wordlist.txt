@@ -1,4 +1,5 @@
 parallelizes
+parallelized
 parallelization
 pseudocode
 py
@@ -24,3 +25,5 @@ nvcc
 benchmarking
 Equ
 src
+Pérez
+Gangnet
