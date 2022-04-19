@@ -381,6 +381,11 @@ circle9  579x579   335241   262341            |image12|
 circle10 1157x1157 1338649  1049489           |image13|
 ======== ========= ======== ================= =========
 
+We try to keep the number of unmasked pixels of circleX and squareX to
+be the same level. For EquSolver there’s no difference, but for
+GridSolver it cannot be ignored, since it needs to process all pixels no
+matter it is masked.
+
 Metric
 ^^^^^^
 
@@ -389,9 +394,15 @@ is derived by
 ``total time / total number of iteration / number of pixel``. The
 smaller the TpO, the more efficient the parallel algorithm is.
 
-The detail of the following experiment (command and table) can be found
-at `benchmark <./benchmark.html>`__. For simplicity, we only demonstrate
-the figure in the following sections.
+Result
+^^^^^^
+
+We use all seven backend to run benchmark experiments. ``GCC``
+(single-thread C++ implementation) is the baseline. The detail of the
+following experiment (command and table) can be found at
+`Benchmark <./benchmark.html>`__ page. For simplicity, we only
+demonstrate the plot in the following sections. All plots are with
+log-log scale.
 
 |image14|
 
@@ -424,15 +435,45 @@ the figure in the following sections.
    -  Was your choice of machine target sound? (If you chose a GPU,
       would a CPU have been a better choice? Or vice versa.)
 
-Analysis for 3rd-party Backend: NumPy, Numba, Taichi
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Analysis for 3rd-party Backend
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-numpy vs numba: hard to say
+NumPy
+^^^^^
 
-numpy vs gcc: gcc is much faster
+NumPy is 10~11x slower than GCC with EquSolver, and 8~9x slower than GCC
+with GridSolver. This result indicates the overhead in NumPy solver is
+not negligible. Each iteration it needs to transfer data between C and
+Python repeatedly, and create some temporary array to calculate the
+result. It cannot utilize the memory layout even though we have already
+use vectorized operation for all computations.
 
-taichi: cpu: equal or better than gcc; gpu: good performance; both of
-them need a large amount of data to show its advantage
+Numba
+^^^^^
+
+Numba is a just-in-time compiler for numerical functions in Python. For
+EquSolver, Numba is about twice faster than NumPy; however, for
+GridSolver, Numba is about twice slower than NumPy. This result shows
+Numba cannot provide a general speedup for any NumPy operations, not to
+mention it is still slower than GCC.
+
+Taichi
+^^^^^^
+
+Taichi is an open-source, imperative, parallel programming language for
+high-performance numerical computation. If we use Taichi with a small
+size input image, it won’t get too much benefit. However, when
+increasing the problem size to a very large scale, the advantage becomes
+much clear. We think it is because of pre-processing step in Taichi.
+
+With CPU backend, EquSolver is faster than GCC, while GridSolver’s
+performance is almost equal to GCC. This shows the access pattern
+largely affects the actual performance.
+
+With GPU backend, though the TpO is twice slower than CUDA with
+extremely large-scale input, it is still faster than any other backend.
+We are quite interested about other 3rd-party GPU solution, and leave it
+as future work.
 
 Analysis for Non 3rd-party Backend: OpenMP, MPI, CUDA
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -463,6 +504,12 @@ Case study: CUDA
 ~~~~~~~~~~~~~~~~
 
 |image17|
+
+Contribution
+------------
+
+The contribution for each group member can be found in
+`GitHub <https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/graphs/contributors>`__.
 
 REFERENCE
 ---------
