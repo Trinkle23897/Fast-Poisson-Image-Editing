@@ -6,7 +6,7 @@
 
 > Jiayi Weng (jiayiwen), Zixu Chen (zixuc)
 
-[Poisson Image Editing](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) is a technique that can blend two images together without artifacts. Given a source image and its corresponding mask, and a coordination on target image, this algorithm can always generate amazing result.
+[Poisson Image Editing](https://www.cs.jhu.edu/~misha/Fall07/Papers/Perez03.pdf) is a technique that can fuse two images together without producing artifacts. Given a source image and its corresponding mask, as well as a coordination on the target image, the algorithm always yields amazing result.
 
 This project aims to provide a fast poisson image editing algorithm (based on [Jacobi Method](https://en.wikipedia.org/wiki/Jacobi_method)) that can utilize multi-core CPU or GPU to handle a high-resolution image input.
 
@@ -101,7 +101,7 @@ For other usage, please run `fpie -h` or `fpie-gui -h` to see the hint.
 
 ![](https://fpie.readthedocs.io/en/main/_images/benchmark.png)
 
-See [benchmark result](https://fpie.readthedocs.io/en/main/benchmark.html).
+See [benchmark result](https://fpie.readthedocs.io/en/main/benchmark.html) and [report](https://fpie.readthedocs.io/en/main/report.html#result-and-analysis).
 
 ## Algorithm Detail
 
@@ -111,7 +111,7 @@ The gradient is computed by
 
 ![](https://latex.codecogs.com/svg.latex?\nabla(x,y)=4I(x,y)-I(x-1,y)-I(x,y-1)-I(x+1,y)-I(x,y+1))
 
-After computing the gradient in source image, the algorithm tries to solve the following problem: given the gradient and the boundary value, calculate the approximate solution that meets the requirement, i.e., to keep target image's gradient as similar as the source image. It can be formulated as ![](https://latex.codecogs.com/svg.latex?{(4-A)\vec{x}=\vec{b}}), where ![](https://latex.codecogs.com/svg.latex?{A\in\mathbb{R}^{N\times%20N},\vec{x}\in\mathbb{R}^N,\vec{b}\in\mathbb{R}^N}), N is the number of pixels in the mask, A is a giant sparse matrix because each line of A only contains at most 4 non-zero value (neighborhood), b is the gradient from source image, and x is the result value.
+After calculating the gradient in source image, the algorithm tries to solve the following problem: given the gradient and the boundary value, calculate the approximate solution that meets the requirement, i.e., to keep target image's gradient as similar as the source image. It can be formulated as ![](https://latex.codecogs.com/svg.latex?{(4-A)\vec{x}=\vec{b}}), where ![](https://latex.codecogs.com/svg.latex?{A\in\mathbb{R}^{N\times%20N},\vec{x}\in\mathbb{R}^N,\vec{b}\in\mathbb{R}^N}), N is the number of pixels in the mask, A is a giant sparse matrix because each line of A only contains at most 4 non-zero value (neighborhood), b is the gradient from source image, and x is the result value.
 
 N is always a large number, i.e., greater than 50k, so the Gauss-Jordan Elimination cannot be directly applied here because of the high time complexity O(N^3). People use [Jacobi Method](https://en.wikipedia.org/wiki/Jacobi_method) to solve the problem. Thanks to the sparsity of matrix A, the overall time complexity is O(MN) where M is the number of iteration performed by poisson image editing.
 
