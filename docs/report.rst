@@ -337,17 +337,70 @@ Model <#share-memory-programming-model>`__.
 Experiments
 -----------
 
+Experiment Setting
+~~~~~~~~~~~~~~~~~~
+
+Hardware and Software
+^^^^^^^^^^^^^^^^^^^^^
+
+We use GHC83 to run all of the following experiments. Here is the
+hardware and software configuration:
+
+-  OS: Red Hat Enterprise Linux Workstation 7.9 (Maipo)
+-  CPU: 8x Intel(R) Core(TM) i7-9700 CPU @ 3.00GHz
+-  GPU: GeForce RTX 2080 8G
+-  Python: 3.6.8
+-  Python package version:
+
+   -  numpy==1.19.5
+   -  opencv-python==4.5.5.64
+   -  mpi4py==3.1.3
+   -  numba==0.53.1
+   -  taichi==1.0.0
+
+Data
+^^^^
+
+We generate 10 images for benchmarking performance, 5 square and 5
+circle. The script is
+`tests/data.py <https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/tests/data.py>`__.
+You can find the detail information in this table:
+
+======== ========= ======== ================= =========
+ID       Size      # pixels # unmasked pixels Image
+======== ========= ======== ================= =========
+square6  66x66     4356     4356              |image4|
+square7  130x130   16900    16900             |image5|
+square8  258x258   66564    66564             |image6|
+square9  514x514   264196   264196            |image7|
+square10 1026x1026 1052676  1052676           |image8|
+circle6  74x74     5476     4291              |image9|
+circle7  146x146   21316    16727             |image10|
+circle8  290x290   84100    66043             |image11|
+circle9  579x579   335241   262341            |image12|
+circle10 1157x1157 1338649  1049489           |image13|
+======== ========= ======== ================= =========
+
+Metric
+^^^^^^
+
+We measure the performance by “Time per Op” (TpO for short). This metric
+is derived by
+``total time / total number of iteration / number of pixel``. The
+smaller the TpO, the more efficient the parallel algorithm is.
+
+The detail of the following experiment (command and table) can be found
+at `benchmark <./benchmark.html>`__. For simplicity, we only demonstrate
+the figure in the following sections.
+
+|image14|
+
 -  RESULTS: How successful were you at achieving your goals? We expect
    results sections to differ from project to project, but we expect
    your evaluation to be very thorough (your project evaluation is a
    great way to demonstrate you understood topics from this course).
    Here are a few ideas:
 
-   -  If your project was optimizing an algorithm, please define how you
-      measured performance. Is it wall-clock time? Speedup? An
-      application specific rate? (e.g., moves per second, images/sec)
-   -  Please also describe your experimental setup. What were the size
-      of the inputs? How were requests generated?
    -  Provide graphs of speedup or execute time. Please precisely define
       the configurations being compared. Is your baseline
       single-threaded CPU code? It is an optimized parallel
@@ -371,14 +424,8 @@ Experiments
    -  Was your choice of machine target sound? (If you chose a GPU,
       would a CPU have been a better choice? Or vice versa.)
 
-If the GridSolver’s parameter ``grid_x`` and ``grid_y`` is carefully
-tuned, it can always perform better than EquSolver with different
-backend configuration.
-
-|image4|
-
-Benchmark Analysis for 3rd-party Backend
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Analysis for 3rd-party Backend: NumPy, Numba, Taichi
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 numpy vs numba: hard to say
 
@@ -387,28 +434,35 @@ numpy vs gcc: gcc is much faster
 taichi: cpu: equal or better than gcc; gpu: good performance; both of
 them need a large amount of data to show its advantage
 
-Benchmark Analysis for Non 3rd-party Backend
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Analysis for Non 3rd-party Backend: OpenMP, MPI, CUDA
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 OpenMP and MPI can achieve almost the same speed. MPI’s converge speed
 is slower.
 
 CUDA is super fast
 
+EquSolver vs GridSolver
+~~~~~~~~~~~~~~~~~~~~~~~
+
+If the GridSolver’s parameter ``grid_x`` and ``grid_y`` is carefully
+tuned, it can always perform better than EquSolver with different
+backend configuration.
+
 Case study: OpenMP
 ~~~~~~~~~~~~~~~~~~
 
-|image5|
+|image15|
 
 Case study: MPI
 ~~~~~~~~~~~~~~~
 
-|image6|
+|image16|
 
 Case study: CUDA
 ~~~~~~~~~~~~~~~~
 
-|image7|
+|image17|
 
 REFERENCE
 ---------
@@ -431,7 +485,17 @@ Graphics (TOG)* 38.6 (2019): 1-16.
 .. |image1| image:: https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_mask.png
 .. |image2| image:: https://github.com/Trinkle23897/DIP2018/raw/master/1/image_fusion/test2_target.png
 .. |image3| image:: /_static/images/result2.jpg
-.. |image4| image:: /_static/images/benchmark.png
-.. |image5| image:: /_static/images/openmp.png
-.. |image6| image:: /_static/images/mpi.png
-.. |image7| image:: /_static/images/cuda.png
+.. |image4| image:: /_static/images/square6.png
+.. |image5| image:: /_static/images/square7.png
+.. |image6| image:: /_static/images/square8.png
+.. |image7| image:: /_static/images/square9.png
+.. |image8| image:: /_static/images/square10.png
+.. |image9| image:: /_static/images/circle6.png
+.. |image10| image:: /_static/images/circle7.png
+.. |image11| image:: /_static/images/circle8.png
+.. |image12| image:: /_static/images/circle9.png
+.. |image13| image:: /_static/images/circle10.png
+.. |image14| image:: /_static/images/benchmark.png
+.. |image15| image:: /_static/images/openmp.png
+.. |image16| image:: /_static/images/mpi.png
+.. |image17| image:: /_static/images/cuda.png

@@ -19,7 +19,7 @@ utilize multi-core CPU or GPU to handle a high-resolution image input.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Contents
 
    get_start
    backend

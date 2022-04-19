@@ -15,6 +15,7 @@ Python package version:
 - numpy==1.19.5
 - opencv-python==4.5.5.64
 - mpi4py==3.1.3
+- numba==0.53.1
 - taichi==1.0.0
 
 ## Problem size vs backend

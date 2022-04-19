@@ -201,20 +201,59 @@ There's no barrier in both solvers' iteration process. The reason has been discu
 
 ## Experiments
 
+### Experiment Setting
+
+#### Hardware and Software
+
+We use GHC83 to run all of the following experiments. Here is the hardware and software configuration:
+
+- OS: Red Hat Enterprise Linux Workstation 7.9 (Maipo)
+- CPU: 8x Intel(R) Core(TM) i7-9700 CPU @ 3.00GHz
+- GPU: GeForce RTX 2080 8G
+- Python: 3.6.8
+- Python package version:
+  - numpy==1.19.5
+  - opencv-python==4.5.5.64
+  - mpi4py==3.1.3
+  - numba==0.53.1
+  - taichi==1.0.0
+
+#### Data
+
+We generate 10 images for benchmarking performance, 5 square and 5 circle. The script is [tests/data.py](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/blob/main/tests/data.py). You can find the detail information in this table:
+
+| ID       | Size      | # pixels | # unmasked pixels | Image                             |
+| -------- | --------- | -------- | ----------------- | --------------------------------- |
+| square6  | 66x66     | 4356     | 4356              | ![](/_static/images/square6.png)  |
+| square7  | 130x130   | 16900    | 16900             | ![](/_static/images/square7.png)  |
+| square8  | 258x258   | 66564    | 66564             | ![](/_static/images/square8.png)  |
+| square9  | 514x514   | 264196   | 264196            | ![](/_static/images/square9.png)  |
+| square10 | 1026x1026 | 1052676  | 1052676           | ![](/_static/images/square10.png) |
+| circle6  | 74x74     | 5476     | 4291              | ![](/_static/images/circle6.png)  |
+| circle7  | 146x146   | 21316    | 16727             | ![](/_static/images/circle7.png)  |
+| circle8  | 290x290   | 84100    | 66043             | ![](/_static/images/circle8.png)  |
+| circle9  | 579x579   | 335241   | 262341            | ![](/_static/images/circle9.png)  |
+| circle10 | 1157x1157 | 1338649  | 1049489           | ![](/_static/images/circle10.png) |
+
+#### Metric
+
+We measure the performance by "Time per Op" (TpO for short). This metric is derived by `total time / total number of iteration / number of pixel`. The smaller the TpO, the more efficient the parallel algorithm is.
+
+The detail of the following experiment (command and table) can be found at [benchmark](./benchmark.html). For simplicity, we only demonstrate the figure in the following sections.
+
+![](/_static/images/benchmark.png)
+
+
+
 - RESULTS: How successful were you at achieving your goals? We expect results sections to differ from project to project, but we expect your evaluation to be very thorough (your project evaluation is a great way to demonstrate you understood topics from this course). Here are a few ideas:
-  - If your project was optimizing an algorithm, please define how you measured performance. Is it wall-clock time? Speedup? An application specific rate? (e.g., moves per second, images/sec)
-  - Please also describe your experimental setup. What were the size of the inputs? How were requests generated?
   - Provide graphs of speedup or execute time. Please precisely define the configurations being compared. Is your baseline single-threaded CPU code? It is an optimized parallel implementation for a single CPU?
   - Recall the importance of problem size. Is it important to report results for different problem sizes for your project? Do different workloads exhibit different execution behavior?
   - **IMPORTANT:** What limited your speedup? Is it a lack of parallelism? (dependencies) Communication or synchronization overhead? Data transfer (memory-bound or bus transfer bound). Poor SIMD utilization due to divergence? As you try and answer these questions, we strongly prefer that you provide data and measurements to support your conclusions. If you are merely speculating, please state this explicitly. Performing a solid analysis of your implementation is a good way to pick up credit even if your optimization efforts did not yield the performance you were hoping for.
   - Deeper analysis: Can you break execution time of your algorithm into a number of distinct components. What percentage of time is spent in each region? Where is there room to improve?
   - Was your choice of machine target sound? (If you chose a GPU, would a CPU have been a better choice? Or vice versa.)
 
-If the GridSolver's parameter `grid_x` and `grid_y` is carefully tuned, it can always perform better than EquSolver with different backend configuration.
 
-![](/_static/images/benchmark.png)
-
-### Benchmark Analysis for 3rd-party Backend
+### Analysis for 3rd-party Backend: NumPy, Numba, Taichi
 
 numpy vs numba: hard to say
 
@@ -222,11 +261,15 @@ numpy vs gcc: gcc is much faster
 
 taichi: cpu: equal or better than gcc; gpu: good performance; both of them need a large amount of data to show its advantage
 
-### Benchmark Analysis for Non 3rd-party Backend
+### Analysis for Non 3rd-party Backend: OpenMP, MPI, CUDA
 
 OpenMP and MPI can achieve almost the same speed. MPI's converge speed is slower.
 
 CUDA is super fast
+
+### EquSolver vs GridSolver
+
+If the GridSolver's parameter `grid_x` and `grid_y` is carefully tuned, it can always perform better than EquSolver with different backend configuration.
 
 ### Case study: OpenMP
 
