@@ -26,7 +26,7 @@ Schedule:
 
 - [x] 3.28 - 4.9: implement parallel version of PIE (OpenMP, MPI, CUDA)
 - [x] 4.11 - 4.22: benchmarking, optimizing, write Python interactive frontend
-- [ ] 4.25 - 5.5: write report
+- [x] 4.25 - 5.5: write report
 
 ## Milestone
 

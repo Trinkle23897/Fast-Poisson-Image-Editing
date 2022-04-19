@@ -147,4 +147,6 @@ The following example shows the difference between these three methods:
 
 ## Miscellaneous (for 15-618 course project)
 
-See [docs/misc.md](docs/misc.md).
+Project proposal and milestone: [docs/misc.md](docs/misc.md).
+
+Final report: https://fpie.readthedocs.io/en/main/report.html
