@@ -277,7 +277,7 @@ With GPU backend, though the TpO is twice slower than CUDA with extremely large-
 
 #### Analysis for Non 3rd-party Backend
 
-TL; DR: OpenMP and MPI can achieve almost the same speed, but MPI's converge speed is slower because of the synchronization trade-off. CUDA is super fast in all conditions.
+TL; DR: OpenMP and MPI can achieve almost the same speed, but MPI's converge speed is slower because of the synchronization trade-off. CUDA is the fastest in all conditions.
 
 ##### OpenMP
 
@@ -298,11 +298,13 @@ EquSolver is 8\~9x faster than GCC; GridSolver is 6\~7x faster than GCC. However
 
 ![](/_static/images/openmp0.png)
 
+We also investigated the impact of the number of threads on the performance of the OpenMP backend. There is a linear speedup when the aforementioned cache-miss problem does not occur; when the cache-miss problem is encountered, its performance quickly saturates, especially for EquSolver. We think the reason behind is GridSolver can better use the locality comparing with EquSolver, since it has no re-labeling pixel process and keep all of the 2D information.
+
 ![](/_static/images/openmp.png)
 
 ##### MPI
 
-EquSolver and GridSolver is 6\~7x faster than GCC. Like OpenMP, there is a huge performance drop. The threshold is 300k \~ 400k for EquSolver and 400k \~ 500k for GridSolver.
+EquSolver and GridSolver is 6\~7x faster than GCC. Like OpenMP, there is a huge performance drop. The threshold is 300k \~ 400k for EquSolver and 400k \~ 500k for GridSolver. Fortunately, the following table and plot confirms our assumption of cache-miss:
 
 <!--mpi-->
 | MPI | # of pixels      | 100000 | 200000 | 300000 | 400000 | 500000 | 600000 | 700000 | 800000 | 900000 | 1000000 |
@@ -318,11 +320,17 @@ EquSolver and GridSolver is 6\~7x faster than GCC. Like OpenMP, there is a huge 
 
 ![](/_static/images/mpi0.png)
 
+A similar phenomenon occurs on the MPI backend when the number of processes is changed:
+
 ![](/_static/images/mpi.png)
 
 ##### CUDA
 
 EquSolver is 27\~44x faster than GCC; GridSolver is 38\~42x faster than GCC. The performance is consistent over different input size.
+
+We studied with the impact of different block size on CUDA EquSolver. For better demonstration, we don't use GridSolver because it needs to set two parameters `grid_x` and `grid_y`. By increasing the block size, the performance gets better first, reaches the peak, and drops down finally. The best configuration is block size = 256.
+
+When the block size is too small, it will use more grids to compute, thus the cross-grid communication overhead will be increased. When the block size is too large, though it uses less amount of grids, the cache-invalidation issue dominates -- since we don't use share memory inside this CUDA kernel and there's no barrier when calling this kernel, we guess the program frequently read values that cannot be cached, and also frequently write values to invalidate cache.
 
 ![](/_static/images/cuda.png)
 
