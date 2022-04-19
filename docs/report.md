@@ -239,66 +239,96 @@ We try to keep the number of unmasked pixels of circleX and squareX to be the sa
 
 #### Metric
 
-We measure the performance by "Time per Op" (TpO for short). This metric is derived by `total time / total number of iteration / number of pixel`. The smaller the TpO, the more efficient the parallel algorithm is.
+We measure the performance by "Time per Operation" (TpO for short) and "Cache Miss per Operation" (CMpO for short). TpO is derived by `total time / total number of iteration / number of pixel`. The smaller the TpO, the more efficient the parallel algorithm is. CMpO is derived by `total cache miss / total number of iteration / number of pixel`.
 
-#### Result
+### Result and Analysis
 
 We use all seven backend to run benchmark experiments. `GCC` (single-thread C++ implementation) is the baseline. The detail of the following experiment (command and table) can be found at [Benchmark](./benchmark.html) page. For simplicity, we only demonstrate the plot in the following sections. All plots are with log-log scale.
 
 ![](/_static/images/benchmark.png)
 
+- Provide graphs of speedup or execute time. Please precisely define the configurations being compared. Is your baseline single-threaded CPU code? It is an optimized parallel implementation for a single CPU?
+- Recall the importance of problem size. Is it important to report results for different problem sizes for your project? Do different workloads exhibit different execution behavior?
+- **IMPORTANT:** What limited your speedup? Is it a lack of parallelism? (dependencies) Communication or synchronization overhead? Data transfer (memory-bound or bus transfer bound). Poor SIMD utilization due to divergence? As you try and answer these questions, we strongly prefer that you provide data and measurements to support your conclusions. If you are merely speculating, please state this explicitly. Performing a solid analysis of your implementation is a good way to pick up credit even if your optimization efforts did not yield the performance you were hoping for.
+- Deeper analysis: Can you break execution time of your algorithm into a number of distinct components. What percentage of time is spent in each region? Where is there room to improve?
+- Was your choice of machine target sound? (If you chose a GPU, would a CPU have been a better choice? Or vice versa.)
 
+#### EquSolver vs GridSolver
 
-- RESULTS: How successful were you at achieving your goals? We expect results sections to differ from project to project, but we expect your evaluation to be very thorough (your project evaluation is a great way to demonstrate you understood topics from this course). Here are a few ideas:
-  - Provide graphs of speedup or execute time. Please precisely define the configurations being compared. Is your baseline single-threaded CPU code? It is an optimized parallel implementation for a single CPU?
-  - Recall the importance of problem size. Is it important to report results for different problem sizes for your project? Do different workloads exhibit different execution behavior?
-  - **IMPORTANT:** What limited your speedup? Is it a lack of parallelism? (dependencies) Communication or synchronization overhead? Data transfer (memory-bound or bus transfer bound). Poor SIMD utilization due to divergence? As you try and answer these questions, we strongly prefer that you provide data and measurements to support your conclusions. If you are merely speculating, please state this explicitly. Performing a solid analysis of your implementation is a good way to pick up credit even if your optimization efforts did not yield the performance you were hoping for.
-  - Deeper analysis: Can you break execution time of your algorithm into a number of distinct components. What percentage of time is spent in each region? Where is there room to improve?
-  - Was your choice of machine target sound? (If you chose a GPU, would a CPU have been a better choice? Or vice versa.)
+If the GridSolver's parameter `grid_x` and `grid_y` is carefully tuned, most of the time it can perform better than EquSolver with hand-written backend configuration (OpenMP/MPI/CUDA). The analysis will be in the following sections. However, it's hard to say which one is better by using other 3rd-party backend. This may due to the internal design of these libraries.
 
-### Analysis for 3rd-party Backend
+#### Analysis for 3rd-party Backend
 
-#### NumPy
+##### NumPy
 
 NumPy is 10\~11x slower than GCC with EquSolver, and 8\~9x slower than GCC with GridSolver. This result indicates the overhead in NumPy solver is not negligible. Each iteration it needs to transfer data between C and Python repeatedly, and create some temporary array to calculate the result. It cannot utilize the memory layout even though we have already use vectorized operation for all computations.
 
-#### Numba
+##### Numba
 
 Numba is a just-in-time compiler for numerical functions in Python. For EquSolver, Numba is about twice faster than NumPy; however, for GridSolver, Numba is about twice slower than NumPy. This result shows Numba cannot provide a general speedup for any NumPy operations, not to mention it is still slower than GCC.
 
-#### Taichi
+##### Taichi
 
 Taichi is an open-source, imperative, parallel programming language for high-performance numerical computation. If we use Taichi with a small size input image, it won't get too much benefit. However, when increasing the problem size to a very large scale, the advantage becomes much clear. We think it is because of pre-processing step in Taichi.
 
 With CPU backend, EquSolver is faster than GCC, while GridSolver's performance is almost equal to GCC. This shows the access pattern largely affects the actual performance.
 
-With GPU backend, though the TpO is twice slower than CUDA with extremely large-scale input, it is still faster than any other backend. We are quite interested about other 3rd-party GPU solution, and leave it as future work.
+With GPU backend, though the TpO is twice slower than CUDA with extremely large-scale input, it is still faster than any other backend. We are quite interested in other 3rd-party GPU solution's performance, and leave it as future work.
 
-### Analysis for Non 3rd-party Backend: OpenMP, MPI, CUDA
+#### Analysis for Non 3rd-party Backend
 
-OpenMP and MPI can achieve almost the same speed. MPI's converge speed is slower.
+TL; DR: OpenMP and MPI can achieve almost the same speed, but MPI's converge speed is slower because of the synchronization trade-off. CUDA is super fast in all conditions.
 
-CUDA is super fast
+##### OpenMP
 
-### EquSolver vs GridSolver
+EquSolver is 8\~9x faster than GCC; GridSolver is 6\~7x faster than GCC. However, there is a huge performance drop when the problem size is greater than 1M for both two solvers. The threshold is 300k \~ 400k for EquSolver and 500k \~ 600k for GridSolver. We suspect that is because of cache-miss, confirmed by the following numerical result:
 
-If the GridSolver's parameter `grid_x` and `grid_y` is carefully tuned, it can always perform better than EquSolver with different backend configuration.
+<!--openmp-->
 
-### Case study: OpenMP
+| OpenMP | # of pixels      | 100000 | 200000 | 300000 | 400000 | 500000 | 600000 | 700000 | 800000 | 900000 | 1000000 |
+| ----------------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------- | ------- |
+| EquSolver | Time (s) | 0.1912 | 0.3728 | 0.6033 | 1.073 | 2.0081 | 3.4242 | 4.1646 | 5.6254 | 6.2875 | 7.6159 |
+| EquSolver | TpO (ns) | 0.3824 | 0.3728 | 0.4022 | 0.5365 | 0.8032 | 1.1414 | 1.1899 | 1.4063 | 1.3972 | 1.5232 |
+| EquSolver | CMpO | 0.0341 | 0.0201 | 0.1104 | 0.3713 | 0.5799 | 0.6757 | 0.7356 | 0.8083 | 0.8639 | 0.9232 |
+| GridSolver | Time (s) | 0.2870 | 0.5722 | 0.8356 | 1.1321 | 1.4391 | 2.2886 | 3.0738 | 4.1967 | 5.5097 | 6.0635 |
+| GridSolver | TpO (ns) | 0.5740 | 0.5722 | 0.5571 | 0.5661 | 0.5756 | 0.7629 | 0.8782 | 1.0492 | 1.2244 | 1.2127 |
+| GridSolver | CMpO | 0.0330 | 0.0174 | 0.0148 | 0.0522 | 0.1739 | 0.3346 | 0.3952 | 0.4495 | 0.5132 | 0.5394 |
+
+<!--openmp-->
+
+![](/_static/images/openmp0.png)
 
 ![](/_static/images/openmp.png)
 
-### Case study: MPI
+##### MPI
+
+EquSolver and GridSolver is 6\~7x faster than GCC. Like OpenMP, there is a huge performance drop. The threshold is 300k \~ 400k for EquSolver and 400k \~ 500k for GridSolver.
+
+<!--mpi-->
+| MPI | # of pixels      | 100000 | 200000 | 300000 | 400000 | 500000 | 600000 | 700000 | 800000 | 900000 | 1000000 |
+| ----------------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------- | ------- |
+| EquSolver | Time (s) | 0.2696 | 0.6584 | 0.9549 | 1.6435 | 2.6920 | 3.6933 | 4.7265 | 5.7762 | 6.8305 | 7.7894  |
+| EquSolver | TpO (ns) | 0.5392 | 0.6584 | 0.6366 | 0.8218 | 1.0768 | 1.2311 | 1.3504 | 1.4441 | 1.5179 | 1.5579  |
+| EquSolver | CMpO | 0.5090 | 0.2743 | 0.2998 | 0.4646 | 0.5995 | 0.7006 | 0.7525 | 0.7951 | 0.8204 | 0.8391  |
+| GridSolver | Time (s) | 0.2994 | 0.5948 | 0.9088 | 1.3075 | 1.6024 | 2.1239 | 2.8969 | 3.7388 | 4.4776 | 5.3026  |
+| GridSolver | TpO (ns) | 0.5988 | 0.5948 | 0.6059 | 0.6538 | 0.6410 | 0.7080 | 0.8277 | 0.9347 | 0.9950 | 1.0605  |
+| GridSolver | CMpO | 0.5054 | 0.2570 | 0.1876 | 0.2008 | 0.2991 | 0.3783 | 0.4415 | 0.4866 | 0.5131 | 0.5459  |
+
+<!--mpi-->
+
+![](/_static/images/mpi0.png)
 
 ![](/_static/images/mpi.png)
 
-### Case study: CUDA
+##### CUDA
+
+EquSolver is 27\~44x faster than GCC; GridSolver is 38\~42x faster than GCC. The performance is consistent over different input size.
 
 ![](/_static/images/cuda.png)
 
 ## Contribution
 
-The contribution for each group member can be found in [GitHub](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/graphs/contributors).
+The contribution for each group member is on [GitHub](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/graphs/contributors).
 
 ## REFERENCE
 

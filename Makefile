@@ -79,7 +79,7 @@ doc-clean:
 
 md2rst:
 	pandoc docs/benchmark.md --from markdown --to rst -s -o docs/benchmark.rst
-	pandoc docs/report.md --from markdown --to rst -s -o docs/report.rst
+	pandoc docs/report.md --from markdown --to rst -s -o docs/report.rst --columns 100
 
 lint: flake8 py-format clang-format cmake-format cpplint mypy docstyle spelling
 

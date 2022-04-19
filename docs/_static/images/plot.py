@@ -3,6 +3,7 @@
 import math
 from typing import Tuple
 
+import matplotlib.ticker as ticker
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -165,8 +166,79 @@ def ablation(backend, new_col):
   g.savefig(f"{backend}.png")
 
 
+def parse_table2(raw: str):
+  data = {
+    "Backend": [],
+    "Method": [],
+    "Time per Op (ns)": [],
+    "Cache Miss per Op": [],
+    "Problem Size": [],
+    "Metric": [],
+  }
+  raw = raw.strip().splitlines()
+  backend = raw[0][1:-1].split("|")[0].strip()
+  base = list(map(int, raw[0][1:-1].split("|")[2:]))
+  raw = raw[2:]
+  for tpo, cmpo in [(raw[1], raw[2]), (raw[4], raw[5])]:
+    tpo = tpo[1:-1].split("|")
+    cmpo = cmpo[1:-1].split("|")
+    method = tpo[0].strip()
+    tpo, cmpo = list(map(float, tpo[2:])), list(map(float, cmpo[2:]))
+    for b, t, c in zip(base, tpo, cmpo):
+      data["Backend"].append(backend)
+      data["Method"].append(method)
+      data["Time per Op (ns)"].append(t)
+      data["Cache Miss per Op"].append(None)
+      data["Problem Size"].append(b)
+      data["Metric"].append("TpO")
+      data["Backend"].append(backend)
+      data["Method"].append(method)
+      data["Time per Op (ns)"].append(None)
+      data["Cache Miss per Op"].append(c)
+      data["Problem Size"].append(b)
+      data["Metric"].append("CMpO")
+  return data
+
+
+def ablation2(backend):
+  sep = f"<!--{backend}-->"
+  raw = open("../../report.md").read().split(sep)
+  data = parse_table2(raw[1])
+  data = pd.DataFrame(data)
+  print(data)
+  g = sns.FacetGrid(
+    data,
+    col="Method",
+    hue="Metric",
+    height=3,
+    aspect=1.6,
+    sharex=False,
+    sharey=False,
+  )
+
+  def mapping(x, y, y2, **kwargs):
+    plot = sns.lineplot(x=x, y=y, **kwargs)
+    sns.lineplot(x=x, y=y2, **kwargs)
+    plot.xaxis.set_major_formatter(ticker.EngFormatter())
+
+  g.map(
+    mapping,
+    "Problem Size",
+    "Time per Op (ns)",
+    "Cache Miss per Op",
+    marker="o",
+  )
+
+  g.set_axis_labels("Problem Size", "TpO (ns) and CMpO")
+  g.add_legend(bbox_to_anchor=(0.52, 1.02), ncol=7)
+
+  g.savefig(f"{backend}0.png")
+
+
 if __name__ == '__main__':
   benchmark()
   ablation("openmp", "# of Threads")
   ablation("mpi", "# of Workers")
   ablation("cuda", "# of Threads per Block")
+  ablation2("openmp")
+  ablation2("mpi")
