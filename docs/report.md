@@ -2,7 +2,7 @@
 
 ## Summary
 
-We have implemented a parallelized Poisson image editor with Jacobi method. It can compute results using seven extensions: NumPy, [Numba](https://github.com/numba/numba), [Taichi](https://github.com/taichi-dev/taichi), single-thread c++, OpenMP, MPI, and CUDA. In terms of performance, we have a detailed benchmarking result where the CUDA backend can achieve 31 to 42 times speedup on GHC machines compared to the single-threaded c++ implementation. In terms of user-experience, we have a simple GUI to demonstrate the results interactively, released a standard [PyPI package](https://pypi.org/project/fpie/), and provide [a website](https://fpie.readthedocs.io/) for project documentation.
+We have implemented a parallelized Poisson image editor with Jacobi method. It can compute results using seven extensions: NumPy, [Numba](https://github.com/numba/numba), [Taichi](https://github.com/taichi-dev/taichi), single-threaded c++, OpenMP, MPI, and CUDA. In terms of performance, we have a detailed benchmarking result where the CUDA backend can achieve 31 to 42 times speedup on GHC machines compared to the single-threaded c++ implementation. In terms of user-experience, we have a simple GUI to demonstrate the results interactively, released a standard [PyPI package](https://pypi.org/project/fpie/), and provide [a website](https://fpie.readthedocs.io/) for project documentation.
 
 | Source image                                                 | Mask image                                                   | Target image                                                 | Result image                     |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | -------------------------------- |
@@ -243,7 +243,7 @@ We measure the performance by "Time per Operation" (TpO for short) and "Cache Mi
 
 ### Result and Analysis
 
-We use all seven backend to run benchmark experiments. `GCC` (single-thread C++ implementation) is the baseline. Details of the following experiment (commands and tables) can be found on [Benchmark](./benchmark.html) page. For the sake of simplicity, we only demonstrate the plot in the following sections. Most plots are in logarithmic scale.
+We use all seven backend to run benchmark experiments. `GCC` (single-threaded C++ implementation) is the baseline. Details of the following experiment (commands and tables) can be found on [Benchmark](./benchmark.html) page. For the sake of simplicity, we only demonstrate the plot in the following sections. Most plots are in logarithmic scale.
 
 ![](/_static/images/benchmark.png)
 
@@ -336,8 +336,10 @@ Each group member's contributions are on [GitHub](https://github.com/Trinkle2389
 
 [1] Pérez, Patrick, Michel Gangnet, and Andrew Blake. "Poisson image editing." *ACM SIGGRAPH 2003 Papers*. 2003. 313-318.
 
-[2] Harris, Charles R., et al. "Array programming with NumPy." *Nature* 585.7825 (2020): 357-362.
+[2] Jacobi Method, https://en.wikipedia.org/wiki/Jacobi_method
 
-[3] Lam, Siu Kwan, Antoine Pitrou, and Stanley Seibert. "Numba: A llvm-based python jit compiler." *Proceedings of the Second Workshop on the LLVM Compiler Infrastructure in HPC*. 2015.
+[3] Harris, Charles R., et al. "Array programming with NumPy." *Nature* 585.7825 (2020): 357-362.
 
-[4] Hu, Yuanming, et al. "Taichi: a language for high-performance computation on spatially sparse data structures." *ACM Transactions on Graphics (TOG)* 38.6 (2019): 1-16.
+[4] Lam, Siu Kwan, Antoine Pitrou, and Stanley Seibert. "Numba: A llvm-based python jit compiler." *Proceedings of the Second Workshop on the LLVM Compiler Infrastructure in HPC*. 2015.
+
+[5] Hu, Yuanming, et al. "Taichi: a language for high-performance computation on spatially sparse data structures." *ACM Transactions on Graphics (TOG)* 38.6 (2019): 1-16.
