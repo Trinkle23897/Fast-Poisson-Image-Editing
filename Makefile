@@ -32,7 +32,7 @@ cmake-format-install:
 
 doc-install:
 	$(call check_install, pydocstyle)
-	$(call check_install, doc8)
+	$(call check_install_extra, doc8, "doc8<1")
 	$(call check_install, sphinx)
 	$(call check_install, sphinx_rtd_theme)
 	$(call check_install_extra, sphinxcontrib.spelling, sphinxcontrib.spelling pyenchant)
