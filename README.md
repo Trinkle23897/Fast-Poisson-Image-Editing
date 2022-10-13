@@ -12,12 +12,9 @@ This project aims to provide a fast poisson image editing algorithm (based on [J
 
 ## Installation
 
-### Linux/macOS
+### Linux/macOS/Windows
 
 ```bash
-# install cmake >= 3.4
-# if you don't have sudo (like GHC), install cmake from source
-# on macOS, type `brew install cmake`
 $ pip install fpie
 
 # or install from source
