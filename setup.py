@@ -74,7 +74,8 @@ setup(
     "console_scripts": ["fpie=fpie.cli:main", "fpie-gui=fpie.gui:main"],
   },
   install_requires=[
-    "opencv-python>=4.5",
+    "cmake>=3.4",
+    "opencv-python-headless>=4.2",
     "numpy>=1.18",
     # these packages are universal
     "taichi>=1.0",
@@ -108,5 +109,6 @@ setup(
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
   ],
 )
