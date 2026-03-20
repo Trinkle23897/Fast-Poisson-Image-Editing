@@ -41,13 +41,16 @@ class CMakeBuild(build_ext):
         super().initialize_options()
         self._cmake_output_dirs = {}
 
-    def _iter_native_artifacts(self, output_dir: Path):
+    def _iter_native_artifacts(self, *search_roots: Path):
         seen = set()
-        for suffix in importlib.machinery.EXTENSION_SUFFIXES:
-            for artifact in sorted(output_dir.glob(f"core_*{suffix}")):
-                if artifact.is_file() and artifact not in seen:
-                    seen.add(artifact)
-                    yield artifact
+        for output_dir in search_roots:
+            if not output_dir.exists():
+                continue
+            for suffix in importlib.machinery.EXTENSION_SUFFIXES:
+                for artifact in sorted(output_dir.rglob(f"core_*{suffix}")):
+                    if artifact.is_file() and artifact not in seen:
+                        seen.add(artifact)
+                        yield artifact
 
     def build_extension(self, ext):
         """Build an extension with CMake and ``make``."""
@@ -72,6 +75,10 @@ class CMakeBuild(build_ext):
                 ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp
             )
             subprocess.check_call(["make"] + build_args, cwd=self.build_temp)
+            # Some CMake generators place per-target outputs under nested build
+            # directories, so copy any produced backend modules into build_lib.
+            for artifact in self._iter_native_artifacts(Path(self.build_temp)):
+                shutil.copy2(artifact, extdir / artifact.name)
         except Exception as e:
             print(f"{type(e)}: {e}")
             pass
@@ -112,7 +119,6 @@ setup(
     long_description_content_type="text/markdown",
     python_requires=">=3.10,<3.14",
     packages=find_packages(exclude=["tests", "tests.*"]),
-    package_data={"fpie": ["core_*.so", "core_*.pyd"]},
     entry_points={
         "console_scripts": ["fpie=fpie.cli:main", "fpie-gui=fpie.gui:main"],
     },
