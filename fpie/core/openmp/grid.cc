@@ -35,18 +35,15 @@ inline void OpenMPGridSolver::update_equation(int id) {
   int id1 = off3 - 3;
   int id2 = off3 + 3;
   int id3 = off3 + m3;
-  next_tgt[off3 + 0] =
-      (grad[off3 + 0] + tgt[id0 + 0] + tgt[id1 + 0] + tgt[id2 + 0] +
-       tgt[id3 + 0]) /
-      4.0;
-  next_tgt[off3 + 1] =
-      (grad[off3 + 1] + tgt[id0 + 1] + tgt[id1 + 1] + tgt[id2 + 1] +
-       tgt[id3 + 1]) /
-      4.0;
-  next_tgt[off3 + 2] =
-      (grad[off3 + 2] + tgt[id0 + 2] + tgt[id1 + 2] + tgt[id2 + 2] +
-       tgt[id3 + 2]) /
-      4.0;
+  next_tgt[off3 + 0] = (grad[off3 + 0] + tgt[id0 + 0] + tgt[id1 + 0] +
+                        tgt[id2 + 0] + tgt[id3 + 0]) /
+                       4.0;
+  next_tgt[off3 + 1] = (grad[off3 + 1] + tgt[id0 + 1] + tgt[id1 + 1] +
+                        tgt[id2 + 1] + tgt[id3 + 1]) /
+                       4.0;
+  next_tgt[off3 + 2] = (grad[off3 + 2] + tgt[id0 + 2] + tgt[id1 + 2] +
+                        tgt[id2 + 2] + tgt[id3 + 2]) /
+                       4.0;
 }
 
 void OpenMPGridSolver::calc_error() {
