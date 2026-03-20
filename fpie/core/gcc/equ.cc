@@ -1,3 +1,5 @@
+#include <tuple>
+
 #include "solver.h"
 
 GCCEquSolver::GCCEquSolver() : maskbuf(NULL), imgbuf(NULL), EquSolver() {}

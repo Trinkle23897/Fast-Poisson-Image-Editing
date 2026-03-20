@@ -1,6 +1,7 @@
 #ifndef FPIE_CORE_CUDA_SOLVER_H_
 #define FPIE_CORE_CUDA_SOLVER_H_
 
+#include <iostream>
 #include <tuple>
 
 #include "base_solver.h"

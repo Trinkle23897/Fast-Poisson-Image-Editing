@@ -28,6 +28,6 @@ def read_images(
   if os.path.exists(mask_name):
     mask = read_image(mask_name)
   else:
-    warnings.warn("No mask file found, use default setting")
+    warnings.warn("No mask file found, use default setting", stacklevel=2)
     mask = np.zeros_like(src) + 255
   return src, mask, tgt

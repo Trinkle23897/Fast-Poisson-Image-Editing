@@ -78,7 +78,7 @@ setup(
     "console_scripts": ["fpie=fpie.cli:main", "fpie-gui=fpie.gui:main"],
   },
   install_requires=[
-    "cmake>=3.4",
+    "cmake>=3.5",
     "opencv-python-headless>=4.2",
     "numpy>=1.18",
     # these packages are universal

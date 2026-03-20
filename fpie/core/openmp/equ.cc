@@ -1,5 +1,7 @@
 #include <omp.h>
 
+#include <tuple>
+
 #include "solver.h"
 
 OpenMPEquSolver::OpenMPEquSolver(int n_cpu)

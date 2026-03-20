@@ -1,5 +1,7 @@
 #include <mpi.h>
 
+#include <tuple>
+
 #include "solver.h"
 
 MPIGridSolver::MPIGridSolver(int min_interval)

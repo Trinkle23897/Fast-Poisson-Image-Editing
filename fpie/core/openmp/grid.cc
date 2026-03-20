@@ -1,5 +1,7 @@
 #include <omp.h>
 
+#include <tuple>
+
 #include "solver.h"
 
 OpenMPGridSolver::OpenMPGridSolver(int grid_x, int grid_y, int n_cpu)

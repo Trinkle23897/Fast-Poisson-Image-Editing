@@ -1,7 +1,7 @@
 # copy from
 # https://github.com/mwydmuch/ViZDoom/blob/master/cmake_modules/GitUtils.cmake
 
-cmake_minimum_required(VERSION 2.9)
+cmake_minimum_required(VERSION 3.5)
 
 include(CMakeParseArguments)
 

@@ -1,5 +1,7 @@
 #include <mpi.h>
 
+#include <tuple>
+
 #include "solver.h"
 
 MPIEquSolver::MPIEquSolver(int min_interval)
