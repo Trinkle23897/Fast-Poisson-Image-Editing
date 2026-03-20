@@ -11,13 +11,15 @@ OpenMPGridSolver::OpenMPGridSolver(int grid_x, int grid_y, int n_cpu)
 
 OpenMPGridSolver::~OpenMPGridSolver() {
   if (tmp != NULL) {
-    delete[] tmp, imgbuf;
+    delete[] tmp;
+    delete[] imgbuf;
   }
 }
 
 void OpenMPGridSolver::post_reset() {
   if (tmp != NULL) {
-    delete[] tmp, imgbuf;
+    delete[] tmp;
+    delete[] imgbuf;
   }
   tmp = new float[N * m3];
   imgbuf = new unsigned char[N * m3];

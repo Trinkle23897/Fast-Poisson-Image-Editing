@@ -36,7 +36,10 @@ void MPIGridSolver::sync() {
   MPI_Bcast(&M, 1, MPI_INT, 0, MPI_COMM_WORLD);
   if (proc_id > 0) {
     if (mask != NULL) {
-      delete[] mask, tgt, grad, imgbuf;
+      delete[] mask;
+      delete[] tgt;
+      delete[] grad;
+      delete[] imgbuf;
     }
     m3 = M * 3;
     mask = new int[N * M];

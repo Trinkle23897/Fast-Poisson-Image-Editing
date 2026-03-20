@@ -17,7 +17,8 @@ MPIEquSolver::MPIEquSolver(int min_interval)
 
 MPIEquSolver::~MPIEquSolver() {
   if (maskbuf != NULL) {
-    delete[] maskbuf, imgbuf;
+    delete[] maskbuf;
+    delete[] imgbuf;
   }
   if (tmp != NULL) {
     delete[] tmp;
@@ -47,7 +48,8 @@ py::array_t<int> MPIEquSolver::partition(py::array_t<int> mask) {
 
 void MPIEquSolver::post_reset() {
   if (tmp != NULL) {
-    delete[] tmp, imgbuf;
+    delete[] tmp;
+    delete[] imgbuf;
   }
   tmp = new float[N * 3];
   imgbuf = new unsigned char[N * 3];
@@ -63,7 +65,11 @@ void MPIEquSolver::sync() {
   MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
   if (proc_id > 0) {
     if (A != NULL) {
-      delete[] A, B, X, tmp, imgbuf;
+      delete[] A;
+      delete[] B;
+      delete[] X;
+      delete[] tmp;
+      delete[] imgbuf;
     }
     A = new int[N * 4];
     B = new float[N * 3];

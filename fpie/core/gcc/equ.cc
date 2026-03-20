@@ -6,7 +6,8 @@ GCCEquSolver::GCCEquSolver() : maskbuf(NULL), imgbuf(NULL), EquSolver() {}
 
 GCCEquSolver::~GCCEquSolver() {
   if (maskbuf != NULL) {
-    delete[] maskbuf, imgbuf;
+    delete[] maskbuf;
+    delete[] imgbuf;
   }
 }
 
