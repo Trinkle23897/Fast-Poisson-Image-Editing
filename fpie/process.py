@@ -8,7 +8,25 @@ import numpy as np
 
 from fpie import np_solver
 
-CPU_COUNT = os.cpu_count() or 1
+DEFAULT_CPU_CAP = 8
+
+
+def _default_cpu_count() -> int:
+    """Pick a conservative default for CPU-backed solvers."""
+    candidates: list[int] = []
+    cpu_count = os.cpu_count()
+    if cpu_count is not None:
+        candidates.append(cpu_count)
+    try:
+        candidates.append(len(os.sched_getaffinity(0)))
+    except (AttributeError, OSError):
+        pass
+    if not candidates:
+        return 1
+    return max(1, min(min(candidates), DEFAULT_CPU_CAP))
+
+
+CPU_COUNT = _default_cpu_count()
 DEFAULT_BACKEND = "numpy"
 ALL_BACKEND = ["numpy"]
 MPI: Any | None = None

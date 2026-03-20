@@ -5,23 +5,26 @@
 #include "solver.h"
 
 OpenMPGridSolver::OpenMPGridSolver(int grid_x, int grid_y, int n_cpu)
-    : imgbuf(NULL), tmp(NULL), GridSolver(grid_x, grid_y) {
+    : imgbuf(NULL), tmp(NULL), next_tgt(NULL), GridSolver(grid_x, grid_y) {
   omp_set_num_threads(n_cpu);
 }
 
 OpenMPGridSolver::~OpenMPGridSolver() {
-  if (tmp != NULL) {
+  if (next_tgt != NULL) {
     delete[] tmp;
+    delete[] next_tgt;
     delete[] imgbuf;
   }
 }
 
 void OpenMPGridSolver::post_reset() {
-  if (tmp != NULL) {
+  if (next_tgt != NULL) {
     delete[] tmp;
+    delete[] next_tgt;
     delete[] imgbuf;
   }
   tmp = new float[N * m3];
+  next_tgt = new float[N * m3];
   imgbuf = new unsigned char[N * m3];
   memset(tmp, 0, sizeof(float) * N * m3);
 }
@@ -32,15 +35,18 @@ inline void OpenMPGridSolver::update_equation(int id) {
   int id1 = off3 - 3;
   int id2 = off3 + 3;
   int id3 = off3 + m3;
-  tgt[off3 + 0] = (grad[off3 + 0] + tgt[id0 + 0] + tgt[id1 + 0] + tgt[id2 + 0] +
-                   tgt[id3 + 0]) /
-                  4.0;
-  tgt[off3 + 1] = (grad[off3 + 1] + tgt[id0 + 1] + tgt[id1 + 1] + tgt[id2 + 1] +
-                   tgt[id3 + 1]) /
-                  4.0;
-  tgt[off3 + 2] = (grad[off3 + 2] + tgt[id0 + 2] + tgt[id1 + 2] + tgt[id2 + 2] +
-                   tgt[id3 + 2]) /
-                  4.0;
+  next_tgt[off3 + 0] =
+      (grad[off3 + 0] + tgt[id0 + 0] + tgt[id1 + 0] + tgt[id2 + 0] +
+       tgt[id3 + 0]) /
+      4.0;
+  next_tgt[off3 + 1] =
+      (grad[off3 + 1] + tgt[id0 + 1] + tgt[id1 + 1] + tgt[id2 + 1] +
+       tgt[id3 + 1]) /
+      4.0;
+  next_tgt[off3 + 2] =
+      (grad[off3 + 2] + tgt[id0 + 2] + tgt[id1 + 2] + tgt[id2 + 2] +
+       tgt[id3 + 2]) /
+      4.0;
 }
 
 void OpenMPGridSolver::calc_error() {
@@ -89,6 +95,15 @@ OpenMPGridSolver::step(int iteration) {
             update_equation(id);
           }
         }
+      }
+    }
+#pragma omp parallel for schedule(static)
+    for (int id = 0; id < N * M; ++id) {
+      if (mask[id]) {
+        int off3 = id * 3;
+        tgt[off3 + 0] = next_tgt[off3 + 0];
+        tgt[off3 + 1] = next_tgt[off3 + 1];
+        tgt[off3 + 2] = next_tgt[off3 + 2];
       }
     }
   }
