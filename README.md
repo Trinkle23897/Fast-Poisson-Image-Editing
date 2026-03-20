@@ -21,6 +21,8 @@ $ pip install fpie
 $ pip install .
 ```
 
+Supported Python versions: `3.10` to `3.13`.
+
 ### Extensions
 
 | Backend                                        | EquSolver          | GridSolver         | Documentation                                                | Dependency for installation                                  |
