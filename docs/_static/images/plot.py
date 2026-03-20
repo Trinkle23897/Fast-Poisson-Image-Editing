@@ -27,7 +27,6 @@ def reset_data(new_col=None):
 def parse_table(raw: str,
                 ttype: str,
                 new_col: str = None) -> Tuple[np.ndarray, int, int]:
-  global data
   raw = raw.replace("# of vars", "N").strip().splitlines()
   head, raw = raw[0], raw[2:]
   head = head[1:-1].split("|")
