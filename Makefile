@@ -4,6 +4,7 @@ PYTHON_FILES = $(shell find setup.py fpie tests docs -type f -name "*.py")
 CPP_FILES    = $(shell find fpie -type f -name "*.h" -o -name "*.cc" -o -name "*.cu")
 CMAKE_FILES  = $(shell find fpie -type f -name "CMakeLists.txt") $(shell find cmake_modules -type f) CMakeLists.txt
 COMMIT_HASH  = $(shell git log -1 --format=%h)
+CLANG_FORMAT = $(shell command -v clang-format-11 2>/dev/null || command -v clang-format 2>/dev/null || echo clang-format)
 
 # installation
 
@@ -25,7 +26,7 @@ cpplint-install:
 	$(call check_install, cpplint)
 
 clang-format-install:
-	command -v clang-format-11 || sudo apt-get install -y clang-format-11
+	command -v clang-format-11 || command -v clang-format || (sudo apt-get update && sudo apt-get install -y clang-format)
 
 cmake-format-install:
 	$(call check_install, cmakelang)
@@ -57,7 +58,7 @@ cpplint: cpplint-install
 	cpplint $(CPP_FILES)
 
 clang-format: clang-format-install
-	clang-format-11 --style=file -i $(CPP_FILES) -n --Werror
+	$(CLANG_FORMAT) --style=file -i $(CPP_FILES) -n --Werror
 
 cmake-format: cmake-format-install
 	cmake-format --check ${CMAKE_FILES}
