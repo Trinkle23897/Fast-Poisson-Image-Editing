@@ -1,4 +1,5 @@
 #include <omp.h>
+
 #include <tuple>
 
 #include "solver.h"
