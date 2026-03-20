@@ -6,7 +6,11 @@ import unittest
 
 import numpy as np
 
-from fpie.process import EquProcessor, GridProcessor
+from fpie.process import (
+    ALL_BACKEND,
+    EquProcessor,
+    GridProcessor,
+)
 
 
 class SmokeTest(unittest.TestCase):
@@ -40,6 +44,26 @@ class SmokeTest(unittest.TestCase):
         self.assertEqual(out.shape, self.tgt.shape)
         self.assertEqual(out.dtype, np.uint8)
         self.assertEqual(err.shape, (3,))
+
+    @unittest.skipUnless("openmp" in ALL_BACKEND, "OpenMP backend unavailable")
+    def test_grid_processor_openmp_matches_numpy(self) -> None:
+        """OpenMP grid solver should match the NumPy Jacobi update."""
+        rng = np.random.default_rng(0)
+        src = rng.integers(0, 256, size=(24, 24, 3), dtype=np.uint8)
+        tgt = rng.integers(0, 256, size=(24, 24, 3), dtype=np.uint8)
+        mask = np.zeros((24, 24), dtype=np.uint8)
+        mask[2:-2, 2:-2] = (rng.random((20, 20)) > 0.35).astype(np.uint8) * 255
+
+        proc_np = GridProcessor(backend="numpy", grid_x=1, grid_y=1)
+        proc_omp = GridProcessor(backend="openmp", n_cpu=4, grid_x=1, grid_y=1)
+        proc_np.reset(src, mask, tgt.copy(), (0, 0), (0, 0))
+        proc_omp.reset(src, mask, tgt.copy(), (0, 0), (0, 0))
+
+        out_np, err_np = proc_np.step(5)
+        out_omp, err_omp = proc_omp.step(5)
+
+        np.testing.assert_array_equal(out_omp, out_np)
+        np.testing.assert_allclose(err_omp, err_np, rtol=1e-5, atol=1e-5)
 
     def test_cli_check_backend(self) -> None:
         """Verify the CLI can report available backends."""

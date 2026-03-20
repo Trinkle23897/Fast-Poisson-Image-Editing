@@ -32,13 +32,13 @@ inline void OpenMPGridSolver::update_equation(int id) {
   int id1 = off3 - 3;
   int id2 = off3 + 3;
   int id3 = off3 + m3;
-  tgt[off3 + 0] = (grad[off3 + 0] + tgt[id0 + 0] + tgt[id1 + 0] + tgt[id2 + 0] +
+  tmp[off3 + 0] = (grad[off3 + 0] + tgt[id0 + 0] + tgt[id1 + 0] + tgt[id2 + 0] +
                    tgt[id3 + 0]) /
                   4.0;
-  tgt[off3 + 1] = (grad[off3 + 1] + tgt[id0 + 1] + tgt[id1 + 1] + tgt[id2 + 1] +
+  tmp[off3 + 1] = (grad[off3 + 1] + tgt[id0 + 1] + tgt[id1 + 1] + tgt[id2 + 1] +
                    tgt[id3 + 1]) /
                   4.0;
-  tgt[off3 + 2] = (grad[off3 + 2] + tgt[id0 + 2] + tgt[id1 + 2] + tgt[id2 + 2] +
+  tmp[off3 + 2] = (grad[off3 + 2] + tgt[id0 + 2] + tgt[id1 + 2] + tgt[id2 + 2] +
                    tgt[id3 + 2]) /
                   4.0;
 }
@@ -89,6 +89,15 @@ OpenMPGridSolver::step(int iteration) {
             update_equation(id);
           }
         }
+      }
+    }
+#pragma omp parallel for schedule(static)
+    for (int id = 0; id < N * M; ++id) {
+      if (mask[id]) {
+        int off3 = id * 3;
+        tgt[off3 + 0] = tmp[off3 + 0];
+        tgt[off3 + 1] = tmp[off3 + 1];
+        tgt[off3 + 2] = tmp[off3 + 2];
       }
     }
   }
