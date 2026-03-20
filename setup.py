@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+import importlib.machinery
 import os
+from pathlib import Path
+import shutil
 import subprocess
 import sys
 from multiprocessing import cpu_count
@@ -28,17 +31,26 @@ class CMakeExtension(Extension):
 class CMakeBuild(build_ext):
   """cmake setup helper class"""
 
+  def initialize_options(self) -> None:
+    super().initialize_options()
+    self._cmake_output_dirs = {}
+
+  def _iter_native_artifacts(self, output_dir: Path):
+    seen = set()
+    for suffix in importlib.machinery.EXTENSION_SUFFIXES:
+      for artifact in sorted(output_dir.glob(f"core_*{suffix}")):
+        if artifact.is_file() and artifact not in seen:
+          seen.add(artifact)
+          yield artifact
+
   def build_extension(self, ext):
-    extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-    extdir = os.path.join(extdir, ext.name)
+    extdir = Path(self.build_lib) / ext.name
+    self._cmake_output_dirs[ext.name] = extdir
 
     # required for auto-detection of auxiliary "native" libs
-    if not extdir.endswith(os.path.sep):
-      extdir += os.path.sep
-
     # Set Python_EXECUTABLE instead if you use PYBIND11_FINDPYTHON
     cmake_args = [
-      f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}",
+      f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}{os.path.sep}",
       f"-DPYTHON_EXECUTABLE={sys.executable}",
       "-DCMAKE_BUILD_TYPE=Release",
     ]
@@ -46,6 +58,7 @@ class CMakeBuild(build_ext):
 
     if not os.path.exists(self.build_temp):
       os.makedirs(self.build_temp)
+    extdir.mkdir(parents=True, exist_ok=True)
 
     try:
       subprocess.check_call(
@@ -55,6 +68,22 @@ class CMakeBuild(build_ext):
     except Exception as e:
       print(f"{type(e)}: {e}")
       pass
+
+  def copy_extensions_to_source(self) -> None:
+    build_py = self.get_finalized_command("build_py")
+    for ext in self.extensions:
+      if not isinstance(ext, CMakeExtension):
+        self.copy_extension_to_source(ext)
+        continue
+
+      output_dir = self._cmake_output_dirs.get(ext.name)
+      if output_dir is None:
+        continue
+
+      package_dir = Path(build_py.get_package_dir(ext.name))
+      package_dir.mkdir(parents=True, exist_ok=True)
+      for artifact in self._iter_native_artifacts(output_dir):
+        shutil.copy2(artifact, package_dir / artifact.name)
 
 
 def get_description():
@@ -72,8 +101,9 @@ setup(
   description="A fast poisson image editing algorithm implementation.",
   long_description=get_description(),
   long_description_content_type="text/markdown",
+  python_requires=">=3.10,<3.14",
   packages=find_packages(exclude=["tests", "tests.*"]),
-  package_data={"fpie": ["fpie/core_*.so"]},
+  package_data={"fpie": ["core_*.so", "core_*.pyd"]},
   entry_points={
     "console_scripts": ["fpie=fpie.cli:main", "fpie-gui=fpie.gui:main"],
   },
@@ -109,10 +139,9 @@ setup(
     "License :: OSI Approved :: MIT License",
     # Specify the Python versions you support here. In particular, ensure
     # that you indicate whether you support Python 2, Python 3 or both.
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
   ],
 )
