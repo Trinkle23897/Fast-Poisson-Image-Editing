@@ -20,7 +20,8 @@ CudaEquSolver::CudaEquSolver(int block_size)
 
 CudaEquSolver::~CudaEquSolver() {
   if (maskbuf != NULL) {
-    delete[] maskbuf, imgbuf;
+    delete[] maskbuf;
+    delete[] imgbuf;
   }
   if (tmp != NULL) {
     cudaFree(cA);

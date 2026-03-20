@@ -18,14 +18,18 @@ class EquSolver {
   EquSolver() : N(0), A(NULL), B(NULL), X(NULL) {}
   ~EquSolver() {
     if (N > 0) {
-      delete[] A, B, X;
+      delete[] A;
+      delete[] B;
+      delete[] X;
     }
   }
 
   void reset(int n, py::array_t<int> a, py::array_t<float> x,
              py::array_t<float> b) {
     if (N > 0) {
-      delete[] A, B, X;
+      delete[] A;
+      delete[] B;
+      delete[] X;
     }
     N = n;
     A = new int[N * 4];
@@ -88,14 +92,18 @@ class GridSolver {
         grad(NULL) {}
   ~GridSolver() {
     if (N > 0) {
-      delete[] mask, tgt, grad;
+      delete[] mask;
+      delete[] tgt;
+      delete[] grad;
     }
   }
 
   void reset(int n, py::array_t<int> m, py::array_t<float> t,
              py::array_t<float> g) {
     if (N > 0) {
-      delete[] mask, tgt, grad;
+      delete[] mask;
+      delete[] tgt;
+      delete[] grad;
     }
     // copy from numpy
     auto mask_arr = m.unchecked<2>();

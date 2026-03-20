@@ -11,7 +11,8 @@ OpenMPEquSolver::OpenMPEquSolver(int n_cpu)
 
 OpenMPEquSolver::~OpenMPEquSolver() {
   if (maskbuf != NULL) {
-    delete[] maskbuf, imgbuf;
+    delete[] maskbuf;
+    delete[] imgbuf;
   }
   if (tmp != NULL) {
     delete[] tmp;
@@ -56,7 +57,8 @@ py::array_t<int> OpenMPEquSolver::partition(py::array_t<int> mask) {
 
 void OpenMPEquSolver::post_reset() {
   if (tmp != NULL) {
-    delete[] tmp, imgbuf;
+    delete[] tmp;
+    delete[] imgbuf;
   }
   tmp = new float[N * 3];
   imgbuf = new unsigned char[N * 3];
