@@ -33,7 +33,7 @@ cmake-format-install:
 
 doc-install:
 	$(call check_install, pydocstyle)
-	$(call check_install_extra, doc8, "doc8<1")
+	$(call check_install_extra, doc8, "doc8<1" setuptools pbr)
 	$(call check_install, sphinx)
 	$(call check_install, sphinx_rtd_theme)
 	if command -v apt-get >/dev/null 2>&1; then dpkg -s libenchant-2-dev >/dev/null 2>&1 || (sudo apt-get update && sudo apt-get install -y libenchant-2-dev); fi
