@@ -14,6 +14,8 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+"""Sphinx configuration for the project documentation."""
+
 import os
 
 # -- Project information -----------------------------------------------------
@@ -24,10 +26,11 @@ author = "Jiayi Weng"
 
 
 def get_version() -> str:
-  # https://packaging.python.org/guides/single-sourcing-package-version/
-  with open(os.path.join("..", project, "__init__.py"), "r") as f:
-    init = f.read().split()
-  return init[init.index("__version__") + 2][1:-1]
+    """Read the package version from ``fpie.__init__``."""
+    # https://packaging.python.org/guides/single-sourcing-package-version/
+    with open(os.path.join("..", project, "__init__.py"), "r") as f:
+        init = f.read().split()
+    return init[init.index("__version__") + 2][1:-1]
 
 
 # The full version, including alpha/beta/rc tags
@@ -39,7 +42,7 @@ release = get_version()
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-  "sphinx.ext.autodoc",
+    "sphinx.ext.autodoc",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
