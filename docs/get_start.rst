@@ -9,7 +9,7 @@ Linux/macOS
 
 .. code:: bash
 
-   # install cmake >= 3.4
+   # install cmake >= 3.5
    # if you don't have sudo (like GHC), install cmake from source
    # on macOS, type `brew install cmake`
    $ pip install fpie
