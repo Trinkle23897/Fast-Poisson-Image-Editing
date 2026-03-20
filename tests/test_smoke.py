@@ -52,14 +52,10 @@ class SmokeTest(unittest.TestCase):
         src = rng.integers(0, 256, size=(24, 24, 3), dtype=np.uint8)
         tgt = rng.integers(0, 256, size=(24, 24, 3), dtype=np.uint8)
         mask = np.zeros((24, 24), dtype=np.uint8)
-        mask[2:-2, 2:-2] = (
-            rng.random((20, 20)) > 0.35
-        ).astype(np.uint8) * 255
+        mask[2:-2, 2:-2] = (rng.random((20, 20)) > 0.35).astype(np.uint8) * 255
 
         proc_np = GridProcessor(backend="numpy", grid_x=1, grid_y=1)
-        proc_omp = GridProcessor(
-            backend="openmp", n_cpu=4, grid_x=1, grid_y=1
-        )
+        proc_omp = GridProcessor(backend="openmp", n_cpu=4, grid_x=1, grid_y=1)
         proc_np.reset(src, mask, tgt.copy(), (0, 0), (0, 0))
         proc_omp.reset(src, mask, tgt.copy(), (0, 0), (0, 0))
 
@@ -88,6 +84,7 @@ class SmokeTest(unittest.TestCase):
         )
 
         self.assertIn("numpy", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()
