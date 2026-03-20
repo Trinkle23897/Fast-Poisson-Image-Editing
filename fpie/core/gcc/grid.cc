@@ -1,3 +1,5 @@
+#include <tuple>
+
 #include "solver.h"
 
 GCCGridSolver::GCCGridSolver(int grid_x, int grid_y)

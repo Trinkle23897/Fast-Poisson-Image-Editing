@@ -1,3 +1,6 @@
+#include <iostream>
+#include <tuple>
+
 #include "solver.h"
 #include "utils.h"
 
