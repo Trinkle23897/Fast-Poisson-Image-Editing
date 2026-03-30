@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/fpie)](https://pypi.org/project/fpie/)
 [![Docs](https://readthedocs.org/projects/fpie/badge/?version=main)](https://fpie.readthedocs.io)
-[![Test](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/workflows/Test/badge.svg?branch=main)](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/actions)
+[![Test](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/Trinkle23897/Fast-Poisson-Image-Editing/actions/workflows/test.yml)
 
 > Jiayi Weng (jiayiwen), Zixu Chen (zixuc)
 
