@@ -21,3 +21,4 @@ Makefile
 __pycache__
 pybind11/
 .DS_Store
+venv/

@@ -46,7 +46,7 @@ def get_args(gen_type: str) -> argparse.Namespace:
     parser.add_argument(
         "--method",
         type=str,
-        choices=["equ", "grid"],
+        choices=["equ", "grid", "brb"],
         default="equ",
         help="how to parallelize computation",
     )
@@ -122,6 +122,9 @@ def get_args(gen_type: str) -> argparse.Namespace:
     )
     parser.add_argument(
         "--grid-y", type=int, help="y axis stride for grid solver", default=8
+    )
+    parser.add_argument(
+        "--tile", type=int, help="tile size for block red-black solver", default=32,
     )
 
     args = parser.parse_args()

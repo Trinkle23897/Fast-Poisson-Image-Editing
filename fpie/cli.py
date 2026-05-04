@@ -4,7 +4,7 @@ import time
 
 from fpie.args import get_args
 from fpie.io import read_images, write_image
-from fpie.process import BaseProcessor, EquProcessor, GridProcessor
+from fpie.process import BaseProcessor, EquProcessor, GridProcessor, BlockRBProcessor
 
 
 def main() -> None:
@@ -20,7 +20,7 @@ def main() -> None:
             args.mpi_sync_interval,
             args.block_size,
         )
-    else:
+    elif args.method == "grid":
         proc = GridProcessor(
             args.gradient,
             args.backend,
@@ -30,6 +30,15 @@ def main() -> None:
             args.grid_x,
             args.grid_y,
         )
+    elif args.method == "brb":
+        proc = BlockRBProcessor(
+            gradient=args.gradient,
+            backend=args.backend,
+            n_cpu=args.cpu,
+            tile_size=args.tile,
+        )
+    else:
+        raise ValueError(f"Unknown method {args.method}")
 
     if proc.root:
         print(

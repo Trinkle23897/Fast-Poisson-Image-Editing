@@ -44,4 +44,25 @@ class OpenMPGridSolver : public GridSolver {
       int iteration);
 };
 
+
+class OpenMPBlockRBSolver : public GridSolver {
+  unsigned char* imgbuf;
+  float* tmp;
+  int tile_size;
+
+ public:
+  OpenMPBlockRBSolver(int tile_size, int n_cpu);
+  ~OpenMPBlockRBSolver();
+
+  void post_reset();
+  inline void update_tile(int r0, int r1, int c0, int c1);
+  void calc_error();
+
+  std::tuple<py::array_t<unsigned char>, py::array_t<float>> step(
+      int iteration);
+};
+
 #endif  // FPIE_CORE_OPENMP_SOLVER_H_
+
+
+
