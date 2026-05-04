@@ -4,7 +4,7 @@ import time
 
 from fpie.args import get_args
 from fpie.io import read_images, write_image
-from fpie.process import BaseProcessor, EquProcessor, GridProcessor, BlockRBProcessor
+from fpie.process import BaseProcessor, EquProcessor, GridProcessor, BlockRBProcessor, MultiSweepsRedBlackProcessor
 
 
 def main() -> None:
@@ -36,6 +36,15 @@ def main() -> None:
             backend=args.backend,
             n_cpu=args.cpu,
             tile_size=args.tile,
+        )
+    elif args.method == "msrb":
+        proc = MultiSweepsRedBlackProcessor(
+            gradient=args.gradient,
+            backend=args.backend,
+            n_cpu=args.cpu,
+            tile_size=args.tile,
+            a_max=args.a_max,
+            conv_threshold=args.conv_threshold,
         )
     else:
         raise ValueError(f"Unknown method {args.method}")

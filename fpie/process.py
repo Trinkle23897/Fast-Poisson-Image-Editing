@@ -471,3 +471,83 @@ class BlockRBProcessor(BaseProcessor):
             self.tgt[self.x0 : self.x1, self.y0 : self.y1] = tgt
             return self.tgt, err
         return None
+
+
+class MultiSweepsRedBlackProcessor(BaseProcessor):
+    """PIE multi-sweeps red-black GS processor with adaptive sweep count."""
+
+    def __init__(
+        self,
+        gradient: str = "max",
+        backend: str = DEFAULT_BACKEND,
+        n_cpu: int = CPU_COUNT,
+        tile_size: int = 32,
+        a_max: int = 8,
+        conv_threshold: float = 1e-4,
+    ):
+        core: Any | None = None
+        rank = 0
+
+        if backend == "openmp" and core_openmp is not None:
+            core = core_openmp.MultiSweepsRedBlackSolver(tile_size, n_cpu, a_max, conv_threshold)
+
+        super().__init__(gradient, rank, backend, core)
+
+    # reset() is identical to GridProcessor.reset() -- uses the same
+    # 2-D grid layout, mask, tgt_crop, and grad arrays
+    def reset(
+        self,
+        src: np.ndarray,
+        mask: np.ndarray,
+        tgt: np.ndarray,
+        mask_on_src: tuple[int, int],
+        mask_on_tgt: tuple[int, int],
+    ) -> int:
+        assert self.root
+
+        if len(mask.shape) == 3:
+            mask = mask.mean(-1)
+        mask = (mask >= 128).astype(np.int32)
+
+        mask[0] = 0
+        mask[-1] = 0
+        mask[:, 0] = 0
+        mask[:, -1] = 0
+
+        x, y = np.nonzero(mask)
+        x0, x1 = x.min() - 1, x.max() + 2
+        y0, y1 = y.min() - 1, y.max() + 2
+        mask = mask[x0:x1, y0:y1]
+        max_id = np.prod(mask.shape)
+
+        src_crop = src[
+            mask_on_src[0] + x0 : mask_on_src[0] + x1,
+            mask_on_src[1] + y0 : mask_on_src[1] + y1,
+        ].astype(np.float32)
+        tgt_crop = tgt[
+            mask_on_tgt[0] + x0 : mask_on_tgt[0] + x1,
+            mask_on_tgt[1] + y0 : mask_on_tgt[1] + y1,
+        ].astype(np.float32)
+
+        grad = np.zeros([*mask.shape, 3], np.float32)
+        grad[1:] += self.mixgrad(src_crop[1:] - src_crop[:-1], tgt_crop[1:] - tgt_crop[:-1])
+        grad[:-1] += self.mixgrad(src_crop[:-1] - src_crop[1:], tgt_crop[:-1] - tgt_crop[1:])
+        grad[:, 1:] += self.mixgrad(src_crop[:, 1:] - src_crop[:, :-1], tgt_crop[:, 1:] - tgt_crop[:, :-1])
+        grad[:, :-1] += self.mixgrad(src_crop[:, :-1] - src_crop[:, 1:], tgt_crop[:, :-1] - tgt_crop[:, 1:])
+        grad[mask == 0] = 0
+
+        self.x0 = mask_on_tgt[0] + x0
+        self.x1 = mask_on_tgt[0] + x1
+        self.y0 = mask_on_tgt[1] + y0
+        self.y1 = mask_on_tgt[1] + y1
+        self.tgt = tgt.copy()
+        self.core.reset(max_id, mask, tgt_crop, grad)
+        return int(max_id)
+
+    def step(self, iteration: int) -> tuple[np.ndarray, np.ndarray] | None:
+        result = self.core.step(iteration)
+        if self.root:
+            tgt, err = result
+            self.tgt[self.x0 : self.x1, self.y0 : self.y1] = tgt
+            return self.tgt, err
+        return None
