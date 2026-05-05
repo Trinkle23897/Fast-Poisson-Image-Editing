@@ -46,7 +46,7 @@ def get_args(gen_type: str) -> argparse.Namespace:
     parser.add_argument(
         "--method",
         type=str,
-        choices=["equ", "grid", "brb"],
+        choices=["equ", "grid", "brb", "msrb"],
         default="equ",
         help="how to parallelize computation",
     )
@@ -125,6 +125,12 @@ def get_args(gen_type: str) -> argparse.Namespace:
     )
     parser.add_argument(
         "--tile", type=int, help="tile size for block red-black solver", default=32,
+    )
+    parser.add_argument(
+        "--a-max", type=int, help="max adaptive sweeps for multi-sweeps RB solver", default=8,
+    )
+    parser.add_argument(
+        "--conv-threshold", type=float, help="convergence threshold for multi-sweeps RB solver", default=1e-4,
     )
 
     args = parser.parse_args()

@@ -17,4 +17,9 @@ PYBIND11_MODULE(core_openmp, m) {
         .def("reset", &OpenMPBlockRBSolver::reset)
         .def("sync",  &OpenMPBlockRBSolver::sync)
         .def("step",  &OpenMPBlockRBSolver::step);
+    py::class_<OpenMPMultiSweepsRedBlackSolver>(m, "MultiSweepsRedBlackSolver")
+        .def(py::init<int, int, int, float>())  // tile_size, n_cpu, a_max, conv_threshold
+        .def("reset", &OpenMPMultiSweepsRedBlackSolver::reset)
+        .def("sync",  &OpenMPMultiSweepsRedBlackSolver::sync)
+        .def("step",  &OpenMPMultiSweepsRedBlackSolver::step);
 }

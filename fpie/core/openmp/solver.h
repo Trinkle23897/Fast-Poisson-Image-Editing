@@ -46,7 +46,8 @@ class OpenMPGridSolver : public GridSolver {
 
 
 class OpenMPBlockRBSolver : public GridSolver {
-  unsigned char* imgbuf;
+  protected:
+    unsigned char* imgbuf;
   float* tmp;
   int tile_size;
 
@@ -57,6 +58,24 @@ class OpenMPBlockRBSolver : public GridSolver {
   void post_reset();
   inline void update_tile(int r0, int r1, int c0, int c1);
   void calc_error();
+
+  std::tuple<py::array_t<unsigned char>, py::array_t<float>> step(
+      int iteration);
+};
+
+class OpenMPMultiSweepsRedBlackSolver : public OpenMPBlockRBSolver {
+  float* tile_residuals;
+  int a_max;
+  float conv_threshold;
+
+ public:
+  OpenMPMultiSweepsRedBlackSolver(int tile_size, int n_cpu, int a_max,
+                                   float conv_threshold);
+  ~OpenMPMultiSweepsRedBlackSolver();
+
+  void post_reset();
+  void calc_tile_residuals();
+  int compute_adaptive_sweeps(float initial_residual, float current_residual);
 
   std::tuple<py::array_t<unsigned char>, py::array_t<float>> step(
       int iteration);

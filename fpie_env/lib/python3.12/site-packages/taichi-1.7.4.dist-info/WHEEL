@@ -1,0 +1,5 @@
+Wheel-Version: 1.0
+Generator: skbuild 0.18.1
+Root-Is-Purelib: false
+Tag: cp312-cp312-manylinux_2_27_x86_64
+
