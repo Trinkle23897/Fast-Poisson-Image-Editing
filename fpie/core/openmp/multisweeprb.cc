@@ -6,10 +6,6 @@
 #include <tuple>
 #include "solver.h"
 
-// FIX 1: Removed the duplicate OpenMPBlockRBSolver(tile_size, n_cpu) call.
-//         C++ only allows each base class to appear once in the initializer
-//         list. The single call below is enough — it satisfies the inherited
-//         constructor and sets tile_size / n_cpu correctly.
 OpenMPMultiSweepsRedBlackSolver::OpenMPMultiSweepsRedBlackSolver(
     int tile_size, int n_cpu, int a_max, float conv_threshold)
     : OpenMPBlockRBSolver(tile_size, n_cpu),
@@ -36,14 +32,6 @@ void OpenMPMultiSweepsRedBlackSolver::post_reset() {
   memset(tile_residuals, 0, sizeof(float) * T_x * T_y);
 }
 
-// FIX 2: Removed the duplicate update_tile() and calc_error() definitions.
-//         OpenMPMultiSweepsRedBlackSolver inherits them from
-//         OpenMPBlockRBSolver — they are identical, so redefining them here
-//         was dead code that also forced the compiler to link an ambiguous
-//         override, preventing the vtable from being set up correctly.
-
-// After calc_error() has filled tmp[] with per-pixel absolute residuals,
-// sum them per tile so we know which tiles still need work.
 void OpenMPMultiSweepsRedBlackSolver::calc_tile_residuals() {
   int T_x = (N + tile_size - 1) / tile_size;
   int T_y = (M + tile_size - 1) / tile_size;
@@ -103,6 +91,7 @@ OpenMPMultiSweepsRedBlackSolver::step(int iteration) {
   float* initial_residuals = new float[T_x * T_y];
   memcpy(initial_residuals, tile_residuals, sizeof(float) * T_x * T_y);
 
+  int actual_iterations = iteration;
   for (int i = 0; i < iteration; ++i) {
 
     // ── RED phase ────────────────────────────────────────────────────────────
@@ -152,6 +141,17 @@ OpenMPMultiSweepsRedBlackSolver::step(int iteration) {
     if (i < iteration - 1) {
       calc_error();
       calc_tile_residuals();
+      
+      float total_error = err[0] + err[1] + err[2];
+      if (total_error < conv_threshold) {
+        actual_iterations = i + 1;
+        if (actual_iterations < iteration) {
+          std::cout << "Converged early at iteration " << actual_iterations 
+                    << " (error: " << total_error << " < threshold: " 
+                    << conv_threshold << ")" << std::endl;
+        }
+        break;  // Exit the loop early
+      }
     }
   }
 
