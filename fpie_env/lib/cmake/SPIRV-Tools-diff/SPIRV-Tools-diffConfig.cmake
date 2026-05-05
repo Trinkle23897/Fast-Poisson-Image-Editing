@@ -1,5 +1,0 @@
-include(CMakeFindDependencyMacro)
-find_dependency(SPIRV-Tools)
-include(${CMAKE_CURRENT_LIST_DIR}/SPIRV-Tools-diffTargets.cmake)
-set(SPIRV-Tools-diff_LIBRARIES SPIRV-Tools-diff)
-get_target_property(SPIRV-Tools-diff_INCLUDE_DIRS SPIRV-Tools-diff INTERFACE_INCLUDE_DIRECTORIES)
