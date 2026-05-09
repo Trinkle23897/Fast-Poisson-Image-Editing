@@ -1,5 +1,6 @@
 """Processor abstractions and backend selection for PIE solvers."""
 
+import atexit
 import os
 from abc import ABC, abstractmethod
 from typing import Any
@@ -30,6 +31,8 @@ CPU_COUNT = _default_cpu_count()
 DEFAULT_BACKEND = "numpy"
 ALL_BACKEND = ["numpy"]
 MPI: Any | None = None
+_MPI_INITIALIZED_BY_FPIE = False
+_MPI_FINALIZER_REGISTERED = False
 
 try:
     from fpie import numba_solver
@@ -146,11 +149,25 @@ class BaseProcessor(ABC):
         pass
 
 
+def _finalize_mpi() -> None:
+    """Finalize MPI when this module initialized it lazily."""
+    assert MPI is not None
+    if MPI.Is_initialized() and not MPI.Is_finalized():
+        MPI.Finalize()
+
+
 def _ensure_mpi_initialized() -> Any:
     """Initialize MPI lazily when the MPI backend is explicitly selected."""
+    global _MPI_FINALIZER_REGISTERED  # noqa: PLW0603
+    global _MPI_INITIALIZED_BY_FPIE  # noqa: PLW0603
+
     assert MPI is not None
     if not MPI.Is_initialized():
         MPI.Init_thread()
+        _MPI_INITIALIZED_BY_FPIE = True
+    if _MPI_INITIALIZED_BY_FPIE and not _MPI_FINALIZER_REGISTERED:
+        atexit.register(_finalize_mpi)
+        _MPI_FINALIZER_REGISTERED = True
     return MPI
 
 

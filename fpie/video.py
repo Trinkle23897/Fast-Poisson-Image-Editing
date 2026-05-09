@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
@@ -195,7 +196,7 @@ def blend_video(
     if output_path.parent:
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    target_fps = fps or target_capture.get(cv2.CAP_PROP_FPS) or DEFAULT_FPS
+    target_fps = _resolve_fps(fps, target_capture.get(cv2.CAP_PROP_FPS))
     width = int(target_capture.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(target_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
     first_frame: np.ndarray | None = None
@@ -280,6 +281,19 @@ def _coerce_capture_source(source: str | int) -> str | int:
     if source.isdecimal():
         return int(source)
     return source
+
+
+def _resolve_fps(override_fps: float | None, capture_fps: float) -> float:
+    for candidate in (override_fps, capture_fps, DEFAULT_FPS):
+        if candidate is None:
+            continue
+        try:
+            value = float(candidate)
+        except (TypeError, ValueError):
+            continue
+        if math.isfinite(value) and value > 0:
+            return value
+    return DEFAULT_FPS
 
 
 def _pick_fourcc(output: str, fourcc: str | None) -> str:

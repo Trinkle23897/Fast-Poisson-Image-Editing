@@ -14,7 +14,7 @@ from fpie.process import (
     EquProcessor,
     GridProcessor,
 )
-from fpie.video import BlendOptions, blend_frame, blend_video
+from fpie.video import BlendOptions, _resolve_fps, blend_frame, blend_video
 
 
 class SmokeTest(unittest.TestCase):
@@ -120,6 +120,12 @@ class SmokeTest(unittest.TestCase):
 
         self.assertEqual(out.shape, self.tgt.shape)
         self.assertEqual(out.dtype, np.uint8)
+
+    def test_video_fps_falls_back_for_invalid_capture_values(self) -> None:
+        """Video FPS selection should ignore non-finite capture values."""
+        self.assertEqual(_resolve_fps(None, float("nan")), 30.0)
+        self.assertEqual(_resolve_fps(None, 0.0), 30.0)
+        self.assertEqual(_resolve_fps(12.0, float("nan")), 12.0)
 
     def test_blend_video_numpy_backend(self) -> None:
         """Verify the video interface writes a blended output stream."""
