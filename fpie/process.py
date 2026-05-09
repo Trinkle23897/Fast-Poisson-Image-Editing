@@ -1,5 +1,6 @@
 """Processor abstractions and backend selection for PIE solvers."""
 
+import atexit
 import os
 from abc import ABC, abstractmethod
 from typing import Any
@@ -30,6 +31,8 @@ CPU_COUNT = _default_cpu_count()
 DEFAULT_BACKEND = "numpy"
 ALL_BACKEND = ["numpy"]
 MPI: Any | None = None
+_MPI_INITIALIZED_BY_FPIE = False
+_MPI_FINALIZER_REGISTERED = False
 
 try:
     from fpie import numba_solver
@@ -64,6 +67,9 @@ except ImportError:
     core_openmp = None
 
 try:
+    import mpi4py
+
+    mpi4py.rc.initialize = False
     from mpi4py import MPI as _MPI
 
     from fpie import core_mpi  # type: ignore
@@ -143,6 +149,28 @@ class BaseProcessor(ABC):
         pass
 
 
+def _finalize_mpi() -> None:
+    """Finalize MPI when this module initialized it lazily."""
+    assert MPI is not None
+    if MPI.Is_initialized() and not MPI.Is_finalized():
+        MPI.Finalize()
+
+
+def _ensure_mpi_initialized() -> Any:
+    """Initialize MPI lazily when the MPI backend is explicitly selected."""
+    global _MPI_FINALIZER_REGISTERED  # noqa: PLW0603
+    global _MPI_INITIALIZED_BY_FPIE  # noqa: PLW0603
+
+    assert MPI is not None
+    if not MPI.Is_initialized():
+        MPI.Init_thread()
+        _MPI_INITIALIZED_BY_FPIE = True
+    if _MPI_INITIALIZED_BY_FPIE and not _MPI_FINALIZER_REGISTERED:
+        atexit.register(_finalize_mpi)
+        _MPI_FINALIZER_REGISTERED = True
+    return MPI
+
+
 class EquProcessor(BaseProcessor):
     """PIE Jacobi equation processor."""
 
@@ -167,9 +195,9 @@ class EquProcessor(BaseProcessor):
         elif backend == "openmp" and core_openmp is not None:
             core = core_openmp.EquSolver(n_cpu)
         elif backend == "mpi" and core_mpi is not None:
-            assert MPI is not None
+            mpi = _ensure_mpi_initialized()
             core = core_mpi.EquSolver(min_interval)
-            rank = MPI.COMM_WORLD.Get_rank()
+            rank = mpi.COMM_WORLD.Get_rank()
         elif backend == "cuda" and core_cuda is not None:
             core = core_cuda.EquSolver(block_size)
         elif backend.startswith("taichi") and taichi_solver is not None:
@@ -306,9 +334,9 @@ class GridProcessor(BaseProcessor):
         elif backend == "openmp" and core_openmp is not None:
             core = core_openmp.GridSolver(grid_x, grid_y, n_cpu)
         elif backend == "mpi" and core_mpi is not None:
-            assert MPI is not None
+            mpi = _ensure_mpi_initialized()
             core = core_mpi.GridSolver(min_interval)
-            rank = MPI.COMM_WORLD.Get_rank()
+            rank = mpi.COMM_WORLD.Get_rank()
         elif backend == "cuda" and core_cuda is not None:
             core = core_cuda.GridSolver(grid_x, grid_y)
         elif backend.startswith("taichi") and taichi_solver is not None:
