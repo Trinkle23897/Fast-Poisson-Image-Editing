@@ -57,7 +57,9 @@ class _FrameSource:
             self.image = cv2.imread(source)
         if self.image is not None:
             if self.image.ndim == 2:
-                self.image = np.stack([self.image, self.image, self.image], axis=-1)
+                self.image = np.stack(
+                    [self.image, self.image, self.image], axis=-1
+                )
             elif self.image.ndim == 3 and self.image.shape[-1] == 4:
                 self.image = self.image[..., :-1]
             return
@@ -91,7 +93,9 @@ class _FrameSource:
 def create_processor(options: BlendOptions) -> BaseProcessor:
     """Create a processor for reusable frame-by-frame blending."""
     if options.backend == "mpi":
-        raise ValueError("Video and stream processing do not support the MPI backend.")
+        raise ValueError(
+            "Video and stream processing do not support the MPI backend."
+        )
 
     if options.method == "equ":
         return EquProcessor(
@@ -133,7 +137,9 @@ def blend_frame(
 
     result = proc.step(options.iterations)
     if result is None:
-        raise RuntimeError("The selected processor did not return a root result.")
+        raise RuntimeError(
+            "The selected processor did not return a root result."
+        )
     frame, _err = result
     return frame
 
@@ -198,7 +204,9 @@ def blend_video(
         if not ok:
             source_frames.release()
             target_capture.release()
-            raise RuntimeError(f"No frames available from target source: {target}")
+            raise RuntimeError(
+                f"No frames available from target source: {target}"
+            )
         height, width = first_frame.shape[:2]
 
     writer = cv2.VideoWriter(

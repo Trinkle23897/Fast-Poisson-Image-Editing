@@ -65,9 +65,7 @@ def get_args() -> argparse.Namespace:
         "--target",
         help="target video filename, stream URL, or camera index",
     )
-    parser.add_argument(
-        "-o", "--output", help="output video filename"
-    )
+    parser.add_argument("-o", "--output", help="output video filename")
     parser.add_argument(
         "-h0",
         type=int,
@@ -159,7 +157,9 @@ def get_args() -> argparse.Namespace:
         if not value
     ]
     if missing:
-        parser.error(f"the following arguments are required: {', '.join(missing)}")
+        parser.error(
+            f"the following arguments are required: {', '.join(missing)}"
+        )
     return args
 
 
