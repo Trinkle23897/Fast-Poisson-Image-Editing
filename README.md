@@ -88,13 +88,36 @@ $ fpie-gui -s test3_src.jpg -t test3_tgt.jpg -o result.jpg -b cuda -n 10000
 
 We provide a simple GUI for real-time seamless cloning. You need to use your mouse to draw a rectangle on top of the source image, and click a point in target image. After that the result will automatically be generated. In the end, you can press ESC to terminate the program.
 
+### Video and streams
+
+```bash
+$ fpie-video -s src.png -m mask.png -t input.mp4 -o output.mp4 -h1 100 -w1 100 -n 5000 -g max
+```
+
+`fpie-video` applies the same Poisson blending to each target frame. The target can be a video file, stream URL, or camera index supported by OpenCV/FFmpeg. If the source is a video, frames are consumed one by one; add `--loop-source` to repeat it when the target is longer.
+
+The same interface is available from Python:
+
+```python
+from fpie.video import BlendOptions, blend_video
+
+blend_video(
+    "src.png",
+    "input.mp4",
+    "output.mp4",
+    mask="mask.png",
+    mask_on_tgt=(100, 100),
+    options=BlendOptions(backend="numpy", iterations=5000),
+)
+```
+
 ### Backend and Solver
 
 We have provided 7 backends. Each backend has two solvers: EquSolver and GridSolver. You can find the difference between these two solvers in the next section.
 
 For different backend usage, please check out the related documentation [here](https://fpie.readthedocs.io/en/main/backend.html).
 
-For other usage, please run `fpie -h` or `fpie-gui -h` to see the hint.
+For other usage, please run `fpie -h`, `fpie-gui -h`, or `fpie-video -h` to see the hint.
 
 ## Benchmark Result
 

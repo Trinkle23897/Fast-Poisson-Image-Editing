@@ -120,7 +120,11 @@ setup(
     python_requires=">=3.10,<3.14",
     packages=find_packages(exclude=["tests", "tests.*"]),
     entry_points={
-        "console_scripts": ["fpie=fpie.cli:main", "fpie-gui=fpie.gui:main"],
+        "console_scripts": [
+            "fpie=fpie.cli:main",
+            "fpie-gui=fpie.gui:main",
+            "fpie-video=fpie.video_cli:main",
+        ],
     },
     install_requires=[
         "cmake>=3.5",

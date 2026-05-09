@@ -2,8 +2,11 @@
 
 import subprocess
 import sys
+import tempfile
 import unittest
+from pathlib import Path
 
+import cv2
 import numpy as np
 
 from fpie.process import (
@@ -11,6 +14,7 @@ from fpie.process import (
     EquProcessor,
     GridProcessor,
 )
+from fpie.video import BlendOptions, blend_frame, blend_video
 
 
 class SmokeTest(unittest.TestCase):
@@ -84,6 +88,81 @@ class SmokeTest(unittest.TestCase):
         )
 
         self.assertIn("numpy", result.stdout)
+
+    def test_video_cli_check_backend(self) -> None:
+        """Verify the video CLI can report available backends."""
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                (
+                    "import sys; "
+                    "from fpie.video_cli import main; "
+                    "sys.argv = ['fpie-video', '--check-backend']; "
+                    "main()"
+                ),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertIn("numpy", result.stdout)
+
+    def test_blend_frame_numpy_backend(self) -> None:
+        """Verify the public frame interface blends one target frame."""
+        out = blend_frame(
+            self.src,
+            self.mask,
+            self.tgt,
+            options=BlendOptions(backend="numpy", iterations=2),
+        )
+
+        self.assertEqual(out.shape, self.tgt.shape)
+        self.assertEqual(out.dtype, np.uint8)
+
+    def test_blend_video_numpy_backend(self) -> None:
+        """Verify the video interface writes a blended output stream."""
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            src_path = tmp_path / "src.png"
+            mask_path = tmp_path / "mask.png"
+            target_path = tmp_path / "target.avi"
+            output_path = tmp_path / "out.avi"
+
+            cv2.imwrite(str(src_path), self.src)
+            cv2.imwrite(str(mask_path), self.mask)
+            writer = cv2.VideoWriter(
+                str(target_path),
+                cv2.VideoWriter_fourcc(*"MJPG"),
+                5.0,
+                (self.tgt.shape[1], self.tgt.shape[0]),
+            )
+            self.assertTrue(writer.isOpened())
+            writer.write(self.tgt)
+            writer.write(self.tgt + 1)
+            writer.release()
+
+            result = blend_video(
+                str(src_path),
+                str(target_path),
+                str(output_path),
+                mask=str(mask_path),
+                options=BlendOptions(backend="numpy", iterations=2),
+                fps=5.0,
+                fourcc="MJPG",
+            )
+
+            self.assertEqual(result.frame_count, 2)
+            self.assertTrue(output_path.exists())
+
+            capture = cv2.VideoCapture(str(output_path))
+            self.assertTrue(capture.isOpened())
+            self.assertEqual(int(capture.get(cv2.CAP_PROP_FRAME_COUNT)), 2)
+            ok, frame = capture.read()
+            capture.release()
+            self.assertTrue(ok)
+            self.assertEqual(frame.shape[:2], self.tgt.shape[:2])
 
 
 if __name__ == "__main__":
