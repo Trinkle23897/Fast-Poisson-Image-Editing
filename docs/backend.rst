@@ -336,6 +336,27 @@ For CUDA GridSolver, you also need to specify ``--grid-x`` and
    Time elapsed: 0.07s
    Successfully write image to result.jpg
 
+.. _amd-gpus-rocm-hip:
+
+AMD GPUs (ROCm/HIP)
+~~~~~~~~~~~~~~~~~~~~~
+
+The CUDA backend also runs on AMD GPUs through ROCm/HIP. The kernels are
+unchanged; a small compatibility header maps the CUDA runtime calls to HIP, and
+the build is selected with ``-DUSE_HIP=ON``. With a ROCm toolchain installed,
+configure the GPU backend directly with CMake:
+
+.. code:: bash
+
+   $ cmake <src> -DUSE_HIP=ON -DCMAKE_HIP_COMPILER=$(which hipcc) -DCMAKE_BUILD_TYPE=Release
+   $ make -j core_cuda
+
+By default CMake builds for the GPU installed in the build machine (detected
+automatically). To target a specific architecture, pass it explicitly, e.g.
+``-DCMAKE_HIP_ARCHITECTURES=gfx1100``. The backend is still selected at runtime
+with ``-b cuda`` (the name is kept for compatibility); on AMD it dispatches to
+the HIP build.
+
 .. _parallelization-strategy-cuda:
 
 Parallelization Strategy

@@ -21,6 +21,35 @@ def get_version() -> str:
     return init[init.index("__version__") + 2][1:-1]
 
 
+def _hip_cmake_args():
+    """Extra CMake args to build the GPU backend with HIP for AMD GPUs, or [].
+
+    Honors USE_HIP from the environment (USE_HIP=1/on/true forces it, 0/off/false
+    disables it). When USE_HIP is unset, auto-detects: if nvcc is absent but a
+    ROCm/HIP toolchain is present, build with HIP; otherwise take the default
+    NVIDIA/CUDA path. This lets ``pip install .`` build the GPU backend on an AMD
+    machine the same way it does on an NVIDIA one."""
+    env = os.environ.get("USE_HIP")
+    if env is not None:
+        if env.strip().lower() not in ("1", "on", "true", "yes"):
+            return []
+    else:
+        rocm_present = (
+            shutil.which("hipcc") or shutil.which("amdclang++")
+            or os.path.isdir(os.environ.get("ROCM_PATH", "/opt/rocm"))
+        )
+        if shutil.which("nvcc") is not None or not rocm_present:
+            return []
+    args = ["-DUSE_HIP=ON"]
+    rocm = os.environ.get("ROCM_PATH", "/opt/rocm")
+    rocm_clang = os.path.join(rocm, "llvm", "bin", "clang++")
+    if os.path.exists(rocm_clang):
+        args.append(f"-DCMAKE_HIP_COMPILER={rocm_clang}")
+    elif shutil.which("amdclang++"):
+        args.append(f"-DCMAKE_HIP_COMPILER={shutil.which('amdclang++')}")
+    return args
+
+
 # A CMakeExtension needs a sourcedir instead of a file list.
 # The name must be the _single_ output extension from the CMake build.
 # If you need multiple extensions, see scikit-build.
@@ -63,7 +92,7 @@ class CMakeBuild(build_ext):
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}{os.path.sep}",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             "-DCMAKE_BUILD_TYPE=Release",
-        ]
+        ] + _hip_cmake_args()
         build_args = ["-j", f"{cpu_count()}"]
 
         if not os.path.exists(self.build_temp):

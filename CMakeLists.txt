@@ -37,7 +37,14 @@ if(MPI_FOUND)
   add_subdirectory(fpie/core/mpi)
 endif()
 
-find_package(CUDA)
-if(CUDA_FOUND)
+option(USE_HIP "Build the GPU backend with HIP for AMD GPUs" OFF)
+if(USE_HIP)
+  # ROCm host: find_package(CUDA) would fail, so add the GPU backend directly;
+  # its CMakeLists builds the same sources through the HIP toolchain.
   add_subdirectory(fpie/core/cuda)
+else()
+  find_package(CUDA)
+  if(CUDA_FOUND)
+    add_subdirectory(fpie/core/cuda)
+  endif()
 endif()
