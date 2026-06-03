@@ -20,13 +20,14 @@ Linux/macOS
 Extensions
 ~~~~~~~~~~
 
-We provide 7 backends:
+We provide 8 backends:
 
 - NumPy, ``pip install numpy``;
 - `Numba <https://github.com/numba/numba>`__, ``pip install numba``;
 - GCC, needs cmake and gcc;
 - OpenMP, needs cmake and gcc (on macOS you need to change clang to gcc-11);
 - CUDA, needs nvcc;
+- ROCm/HIP (the CUDA backend on AMD GPUs), needs a ROCm toolchain (``pip install .``, or cmake ``-DUSE_HIP=ON``);
 - MPI, needs mpicc (on macOS: ``brew install open-mpi``) and ``pip install mpi4py``;
 - `Taichi <https://github.com/taichi-dev/taichi>`__, ``pip install taichi``.
 

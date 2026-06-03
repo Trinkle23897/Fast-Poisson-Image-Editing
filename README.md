@@ -32,6 +32,7 @@ Supported Python versions: `3.10` to `3.13`.
 | GCC                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#gcc) | cmake, gcc                                                   |
 | OpenMP                                         | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#openmp) | cmake, gcc (on macOS you need to change clang to gcc-11)     |
 | CUDA                                           | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#cuda) | nvcc                                                         |
+| ROCm/HIP (CUDA backend on AMD GPUs)            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#amd-gpus-rocm-hip) | ROCm toolchain (`pip install .`, or cmake `-DUSE_HIP=ON`)   |
 | MPI                                            | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#mpi) | `pip install mpi4py` and mpicc (on macOS: `brew install open-mpi`) |
 | [Taichi](https://github.com/taichi-dev/taichi) | :heavy_check_mark: | :heavy_check_mark: | [docs](https://fpie.readthedocs.io/en/main/backend.html#taichi) | `pip install taichi`                                         |
 
@@ -113,7 +114,7 @@ blend_video(
 
 ### Backend and Solver
 
-We have provided 7 backends. Each backend has two solvers: EquSolver and GridSolver. You can find the difference between these two solvers in the next section.
+We have provided 8 backends. Each backend has two solvers: EquSolver and GridSolver. You can find the difference between these two solvers in the next section.
 
 For different backend usage, please check out the related documentation [here](https://fpie.readthedocs.io/en/main/backend.html).
 
