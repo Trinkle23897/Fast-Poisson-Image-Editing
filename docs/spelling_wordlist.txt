@@ -19,7 +19,9 @@ circleX
 fpie
 poisson
 macOS
+CMake
 cmake
+toolchain
 gcc
 nvcc
 cpu

@@ -14,9 +14,9 @@ set(CUDA_SOURCES equ.cu grid.cu utils.cu)
 if(USE_HIP)
   enable_language(HIP)
   # enable_language(HIP) auto-detects the installed GPUs into
-  # CMAKE_HIP_ARCHITECTURES, so by default the backend builds for the GPU in this
-  # machine. Fall back to gfx90a only if nothing was detected (e.g. a build host
-  # with no AMD GPU); an explicit -DCMAKE_HIP_ARCHITECTURES overrides both.
+  # CMAKE_HIP_ARCHITECTURES, so by default the backend builds for the GPU in
+  # this machine. Fall back to gfx90a only if nothing was detected (e.g. a build
+  # host with no AMD GPU); an explicit -DCMAKE_HIP_ARCHITECTURES overrides both.
   if(NOT CMAKE_HIP_ARCHITECTURES)
     set(CMAKE_HIP_ARCHITECTURES "gfx90a")
   endif()
@@ -26,8 +26,8 @@ if(USE_HIP)
   # finalize LTO, so an LTO module is left without an exported PyInit_core_cuda
   # (ImportError). LTO is a non-essential size optimization here.
   pybind11_add_module(core_cuda NO_EXTRAS solver.cc ${CUDA_SOURCES})
-  set_target_properties(core_cuda PROPERTIES
-                        HIP_ARCHITECTURES "${CMAKE_HIP_ARCHITECTURES}")
+  set_target_properties(core_cuda PROPERTIES HIP_ARCHITECTURES
+                                             "${CMAKE_HIP_ARCHITECTURES}")
   target_compile_definitions(core_cuda PRIVATE USE_HIP)
 else()
   find_package(CUDA REQUIRED)

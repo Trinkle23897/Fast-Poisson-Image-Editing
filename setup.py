@@ -28,14 +28,16 @@ def _hip_cmake_args():
     disables it). When USE_HIP is unset, auto-detects: if nvcc is absent but a
     ROCm/HIP toolchain is present, build with HIP; otherwise take the default
     NVIDIA/CUDA path. This lets ``pip install .`` build the GPU backend on an AMD
-    machine the same way it does on an NVIDIA one."""
+    machine the same way it does on an NVIDIA one.
+    """
     env = os.environ.get("USE_HIP")
     if env is not None:
         if env.strip().lower() not in ("1", "on", "true", "yes"):
             return []
     else:
         rocm_present = (
-            shutil.which("hipcc") or shutil.which("amdclang++")
+            shutil.which("hipcc")
+            or shutil.which("amdclang++")
             or os.path.isdir(os.environ.get("ROCM_PATH", "/opt/rocm"))
         )
         if shutil.which("nvcc") is not None or not rocm_present:

@@ -12,17 +12,17 @@
 
 #include <hip/hip_runtime.h>
 
-#define cudaDeviceProp           hipDeviceProp_t
-#define cudaDeviceSynchronize    hipDeviceSynchronize
-#define cudaError_t              hipError_t
-#define cudaFree                 hipFree
-#define cudaGetDeviceCount       hipGetDeviceCount
-#define cudaGetDeviceProperties  hipGetDeviceProperties
-#define cudaMalloc               hipMalloc
-#define cudaMemcpy               hipMemcpy
-#define cudaMemcpyDeviceToHost   hipMemcpyDeviceToHost
-#define cudaMemcpyHostToDevice   hipMemcpyHostToDevice
-#define cudaMemset               hipMemset
+#define cudaDeviceProp hipDeviceProp_t
+#define cudaDeviceSynchronize hipDeviceSynchronize
+#define cudaError_t hipError_t
+#define cudaFree hipFree
+#define cudaGetDeviceCount hipGetDeviceCount
+#define cudaGetDeviceProperties hipGetDeviceProperties
+#define cudaMalloc hipMalloc
+#define cudaMemcpy hipMemcpy
+#define cudaMemcpyDeviceToHost hipMemcpyDeviceToHost
+#define cudaMemcpyHostToDevice hipMemcpyHostToDevice
+#define cudaMemset hipMemset
 
 #else  // CUDA
 
